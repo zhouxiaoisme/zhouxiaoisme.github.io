@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 保留原有样式，无需修改 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习笔记 | 一个普通的思考者</title>
+    <style>
+        /* 复制原有所有样式 */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">🐍</div>
+            <h1>Python学习笔记</h1>
+            <p class="subtitle">从底层逻辑拆解Python，较真每一个知识点</p>
+        </div>
+
+        <div class="notes-section">
+            <h2>我的笔记列表</h2>
+            <!-- 动态生成的列表会插入到这里 -->
+            <ul class="notes-list" id="notesList"></ul>
+        </div>
+
+        <div class="back-btn">
+            <a href="../index.html">← 返回个人主页</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
+    </div>
+
+    <!-- 新增JavaScript，读取JSON生成列表 -->
+    <script>
+        // 读取配置文件，生成笔记列表
+        fetch('notes-config.json')
+            .then(response => response.json())
+            .then(notes => {
+                const notesList = document.getElementById('notesList');
+                notes.forEach(note => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = note.file;
+                    a.textContent = note.title;
+                    a.innerHTML = "📝 " + a.textContent; // 添加笔记图标
+                    li.appendChild(a);
+                    notesList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                // 加载失败时显示提示
+                const notesList = document.getElementById('notesList');
+                notesList.innerHTML = "<li style='color: #718096; padding: 16px;'>笔记列表加载失败，请稍后重试</li>";
+                console.error('加载笔记配置失败：', error);
+            });
+    </script>
+</body>
+</html>
