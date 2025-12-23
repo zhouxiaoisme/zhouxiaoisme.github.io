@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python函数参数传递口诀 - 技工院校教学材料</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);  /* 两行一列布局 */
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            padding: 25px 20px 20px;
+            color: white;
+        }
+        
+        .positional .card-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+        
+        .default .card-header {
+            background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
+        }
+        
+        .keyword .card-header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+        
+        .variable .card-header {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .card-slogan {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .card-body {
+            padding: 25px 20px;
+        }
+        
+        .card-body h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-left: 4px solid;
+            padding-left: 10px;
+        }
+        
+        .positional .card-body h3 {
+            border-left-color: #ff6b6b;
+        }
+        
+        .default .card-body h3 {
+            border-left-color: #48cae4;
+        }
+        
+        .keyword .card-body h3 {
+            border-left-color: #2ecc71;
+        }
+        
+        .variable .card-body h3 {
+            border-left-color: #9b59b6;
+        }
+        
+        .card-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        
+        .code-keyword {
+            color: #3498db;
+        }
+        
+        .code-function {
+            color: #9b59b6;
+        }
+        
+        .code-param {
+            color: #e74c3c;
+        }
+        
+        .code-string {
+            color: #2ecc71;
+        }
+        
+        .code-number {
+            color: #f39c12;
+        }
+        
+        .code-comment {
+            color: #7f8c8d;
+        }
+        
+        .comparison-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        
+        .comparison-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e8f4fc;
+        }
+        
+        .param-type {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .type-positional {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .type-default {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .type-keyword {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .type-variable {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .active-card {
+            outline: 3px solid #f1c40f;
+            outline-offset: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-code"></i> Python函数参数传递口诀</h1>
+            <p class="subtitle">针对技工院校学生设计的Python函数参数传递方式记忆口诀，通过简单易懂的比喻和代码示例，帮助学生快速理解和掌握。</p>
+        </header>
+        
+        <div class="cards-container">
+            <!-- 位置参数卡片 -->
+            <div class="card positional active-card" id="positional-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-list-ol"></i>
+                    </div>
+                    <h2 class="card-title">位置参数</h2>
+                    <p class="card-slogan">顺序要对，个数要齐。</p>
+                </div>
+                <div class="card-body">
+                    <h3>核心特点</h3>
+                    <p class="card-description">函数调用时，实参的顺序和个数必须与函数定义时的形参完全一致，就像流水线上的零件必须按固定顺序放置。</p>
+                    
+                    <h3>代码示例</h3>
+                    <div class="code-example">
+                        <span class="code-keyword">def</span> <span class="code-function">加工零件</span>(<span class="code-param">零件名</span>, <span class="code-param">加工时间</span>, <span class="code-param">转速</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">f"加工{零件名}，用时{加工时间}分钟，转速{转速}转/分"</span>)<br><br>
+                        
+                        <span class="code-comment"># 正确：参数顺序、个数完全匹配</span><br>
+                        <span class="code-function">加工零件</span>(<span class="code-string">"齿轮"</span>, <span class="code-number">10</span>, <span class="code-number">3000</span>)<br><br>
+                        
+                        <span class="code-comment"># 错误：顺序或个数不对会导致错误</span><br>
+                        <span class="code-comment"># 加工零件("齿轮", 3000, 10)  # 顺序错误</span><br>
+                        <span class="code-comment"># 加工零件("齿轮", 10)  # 个数不对</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 默认参数卡片 -->
+            <div class="card default" id="default-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h2 class="card-title">默认参数</h2>
+                    <p class="card-slogan">定义时给备胎，调用时可省力。</p>
+                </div>
+                <div class="card-body">
+                    <h3>核心特点</h3>
+                    <p class="card-description">在定义函数时给形参一个默认值。调用时如果不提供该参数，就使用默认值。就像机器有默认设置，不调就用默认，要调就改一下。</p>
+                    
+                    <h3>代码示例</h3>
+                    <div class="code-example">
+                        <span class="code-keyword">def</span> <span class="code-function">启动设备</span>(<span class="code-param">设备名</span>, <span class="code-param">速度</span>=<span class="code-number">1500</span>, <span class="code-param">模式</span>=<span class="code-string">"自动"</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">f"启动{设备名}，速度{速度}，模式{模式}"</span>)<br><br>
+                        
+                        <span class="code-comment"># 使用默认值</span><br>
+                        <span class="code-function">启动设备</span>(<span class="code-string">"CNC机床"</span>)  <span class="code-comment"># 速度=1500，模式="自动"</span><br><br>
+                        
+                        <span class="code-comment"># 修改部分默认值</span><br>
+                        <span class="code-function">启动设备</span>(<span class="code-string">"铣床"</span>, <span class="code-number">2000</span>)  <span class="code-comment"># 速度=2000，模式="自动"</span><br><br>
+                        
+                        <span class="code-comment"># 修改所有参数</span><br>
+                        <span class="code-function">启动设备</span>(<span class="code-string">"钻床"</span>, <span class="code-number">1200</span>, <span class="code-string">"手动"</span>)
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 关键字参数卡片 -->
+            <div class="card keyword" id="keyword-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h2 class="card-title">关键字参数</h2>
+                    <p class="card-slogan">点名道姓，不怕乱序。</p>
+                </div>
+                <div class="card-body">
+                    <h3>核心特点</h3>
+                    <p class="card-description">调用函数时，通过"形参名=实参值"的方式指定数据，顺序可以打乱。就像设备控制面板上的按钮，按哪个调哪个，不用管顺序。</p>
+                    
+                    <h3>代码示例</h3>
+                    <div class="code-example">
+                        <span class="code-keyword">def</span> <span class="code-function">设置工艺参数</span>(<span class="code-param">温度</span>, <span class="code-param">压力</span>, <span class="code-param">时间</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">f"温度:{温度}°C, 压力:{压力}MPa, 时间:{时间}分钟"</span>)<br><br>
+                        
+                        <span class="code-comment"># 传统位置参数方式</span><br>
+                        <span class="code-function">设置工艺参数</span>(<span class="code-number">200</span>, <span class="code-number">5</span>, <span class="code-number">30</span>)<br><br>
+                        
+                        <span class="code-comment"># 关键字参数方式（顺序可打乱）</span><br>
+                        <span class="code-function">设置工艺参数</span>(时间=<span class="code-number">30</span>, 温度=<span class="code-number">200</span>, 压力=<span class="code-number">5</span>)<br><br>
+                        
+                        <span class="code-comment"># 混合使用（位置参数必须在关键字参数前面）</span><br>
+                        <span class="code-function">设置工艺参数</span>(<span class="code-number">200</span>, 时间=<span class="code-number">30</span>, 压力=<span class="code-number">5</span>)
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 可变参数卡片 -->
+            <div class="card variable" id="variable-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-asterisk"></i>
+                    </div>
+                    <h2 class="card-title">可变参数</h2>
+                    <p class="card-slogan">一个星号*，多少都行，打包成元组。</p>
+                </div>
+                <div class="card-body">
+                    <h3>核心特点</h3>
+                    <p class="card-description">在形参前加<code>*</code>，接收任意数量的位置参数，打包成元组。用于处理事先不知道需要多少个参数的情况，就像零件收集箱，放多少零件都行。</p>
+                    
+                    <h3>代码示例</h3>
+                    <div class="code-example">
+                        <span class="code-keyword">def</span> <span class="code-function">计算总重量</span>(*<span class="code-param">零件重量</span>):<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;总重量 = <span class="code-number">0</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">for</span> 重量 <span class="code-keyword">in</span> 零件重量:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总重量 += 重量<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">f"零件总重量: {总重量}kg"</span>)<br><br>
+                        
+                        <span class="code-comment"># 可以接收任意数量的参数</span><br>
+                        <span class="code-function">计算总重量</span>(<span class="code-number">5.2</span>, <span class="code-number">3.1</span>, <span class="code-number">7.8</span>)  <span class="code-comment"># 3个参数</span><br>
+                        <span class="code-function">计算总重量</span>(<span class="code-number">2.5</span>, <span class="code-number">4.3</span>)  <span class="code-comment"># 2个参数</span><br>
+                        <span class="code-function">计算总重量</span>(<span class="code-number">10</span>)  <span class="code-comment"># 1个参数</span><br>
+                        <span class="code-function">计算总重量</span>()  <span class="code-comment"># 0个参数（空元组）</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comparison-section">
+            <h2><i class="fas fa-exchange-alt"></i> 四种参数传递方式对比</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数类型</th>
+                        <th>口诀</th>
+                        <th>关键特点</th>
+                        <th>使用场景</th>
+                        <th>类比</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="param-type type-positional">位置参数</span></td>
+                        <td><strong>顺序要对，个数要齐</strong></td>
+                        <td>实参顺序、个数必须与形参完全一致</td>
+                        <td>简单函数，参数少且顺序明确</td>
+                        <td>流水线工位</td>
+                    </tr>
+                    <tr>
+                        <td><span class="param-type type-default">默认参数</span></td>
+                        <td><strong>定义时给备胎，调用时可省力</strong></td>
+                        <td>定义时设置默认值，调用时可省略</td>
+                        <td>参数有常用默认值的情况</td>
+                        <td>机器默认设置</td>
+                    </tr>
+                    <tr>
+                        <td><span class="param-type type-keyword">关键字参数</span></td>
+                        <td><strong>点名道姓，不怕乱序</strong></td>
+                        <td>调用时用"形参名=实参值"，顺序可打乱</td>
+                        <td>参数多、易混淆顺序时</td>
+                        <td>控制面板按钮</td>
+                    </tr>
+                    <tr>
+                        <td><span class="param-type type-variable">可变参数</span></td>
+                        <td><strong>一个星号*，多少都行，打包成元组</strong></td>
+                        <td>参数个数可变，接收为元组</td>
+                        <td>参数数量不确定时</td>
+                        <td>零件收集箱</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+
+        </div>
+        
+        <div class="footer-note">
+            <p><i class="fas fa-chalkboard-teacher"></i> 教学提示：建议让学生先掌握位置参数，然后逐步学习其他参数类型，并通过实际编程练习加深理解。</p>
+            <p style="margin-top: 10px;">点击上方卡片可查看详细说明，适合课堂互动教学。</p>
+        </div>
+    </div>
+    
+    <script>
+        // 卡片点击交互
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                // 移除所有卡片的active-card类
+                document.querySelectorAll('.card').forEach(c => {
+                    c.classList.remove('active-card');
+                });
+                
+                // 为当前点击的卡片添加active-card类
+                this.classList.add('active-card');
+                
+                // 滚动到卡片位置（在移动设备上更友好）
+                if (window.innerWidth < 768) {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+        
+        // 添加键盘导航支持
+        document.addEventListener('keydown', function(event) {
+            const cards = document.querySelectorAll('.card');
+            const activeCard = document.querySelector('.active-card');
+            let currentIndex = Array.from(cards).indexOf(activeCard);
+            
+            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                // 下一个卡片
+                event.preventDefault();
+                currentIndex = (currentIndex + 1) % cards.length;
+            } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                // 上一个卡片
+                event.preventDefault();
+                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            } else if (event.key >= '1' && event.key <= '4') {
+                // 数字键1-4直接选择对应卡片
+                event.preventDefault();
+                currentIndex = parseInt(event.key) - 1;
+            }
+            
+            // 移除所有卡片的active-card类
+            cards.forEach(c => c.classList.remove('active-card'));
+            // 为新的当前卡片添加active-card类
+            cards[currentIndex].classList.add('active-card');
+            
+            // 滚动到卡片位置
+            if (window.innerWidth < 768) {
+                cards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+        
+        // 页面加载完成后的提示
+        window.addEventListener('load', function() {
+            console.log("Python函数参数传递口诀页面已加载完成！");
+            console.log("教学提示：您可以使用键盘方向键或数字键1-4在不同参数类型卡片间切换。");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>从对象和引用理解赋值与拷贝</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: {
+                nodeSpacing: 50,
+                rankSpacing: 80
+            }
+        });
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .highlight {
+                @apply text-red-600 font-bold;
+            }
+            .concept-box {
+                @apply bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 my-4;
+            }
+            .example-box {
+                @apply bg-gray-50 p-4 rounded-lg border-l-4 border-indigo-500 my-6;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-5xl bg-white rounded-xl shadow-md">
+        <h1 class="text-3xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-6">从对象和引用理解赋值与拷贝</h1>
+        
+        <div class="bg-amber-50 p-4 rounded-lg border-l-4 border-amber-500 mb-8">
+            <h2 class="text-xl font-semibold text-amber-800 mb-2">核心概念回顾</h2>
+            <ul class="list-disc pl-5 space-y-1">
+                <li><strong>对象</strong>：内存中真实存在的数据（如列表、字典）</li>
+                <li><strong>引用</strong>：变量名（标签），用来指向对象。也就是：指向对象的"指针"</li>
+				<p>今天我们用这两个概念，彻底搞懂直接赋值、浅拷贝和深拷贝的区别，看内存图就能明白核心原因！</p>
+            </ul>
+        </div>
+
+        <!-- 直接赋值 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 border-b border-blue-400 pb-1 mb-4">一、直接赋值：给同一个对象贴新标签</h2>
+            
+            <div class="concept-box">
+                <p><strong>核心特点</strong>：不创建新对象，只是给同一个对象增加新引用（标签）</p>
+            </div>
+
+            <div class="example-box">
+                <h3 class="text-lg font-semibold text-indigo-800 mb-2">代码示例</h3>
+                <pre class="bg-gray-800 text-gray-100 p-3 rounded overflow-x-auto"><code># 创建带嵌套的列表对象
+a = [1, [2, 3]]
+# 直接赋值
+b = a</code></pre>
+            </div>
+
+            <div class="my-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">内存布局示意图</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        subgraph "引用（变量名）"
+                            A[a]
+                            B[b]
+                        end
+                        
+                        subgraph 内存中的对象
+                            O1["外层列表对象<br/>内容: 1, [2,3]"]
+                            O2["嵌套列表对象<br/>内容: 2, 3"]
+                        end
+                        
+                        %% 地址标注
+                        note1["地址: 0x100"]
+                        note2["地址: 0x200"]
+                        
+                        %% 引用指向关系
+                        A --> O1
+                        B --> O1
+                        
+                        %% 对象包含关系
+                        O1 --> O2
+                        
+                        %% 地址指向
+                        note1 -.-> O1
+                        note2 -.-> O2
+                </div>
+            </div>
+
+            <div class="bg-green-50 p-3 rounded">
+                <p><strong>说明</strong>：</p>
+                <ul class="list-disc pl-5">
+                    <li>a和b都指向同一个外层列表对象（地址0x100）</li>
+                    <li>只有一个嵌套列表对象（地址0x200）</li>
+                    <li>修改a或b操作的是同一个对象，会互相影响</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 浅拷贝 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 border-b border-blue-400 pb-1 mb-4">二、浅拷贝：创建新外层对象，共享嵌套对象</h2>
+            
+            <div class="concept-box">
+                <p><strong>核心特点</strong>：只拷贝外层对象，嵌套对象还是原来的（共享引用）</p>
+            </div>
+
+            <div class="example-box">
+                <h3 class="text-lg font-semibold text-indigo-800 mb-2">代码示例</h3>
+                <pre class="bg-gray-800 text-gray-100 p-3 rounded overflow-x-auto"><code># 创建原对象
+a = [1, [2, 3]]
+# 浅拷贝（列表的copy()方法）
+b = a.copy()</code></pre>
+            </div>
+
+            <div class="my-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">内存布局示意图</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        subgraph "引用（变量名）"
+                            A[a]
+                            B[b]
+                        end
+                        
+                        subgraph 原对象
+                            O1["外层列表对象<br/>内容: 1, [2,3]"]
+                        end
+                        
+                        subgraph 浅拷贝产生的新对象
+                            O3["新外层列表对象<br/>内容: 1, [2,3]"]
+                        end
+                        
+                        subgraph 共享的嵌套对象
+                            O2["嵌套列表对象<br/>内容: 2, 3"]
+                        end
+                        
+                        %% 地址标注
+                        note1["地址: 0x100"]
+                        note2["地址: 0x200"]
+                        note3["地址: 0x300"]
+                        
+                        %% 引用指向关系
+                        A --> O1
+                        B --> O3
+                        
+                        %% 对象包含关系
+                        O1 --> O2
+                        O3 --> O2
+                        
+                        %% 地址指向
+                        note1 -.-> O1
+                        note2 -.-> O2
+                        note3 -.-> O3                </div>
+            </div>
+
+            <div class="bg-green-50 p-3 rounded">
+                <p><strong>说明</strong>：</p>
+                <ul class="list-disc pl-5">
+                    <li>a指向原外层对象（0x100），b指向新外层对象（0x300）</li>
+                    <li>两个外层对象都指向同一个嵌套对象（0x200）</li>
+                    <li>修改外层元素（如a[0]）互不影响，但修改嵌套元素（如a[1]）会互相影响</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 深拷贝 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 border-b border-blue-400 pb-1 mb-4">三、深拷贝：创建完全独立的新对象（包括嵌套）</h2>
+            
+            <div class="concept-box">
+                <p><strong>核心特点</strong>：拷贝所有层级的对象，原对象和新对象完全独立</p>
+            </div>
+
+            <div class="example-box">
+                <h3 class="text-lg font-semibold text-indigo-800 mb-2">代码示例</h3>
+                <pre class="bg-gray-800 text-gray-100 p-3 rounded overflow-x-auto"><code>import copy
+# 创建原对象
+a = [1, [2, 3]]
+# 深拷贝
+b = copy.deepcopy(a)</code></pre>
+            </div>
+
+            <div class="my-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">内存布局示意图</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        subgraph "引用（变量名）"
+                            A[a]
+                            B[b]
+                        end
+                        
+                        subgraph 原对象
+                            O1["外层列表对象<br/>内容: 1, [2,3]"]
+                            O2["嵌套列表对象<br/>内容: 2, 3"]
+                        end
+                        
+                        subgraph 深拷贝产生的新对象
+                            O3["新外层列表对象<br/>内容: 1, [2,3]"]
+                            O4["新嵌套列表对象<br/>内容: 2, 3"]
+                        end
+                        
+                        %% 地址标注
+                        note1["地址: 0x100"]
+                        note2["地址: 0x200"]
+                        note3["地址: 0x300"]
+                        note4["地址: 0x400"]
+                        
+                        %% 引用指向关系
+                        A --> O1
+                        B --> O3
+                        
+                        %% 对象包含关系
+                        O1 --> O2
+                        O3 --> O4
+                        
+                        %% 地址指向
+                        note1 -.-> O1
+                        note2 -.-> O2
+                        note3 -.-> O3
+                        note4 -.-> O4
+                </div>
+            </div>
+
+            <div class="bg-green-50 p-3 rounded">
+                <p><strong>说明</strong>：</p>
+                <ul class="list-disc pl-5">
+                    <li>a指向原外层对象（0x100），b指向新外层对象（0x300）</li>
+                    <li>原嵌套对象（0x200）和新嵌套对象（0x400）完全独立</li>
+                    <li>修改任何层级的元素，a和b都互不影响</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 总结对比 -->
+        <section class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">总结对比表</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-3 px-4 border-b text-left">操作类型</th>
+                            <th class="py-3 px-4 border-b text-left">是否创建新对象</th>
+                            <th class="py-3 px-4 border-b text-left">嵌套对象状态</th>
+                            <th class="py-3 px-4 border-b text-left">核心特征</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-3 px-4 border-b">直接赋值</td>
+                            <td class="py-3 px-4 border-b">不创建</td>
+                            <td class="py-3 px-4 border-b">共享</td>
+                            <td class="py-3 px-4 border-b">多引用指向同一对象</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 border-b">浅拷贝</td>
+                            <td class="py-3 px-4 border-b">只创建外层新对象</td>
+                            <td class="py-3 px-4 border-b">共享</td>
+                            <td class="py-3 px-4 border-b">外层独立，嵌套共享</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4 border-b">深拷贝</td>
+                            <td class="py-3 px-4 border-b">所有层级都创建新对象</td>
+                            <td class="py-3 px-4 border-b">独立</td>
+                            <td class="py-3 px-4 border-b">完全独立，无共享</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-4 text-center highlight">记住：看地址是否相同就能判断对象是否共享！</p>
+        </section>
+    </div>
+
+    <script>
+        // 确保Mermaid图表正确渲染
+        document.addEventListener('DOMContentLoaded', function() {
+            mermaid.run();
+        });
+    </script>
+</body>
+</html>

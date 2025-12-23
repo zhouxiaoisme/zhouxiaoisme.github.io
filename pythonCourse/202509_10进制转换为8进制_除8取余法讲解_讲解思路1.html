@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>十进制转八进制 - 除8取余法可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        
+        .input-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        input {
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            width: 300px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+        
+        button {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .method-intro {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+        }
+        
+        .method-intro h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .calculation-steps {
+            margin: 2rem 0;
+        }
+        
+        .step-item {
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        
+        .step-item h4 {
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #e8f5e9;
+            border-radius: 8px;
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .result-box h3 {
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+        
+        .programming-tips {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #fef9e7;
+            border-radius: 6px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .programming-tips h3 {
+            color: #d35400;
+            margin-bottom: 0.5rem;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-family: "Consolas", monospace;
+            font-size: 0.9rem;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>十进制转八进制 - 除8取余法可视化</h1>
+        
+        <div class="method-intro">
+            <h3>转换方法：除8取余法（反向取余）</h3>
+            <p>1. 不断除以8：将十进制数反复除以8，记录每次的余数（0~7）。</p>
+            <p>2. 反向排列余数：直到商为0时停止，将余数从下往上排列，得到的就是八进制数。</p>
+        </div>
+        
+        <div class="input-section">
+            <label for="decimalNum">请输入十进制整数：</label>
+            <input type="number" id="decimalNum" min="0" placeholder="例如：100">
+            <button onclick="convertToOctal()">开始转换</button>
+            <div id="errorMsg" class="error-message"></div>
+        </div>
+        
+        <div class="calculation-steps" id="calculationSteps">
+            <!-- 计算步骤会动态生成 -->
+        </div>
+        
+        <div class="result-box" id="resultBox" style="display: none;">
+            <h3>转换结果</h3>
+            <p id="finalResult"></p>
+        </div>
+        
+        <div class="programming-tips">
+            <h3>编程快捷方法</h3>
+            <p>Python 实现：</p>
+            <div class="code-block">oct(100)  # 输出：0o144（前缀 0o 表示八进制）</div>
+            <p>C/C++ 实现：</p>
+            <div class="code-block">printf("%o", 100);  // 输出：144</div>
+        </div>
+    </div>
+
+    <script>
+        function convertToOctal() {
+            // 清空之前的结果和错误信息
+            document.getElementById('calculationSteps').innerHTML = '';
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('errorMsg').textContent = '';
+            
+            // 获取输入值
+            const inputVal = document.getElementById('decimalNum').value;
+            const decimalNum = parseInt(inputVal);
+            
+            // 验证输入
+            if (isNaN(decimalNum) || decimalNum < 0) {
+                document.getElementById('errorMsg').textContent = '请输入有效的非负十进制整数！';
+                return;
+            }
+            
+            // 特殊情况：输入0
+            if (decimalNum === 0) {
+                const stepsContainer = document.getElementById('calculationSteps');
+                stepsContainer.innerHTML = `
+                    <div class="step-item">
+                        <h4>计算过程</h4>
+                        <p>0 ÷ 8 = 0 余 0</p>
+                    </div>
+                    <div class="step-item">
+                        <h4>反向取余</h4>
+                        <p>从最后一个余数开始往上读 → 0</p>
+                    </div>
+                `;
+                
+                document.getElementById('resultBox').style.display = 'block';
+                document.getElementById('finalResult').textContent = `0（十进制） = 0（八进制）`;
+                return;
+            }
+            
+            // 正常转换流程
+            let num = decimalNum;
+            let remainders = [];
+            let stepsHTML = '<div class="step-item"><h4>计算过程</h4>';
+            
+            // 计算每一步的商和余数
+            while (num > 0) {
+                const remainder = num % 8;
+                const quotient = Math.floor(num / 8);
+                remainders.push(remainder);
+                
+                stepsHTML += `<p>${num} ÷ 8 = ${quotient} 余 ${remainder}</p>`;
+                num = quotient;
+            }
+            
+            stepsHTML += '</div>';
+            
+            // 反向排列余数
+            const octalDigits = remainders.reverse();
+            const octalStr = octalDigits.join('');
+            
+            stepsHTML += `
+                <div class="step-item">
+                    <h4>反向取余</h4>
+                    <p>从最后一个余数开始往上读 → ${octalStr}</p>
+                </div>
+            `;
+            
+            // 显示步骤
+            document.getElementById('calculationSteps').innerHTML = stepsHTML;
+            
+            // 显示结果
+            document.getElementById('resultBox').style.display = 'block';
+            document.getElementById('finalResult').textContent = `${decimalNum}（十进制） = ${octalStr}（八进制）`;
+        }
+    </script>
+</body>
+</html>

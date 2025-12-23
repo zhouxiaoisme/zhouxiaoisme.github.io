@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python基础：对象与引用 - 入门版（带内存图+测验）</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            line-height: 2;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ddd;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .example {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .code {
+            font-family: "Consolas", monospace;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .result {
+            background-color: #e8f4fd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .analogy {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 3px solid #ffc107;
+        }
+        .summary {
+            background-color: #eafaf1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        .key-point {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .memory-diagram {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #f5fafe;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .diagram-title {
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        /* 测验模块样式 */
+        .quiz-section {
+            margin: 40px 0;
+            padding: 25px;
+            background-color: #fdf2f8;
+            border-radius: 10px;
+            border: 1px solid #fce7f3;
+        }
+        .quiz-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .options {
+            margin: 15px 0;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            background-color: #f0f8fb;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        .submit-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 30px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        .score-box {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: none;
+        }
+    </style>
+    <!-- 引入Mermaid库 -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            flowchart: {
+                nodeSpacing: 30,
+                rankSpacing: 50
+            }
+        });
+
+        // 测验逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const submitBtn = document.getElementById('submit-quiz');
+            const scoreBox = document.getElementById('score-box');
+            const questions = [
+                {
+                    id: 1,
+                    correctAnswer: 'b',
+                    feedback: '对象是内存中真实存在的数据，变量名（a）是引用，用来指向对象（100）'
+                },
+                {
+                    id: 2,
+                    correctAnswer: 'a',
+                    feedback: 'b = a 是给同一个对象加新标签，a和b都指向[1,2,3]，修改b会影响a'
+                },
+                {
+                    id: 3,
+                    correctAnswer: 'b',
+                    feedback: '引用是变量名（标签），对象才是真正的数据，引用通过"门牌号"（地址）找到对象'
+                }
+            ];
+
+            submitBtn.addEventListener('click', function() {
+                let score = 0;
+
+                questions.forEach(question => {
+                    const selectedOption = document.querySelector(`input[name="q${question.id}"]:checked`);
+                    const feedbackEl = document.getElementById(`feedback-${question.id}`);
+
+                    if (selectedOption) {
+                        if (selectedOption.value === question.correctAnswer) {
+                            feedbackEl.className = 'feedback correct';
+                            feedbackEl.innerHTML = `✓ 回答正确！${question.feedback}`;
+                            score++;
+                        } else {
+                            feedbackEl.className = 'feedback incorrect';
+                            feedbackEl.innerHTML = `✗ 回答错误。正确答案是：${question.correctAnswer}。${question.feedback}`;
+                        }
+                    } else {
+                        feedbackEl.className = 'feedback incorrect';
+                        feedbackEl.innerHTML = '✗ 请选择一个答案！';
+                    }
+                });
+
+                // 显示得分
+                scoreBox.style.display = 'block';
+                scoreBox.innerHTML = `你的得分：${score}/${questions.length} 分！`;
+
+                // 禁用按钮防止重复提交
+                submitBtn.disabled = true;
+                submitBtn.textContent = '已提交';
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Python入门：必须懂的两个概念</h1>
+        <p>学Python的赋值和拷贝之前，需要先理解两个基础概念。这两个概念很重要，但不用搞得太复杂。今天用最简单的方式+直观图表，讲清楚：</p>
+        <ol>
+            <li>什么是<strong>对象</strong>？</li>
+            <li>什么是<strong>引用</strong>？</li>
+        </ol>
+
+        <h2>一、什么是对象？</h2>
+        
+        <div class="key-point">对象 = 电脑内存里存的数据（比如数字、文字、列表等）</div>
+        
+        <p>你在Python里写的所有数据，本质上都是"对象"：</p>
+        <ul>
+            <li>数字：<code>123</code>、<code>3.14</code> 是对象</li>
+            <li>文字：<code>"你好"</code> 是对象</li>
+            <li>列表：<code>[1,2,3]</code> 是对象</li>
+            <li>字典：<code>{"name":"张三"}</code> 是对象</li>
+        </ul>
+        
+        <div class="analogy">
+            <strong>打个比方：</strong><br>
+            对象就像你手机里存的照片——照片本身是实实在在的数据，存在手机内存里。
+        </div>
+        
+        <div class="example">
+            <h3>看例子学对象：</h3>
+            <div class="code">
+# 这些都是在创建对象
+a = 100       # 创建了一个数字对象（100）
+b = "苹果"    # 创建了一个文字对象（"苹果"）
+c = [1,2,3]   # 创建了一个列表对象（[1,2,3]）
+            </div>
+            <div class="result">
+                说明：等号右边的内容，都是实实在在存在内存里的"对象"
+            </div>
+        </div>
+
+        <!-- 新增对象的内存布局图 -->
+        <div class="memory-diagram">
+            <div class="diagram-title">内存布局示意图：创建多个对象</div>
+            <div class="mermaid">
+                flowchart LR
+                    subgraph 电脑内存空间
+                        O1["数字对象：100<br/>地址：0x100"]
+                        O2["文字对象：'苹果'<br/>地址：0x200"]
+                        O3["列表对象：[1,2,3]<br/>地址：0x300"]
+                    end
+                    
+                    subgraph "变量名（引用）"
+                        A[a]
+                        B[b]
+                        C[c]
+                    end
+                    
+                    A --> O1
+                    B --> O2
+                    C --> O3
+            </div>
+            <p style="text-align: center; margin-top: 10px; color: #666;">
+                每个对象都有独立的内存地址，变量名通过箭头指向对应的对象
+            </p>
+        </div>
+
+        <h2>二、什么是引用？</h2>
+        
+        <div class="key-point">引用 = 变量名（标签），用来找到对象的"门牌号"</div>
+        
+        <p>变量名（比如a、b、c）本身不是数据，它只是一个"标签"，贴在对象上，方便我们找到这个对象。</p>
+        
+        <div class="analogy">
+            <strong>打个比方：</strong><br>
+            引用（变量名）就像你给照片起的名字——比如"全家福"、"旅游照"。名字不是照片本身，但通过名字能找到对应的照片。
+        </div>
+        
+        <div class="example">
+            <h3>看例子学引用：</h3>
+            <div class="code">
+# 等号左边的a、b是引用（标签）
+a = 100       # 把a这个标签贴在100这个对象上
+b = a         # 把b这个标签也贴在100这个对象上（和a贴同一个）
+
+print(a)      # 通过a找到100
+print(b)      # 通过b也找到100
+            </div>
+            <div class="result">
+                运行结果：<br>
+                100<br>
+                100<br>
+                说明：a和b都是引用，指向同一个对象（100）
+            </div>
+        </div>
+
+        <!-- 新增多个引用指向同一对象的内存图 -->
+        <div class="memory-diagram">
+            <div class="diagram-title">内存布局示意图：多个引用指向同一对象</div>
+            <div class="mermaid">
+                flowchart LR
+                    subgraph 电脑内存空间
+                        O["数字对象：100<br/>地址：0x100"]
+                    end
+                    
+                    subgraph "变量名（引用）"
+                        A[a]
+                        B[b]
+                    end
+                    
+                    A --> O
+                    B --> O
+            </div>
+            <p style="text-align: center; margin-top: 10px; color: #666;">
+                a和b两个引用都指向同一个对象，就像两个标签贴在同一张照片上
+            </p>
+        </div>
+
+        <div class="example">
+            <h3>关键点：修改对象会影响所有引用它的变量</h3>
+            <div class="code">
+# 创建一个列表对象，用m做标签
+m = [1, 2, 3]
+# 再给同一个对象贴个新标签n
+n = m
+
+# 通过n修改对象
+n.append(4)
+
+# 查看m和n
+print(m)
+print(n)
+            </div>
+            <div class="result">
+                运行结果：<br>
+                [1, 2, 3, 4]<br>
+                [1, 2, 3, 4]<br>
+                说明：m和n都指向同一个列表对象，改一个，另一个也会变
+            </div>
+        </div>
+
+        <!-- 新增修改对象的内存变化图 -->
+        <div class="memory-diagram">
+            <div class="diagram-title">内存布局示意图：修改共享对象的影响</div>
+            <div class="mermaid">
+                flowchart LR
+                    subgraph 电脑内存空间
+                        O["列表对象：[1,2,3,4]<br/>地址：0x400"]
+                        O_prev["原内容：[1,2,3] → 修改后：[1,2,3,4]"]
+                    end
+                    
+                    subgraph "	变量名（引用）"
+                        M[m]
+                        N[n]
+                    end
+                    
+                    M --> O
+                    N --> O
+                    O_prev -.-> O
+            </div>
+            <p style="text-align: center; margin-top: 10px; color: #666;">
+                通过n修改对象后，对象本身发生变化，m因为指向同一个对象，所以看到的结果也变了
+            </p>
+        </div>
+
+        <div class="summary">
+            <h2>核心总结（20%的知识解决80%的问题）</h2>
+            <p>
+                1. 对象是内存里真实存在的数据（比如数字、列表、字典）；<br>
+                2. 引用是变量名（标签），用来找到对应的对象；<br>
+                3. 多个引用可以指向同一个对象（就像多个标签贴在同一张照片上）；<br>
+                4. 通过任何一个引用修改对象，其他引用都会看到变化。<br>
+            </p>
+            <p class="highlight">记住：变量名（引用）不是数据本身，它只是找到数据（对象）的"工具"。</p>
+        </div>
+
+        <!-- 新增互动测验模块 -->
+        <div class="quiz-section">
+            <h2 class="quiz-title">📝 小测验：检验你的学习成果</h2>
+            
+            <!-- 题目1 -->
+            <div class="question">
+                <a href="20251118_先导概念_对象和引用_小测验.html">点击这里测试(20251118_先导概念_对象和引用_小测验.html)</a>
+		
+                <div id="feedback-1" class="feedback"></div>
+            </div>

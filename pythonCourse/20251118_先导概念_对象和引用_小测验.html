@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python基础：对象与引用 - 入门版（带测验）</title>
+    <style>
+        /* 保持原有样式，新增测验相关样式 */
+        .quiz-section {
+            margin: 40px 0;
+            padding: 25px;
+            background-color: #fdf2f8;
+            border-radius: 10px;
+            border: 1px solid #fce7f3;
+        }
+        .quiz-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .question:last-child {
+            border-bottom: none;
+        }
+        .options {
+            margin: 15px 0;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            background-color: #f0f8fb;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        .code-snippet {
+            font-family: "Consolas", monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .submit-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 30px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .score-box {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: none;
+        }
+        .explanation {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+
+        // 测验逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const submitBtn = document.getElementById('submit-quiz');
+            const scoreBox = document.getElementById('score-box');
+            const questions = [
+                {
+                    id: 1,
+                    type: 'radio',
+                    correctAnswer: 'b',
+                    feedback: '变量名（a）是引用，等号右边的100是内存中的对象'
+                },
+                {
+                    id: 2,
+                    type: 'radio',
+                    correctAnswer: 'a',
+                    feedback: 'b = a 表示让b也指向a所指的对象，两者共享同一个列表'
+                },
+                {
+                    id: 3,
+                    type: 'radio',
+                    correctAnswer: 'c',
+                    feedback: '对象是数据本身（如列表内容），引用是找到对象的标签（变量名）'
+                },
+                {
+                    id: 4,
+                    type: 'radio',
+                    correctAnswer: 'b',
+                    feedback: '修改的是对象本身，a和b都指向这个对象，所以都会看到变化'
+                },
+                {
+                    id: 5,
+                    type: 'radio',
+                    correctAnswer: 'a',
+                    feedback: '重新赋值会让变量指向新对象，不影响原来的对象'
+                }
+            ];
+
+            submitBtn.addEventListener('click', function() {
+                let score = 0;
+
+                questions.forEach(question => {
+                    const selectedOption = document.querySelector(`input[name="q${question.id}"]:checked`);
+                    const feedbackEl = document.getElementById(`feedback-${question.id}`);
+
+                    if (selectedOption) {
+                        if (selectedOption.value === question.correctAnswer) {
+                            feedbackEl.className = 'feedback correct';
+                            feedbackEl.innerHTML = `✓ 回答正确！${question.feedback}`;
+                            score++;
+                        } else {
+                            feedbackEl.className = 'feedback incorrect';
+                            feedbackEl.innerHTML = `✗ 回答错误。正确答案是：${question.correctAnswer}。${question.feedback}`;
+                        }
+                    } else {
+                        feedbackEl.className = 'feedback incorrect';
+                        feedbackEl.innerHTML = '✗ 请选择一个答案！';
+                    }
+                });
+
+                scoreBox.style.display = 'block';
+                scoreBox.innerHTML = `你的得分：${score}/${questions.length} 分！`;
+                submitBtn.disabled = true;
+                submitBtn.textContent = '已提交';
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- 原有教学内容省略（保持不变） -->
+
+        <!-- 互动测验模块 -->
+        <div class="quiz-section">
+            <h2 class="quiz-title">📝 小测验：检验你的学习成果</h2>
+            
+            <!-- 题目1：基础概念辨析 -->
+            <div class="question">
+                <h3>1. 执行代码 <code>a = 100</code> 后，以下说法正确的是？</h3>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-a" value="a">
+                        <label for="q1-a">a是对象，100是引用</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-b" value="b">
+                        <label for="q1-b">a是引用，100是对象</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-c" value="c">
+                        <label for="q1-c">a和100都是对象</label>
+                    </div>
+                </div>
+                <div id="feedback-1" class="feedback"></div>
+            </div>
+
+            <!-- 题目2：引用关系判断 -->
+            <div class="question">
+                <h3>2. 执行以下代码后，a和b的关系是？</h3>
+                <div class="code-snippet">
+a = [1, 2, 3]
+b = a
+                </div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-a" value="a">
+                        <label for="q2-a">a和b指向同一个列表对象</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-b" value="b">
+                        <label for="q2-b">a和b是两个独立的列表对象</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-c" value="c">
+                        <label for="q2-c">a是对象，b是引用</label>
+                    </div>
+                </div>
+                <div id="feedback-2" class="feedback"></div>
+            </div>
+
+            <!-- 题目3：概念本质理解 -->
+            <div class="question">
+                <h3>3. 关于"对象"和"引用"的本质，以下说法正确的是？</h3>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q3" id="q3-a" value="a">
+                        <label for="q3-a">对象是变量名，引用是数据</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q3" id="q3-b" value="b">
+                        <label for="q3-b">对象和引用是同一个概念的不同说法</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q3" id="q3-c" value="c">
+                        <label for="q3-c">对象是内存中的数据，引用是指向数据的标签</label>
+                    </div>
+                </div>
+                <div id="feedback-3" class="feedback"></div>
+            </div>
+
+            <!-- 题目4：代码运行结果分析 -->
+            <div class="question">
+                <h3>4. 执行以下代码后，print(a)的输出结果是？</h3>
+                <div class="code-snippet">
+a = [10, 20]
+b = a
+b.append(30)
+print(a)
+                </div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q4" id="q4-a" value="a">
+                        <label for="q4-a">[10, 20]</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q4" id="q4-b" value="b">
+                        <label for="q4-b">[10, 20, 30]</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q4" id="q4-c" value="c">
+                        <label for="q4-c">报错</label>
+                    </div>
+                </div>
+                <div id="feedback-4" class="feedback"></div>
+            </div>
+
+            <!-- 题目5：引用重定向分析 -->
+            <div class="question">
+                <h3>5. 执行以下代码后，print(a)的输出结果是？</h3>
+                <div class="code-snippet">
+a = [1, 2]
+b = a
+b = [3, 4]  # 重新赋值
+print(a)
+                </div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q5" id="q5-a" value="a">
+                        <label for="q5-a">[1, 2]</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q5" id="q5-b" value="b">
+                        <label for="q5-b">[3, 4]</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q5" id="q5-c" value="c">
+                        <label for="q5-c">[1, 2, 3, 4]</label>
+                    </div>
+                </div>
+                <div id="feedback-5" class="feedback"></div>
+            </div>
+
+            <button class="submit-btn" id="submit-quiz">提交答案</button>
+            <div class="score-box" id="score-box"></div>
+        </div>
+    </div>
+</body>
+</html>

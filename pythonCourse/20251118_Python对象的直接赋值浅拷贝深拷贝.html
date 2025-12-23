@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python中的赋值与拷贝 - 技工院校教学版</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ddd;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .important {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .concept {
+            background-color: #f0f8fb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 3px solid #4299e1;
+        }
+        .example {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .code {
+            font-family: "Consolas", monospace;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre; /* 保留代码中的换行和空格 */
+        }
+        .result {
+            background-color: #e8f4fd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .summary {
+            background-color: #eafaf1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .tip {
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Python中的赋值与拷贝操作</h1>
+        
+        <p>很多同学可能会认为直接赋值、浅拷贝、深拷贝是字典独有的操作，其实这是错误的！</p>
+        
+        <p class="important">这些操作是Python中所有"可变对象"都有的通用操作，比如列表、集合、自定义对象等都适用。</p>
+        
+        <p>在学习具体操作前，我们先明确核心概念：</p>
+        <ul>
+            <li><strong>可变对象</strong>：创建后可以修改内容的对象（如列表、字典、集合）</li>
+            <li><strong>不可变对象</strong>：创建后不能修改内容的对象（如数字、字符串、元组）</li>
+            <li><strong>引用</strong>：变量存储的不是对象本身，而是对象在内存中的地址（类似门牌号）</li>
+        </ul>
+        
+        <h2>一、直接赋值（引用传递）</h2>
+        
+        <div class="concept">
+            <h3>核心概念</h3>
+            <p>直接赋值本质是<strong>引用传递</strong>，不是创建新对象。</p>
+			<p>它不是拷贝，只是给同一个对象起了一个新名字，两个变量指向内存中的同一个位置。<p>
+            <p>相当于给同一个对象贴了两个标签，两个变量指向内存中同一个"门牌号"，操作任何一个变量都会影响另一个。</p>
+        </div>
+        
+        <div class="example">
+            <h3>列表的直接赋值示例：</h3>
+            <div class="code">
+a = [1, 2]  # 创建一个列表，内存地址假设为0x123
+b = a       # 直接赋值，b也指向0x123，和a是同一个对象
+b.append(3) # 修改b（实际修改的是0x123地址的对象）
+print(a)    # 查看a的变化，会跟着修改
+            </div>
+            <div class="result">
+                运行结果：[1, 2, 3]<br>
+                说明：修改b后，a也跟着变了，因为它们指向同一个内存地址的对象
+            </div>
+            <div class="tip">小提示：用id()函数可以查看变量的内存地址，id(a)和id(b)结果会完全相同</div>
+        </div>
+        
+        <div class="example">
+            <h3>字典的直接赋值示例：</h3>
+            <div class="code">
+d1 = {"name": "张三", "age": 20}  # 字典内存地址假设为0x456
+d2 = d1                           # d2也指向0x456
+d2["age"] = 21                    # 修改d2对应的对象
+print(d1)                         # d1也会跟着变化
+            </div>
+            <div class="result">
+                运行结果：{'name': '张三', 'age': 21}<br>
+                说明：d1和d2共享同一个字典对象，修改任何一个都会影响另一个
+            </div>
+        </div>
+        
+        <h2>二、浅拷贝（表层拷贝）</h2>
+        
+        <div class="concept">
+            <h3>核心概念</h3>
+            <p>浅拷贝会创建<strong>新的容器对象</strong>，但只拷贝对象的"表层"。</p>
+			<p>浅拷贝虽然创建了一个新的容器对象，但容器里的元素还是原来的引用（只拷贝表面，不拷贝嵌套的内容）
+            <p>如果原对象包含嵌套的可变对象（如列表里套列表、字典里套列表），嵌套对象不会被拷贝，依然是共享引用。</p>
+            <p>相当于新建了一个房子，房子里的家具还是原来的（嵌套对象）。</p>
+        </div>
+        
+        <p>常见的浅拷贝方法：</p>
+        <ul>
+            <li>列表：list.copy() 或 列表[:]（如a.copy()、a[:]）</li>
+            <li>字典：dict.copy() 或 {**原字典}（如d.copy()、{**d}）</li>
+            <li>集合：set.copy()（如s.copy()）</li>
+        </ul>
+        
+        <div class="example">
+            <h3>列表的浅拷贝示例：</h3>
+            <div class="code">
+a = [1, [2, 3]]  # 外层列表地址0x789，嵌套列表地址0xabc
+b = a.copy()     # 浅拷贝：创建新的外层列表（地址0xdef），但嵌套列表仍指向0xabc
+print(id(a), id(b))  # 输出不同，说明外层是新对象
+
+# 修改表层元素（新列表的元素，不影响原列表）
+b[0] = 100
+print("修改表层后a:", a)  # 原列表表层元素不变
+
+# 修改嵌套的列表（共享的0xabc地址对象）
+b[1].append(4)
+print("修改嵌套后a:", a)  # 原列表的嵌套元素会跟着变
+            </div>
+            <div class="result">
+                运行结果：<br>
+                修改表层后a: [1, [2, 3]]<br>
+                修改嵌套后a: [1, [2, 3, 4]]<br>
+                说明：浅拷贝只保护表层数据，嵌套的可变对象还是共享引用
+            </div>
+        </div>
+        
+        <div class="example">
+            <h3>字典的浅拷贝示例：</h3>
+            <div class="code">
+d1 = {"name": "李四", "scores": [80, 90]}  # 字典地址0x111，嵌套列表地址0x222
+d2 = d1.copy()                             # 新字典地址0x333，嵌套列表仍指向0x222
+
+d2["name"] = "王五"                        # 修改新字典的表层数据（不影响原字典）
+d2["scores"].append(85)                    # 修改嵌套列表（共享的0x222对象）
+
+print("原字典d1:", d1)
+            </div>
+            <div class="result">
+                运行结果：原字典d1: {'name': '李四', 'scores': [80, 90, 85]}<br>
+                说明：字典的浅拷贝只拷贝外层键值对，嵌套的可变对象依然共享
+            </div>
+        </div>
+        
+        <h2>三、深拷贝（完全拷贝）</h2>
+        
+        <div class="concept">
+            <h3>核心概念</h3>
+            <p>深拷贝会创建<strong>完全独立的新对象</strong>，包括所有层级的嵌套对象。</p>
+            <p>相当于新建了一个房子，并且把房子里所有的家具都复制了一份新的，原对象和新对象完全没有关联，修改任何一个都不会影响另一个。</p>
+            <p>需要导入Python内置的copy模块，使用deepcopy()函数实现。</p>
+        </div>
+        
+        <div class="example">
+            <h3>深拷贝示例（列表）：</h3>
+            <div class="code">
+import copy  # 必须导入copy模块才能使用deepcopy
+
+a = [1, [2, 3]]  # 外层列表0x444，嵌套列表0x555
+b = copy.deepcopy(a)  # 深拷贝：新外层列表0x666，新嵌套列表0x777
+print(id(a), id(b))        # 外层地址不同
+print(id(a[1]), id(b[1]))  # 嵌套列表地址也不同
+
+# 修改表层元素
+b[0] = 100
+# 修改嵌套元素
+b[1].append(4)
+
+print("原列表a:", a)
+print("深拷贝后的b:", b)
+            </div>
+            <div class="result">
+                运行结果：<br>
+                原列表a: [1, [2, 3]]<br>
+                深拷贝后的b: [100, [2, 3, 4]]<br>
+                说明：深拷贝后，原对象和新对象完全独立，互不影响
+            </div>
+        </div>
+        
+        <div class="example">
+            <h3>深拷贝示例（字典）：</h3>
+            <div class="code">
+import copy
+
+d1 = {"name": "赵六", "hobbies": ["打球", "看书"]}
+d2 = copy.deepcopy(d1)  # 完全拷贝所有层级
+
+d2["name"] = "孙七"
+d2["hobbies"].append("编程")
+
+print("原字典d1:", d1)
+print("深拷贝d2:", d2)
+            </div>
+            <div class="result">
+                运行结果：<br>
+                原字典d1: {'name': '赵六', 'hobbies': ['打球', '看书']}<br>
+                深拷贝d2: {'name': '孙七', 'hobbies': ['打球', '看书', '编程']}<br>
+                说明：字典的深拷贝会复制所有嵌套内容，修改新字典不影响原字典
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2>总结对比</h2>
+            <table>
+                <tr>
+                    <th>操作类型</th>
+                    <th>核心特点</th>
+                    <th>是否创建新对象</th>
+                    <th>嵌套对象是否共享</th>
+                    <th>适用场景</th>
+                </tr>
+                <tr>
+                    <td>直接赋值</td>
+                    <td>引用传递，变量共享对象</td>
+                    <td>否</td>
+                    <td>完全共享</td>
+                    <td>不需要独立对象，想共用数据时</td>
+                </tr>
+                <tr>
+                    <td>浅拷贝</td>
+                    <td>表层拷贝，新容器+旧元素</td>
+                    <td>是（外层）</td>
+                    <td>嵌套对象共享</td>
+                    <td>对象无嵌套，或不需要独立嵌套内容时</td>
+                </tr>
+                <tr>
+                    <td>深拷贝</td>
+                    <td>完全拷贝，所有层级都新建</td>
+                    <td>是（所有层级）</td>
+                    <td>完全不共享</td>
+                    <td>需要完全独立的对象，尤其是有嵌套结构时</td>
+                </tr>
+            </table>
+            <p style="margin-top: 15px; font-weight: bold;">关键记住：</p>
+            <p>1. 这些操作不是字典独有，列表、集合等可变对象都能使用；</p>
+            <p>2. 区分是否需要独立对象：不需要就用赋值，需要表层独立用浅拷贝，需要完全独立用深拷贝；</p>
+            <p>3. 不可变对象不需要拷贝，因为不能修改内容，赋值就足够。</p>
+        </div>
+    </div>
+</body>
+</html>

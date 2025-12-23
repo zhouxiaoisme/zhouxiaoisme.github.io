@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>列表 vs Range 内存占用动画演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", Consolas, monospace;
+        }
+        body {
+            background: #f0f2f5;
+            padding: 2rem;
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative; /* 新增：让内部绝对定位元素基于container */
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 1rem;
+        }
+        /* 演示内容容器 - 用于控制显示/隐藏 */
+        .demo-content {
+            transition: all 0.5s ease;
+        }
+        .demo-content.hidden {
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+        }
+        .demo-wrapper {
+            display: flex;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        .demo-card {
+            flex: 1;
+            min-width: 400px;
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .demo-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        .list-card {
+            border: 3px solid #e74c3c;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeaea 100%);
+        }
+        .range-card {
+            border: 3px solid #2ecc71;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .list-title {
+            color: #e74c3c;
+        }
+        .range-title {
+            color: #2ecc71;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #f8f8f2;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .code-comment {
+            color: #7f8c8d;
+        }
+        .memory-bar-wrapper {
+            width: 100%;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .memory-bar {
+            height: 100%;
+            line-height: 40px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 2s ease-in-out, background-color 0.5s;
+        }
+        .list-bar {
+            background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+            width: 0;
+        }
+        .range-bar {
+            background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+            width: 0;
+        }
+        .status-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1rem 0;
+            text-align: center;
+            min-height: 2rem;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: #e74c3c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+        .success-check {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            display: none;
+        }
+        .success-check svg {
+            fill: #2ecc71;
+            width: 100%;
+            height: 100%;
+        }
+        .crash-warning {
+            background: #ffecec;
+            border: 2px solid #e74c3c;
+            color: #c0392b;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: none;
+            animation: flash 0.5s infinite alternate;
+        }
+        .success-note {
+            background: #e8f5e9;
+            border: 2px solid #2ecc71;
+            color: #27ae60;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: none;
+        }
+        .start-btn {
+            display: block;
+            margin: 2rem auto;
+            padding: 1rem 3rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .start-btn:hover {
+            background: #2980b9;
+        }
+        /* 核心提示样式 - 原展示区域正中间 */
+        .memory-note {
+            position: absolute;
+            top: 50%; /* 改回垂直居中 */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1.5rem; /* 主标题字体缩小 */
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 1.5rem 2rem; /* 减少内边距 */
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: none;
+            border: 4px solid #3498db;
+            width: 90%; /* 宽度调整 */
+            max-width: 1400px;
+            max-height: 90%; /* 限制最大高度 */
+            overflow-y: auto; /* 内容超出时滚动 */
+        }
+        /* 核心提示内的子元素样式 */
+        .memory-note .tips-text {
+            font-size: 1.1rem; /* 提示文字进一步缩小 */
+            font-weight: normal; /* 取消加粗 */
+            margin-top: 1rem;
+            line-height: 1.6; /* 调整行高 */
+            text-align: left; /* 左对齐更易读 */
+            padding: 0 1rem;
+        }
+        /* 核心提示内的图片样式 */
+        .memory-note img {
+            max-width: 100%; /* 图片自适应宽度 */
+            height: auto;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        /* 相对定位容器 - 用于承载居中提示 */
+        .note-container {
+            position: relative;
+            min-height: 700px; /* 保证有足够高度显示提示 */
+            width: 100%;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes flash {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.3s ease-in-out 3;
+        }
+        .memory-label {
+            position: absolute;
+            top: -25px;
+            left: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>1亿偶数：列表 vs Range 内存占用对比</h1>
+        
+        <!-- 用于承载居中提示的容器 -->
+        <div class="note-container">
+            <!-- 演示内容（H2及以下）- 可隐藏 -->
+            <div class="demo-content" id="demoContent">
+                <button class="start-btn" id="startDemo">开始演示</button>
+
+                <div class="demo-wrapper">
+                    <!-- 列表演示卡片 -->
+                    <div class="demo-card list-card">
+                        <h2 class="card-title list-title">生成列表（list(range(0, 1亿, 2))）</h2>
+                        <div class="code-block">
+                            <span class="code-comment"># 生成包含5000万个偶数的列表</span><br>
+                            big_list = list(range(0, 100000000, 2))<br>
+                            <span class="code-comment"># 尝试遍历（模拟计算）</span><br>
+                            for num in big_list:<br>
+                            &nbsp;&nbsp;pass
+                        </div>
+                        
+                        <div class="memory-bar-wrapper">
+                            <span class="memory-label">内存占用</span>
+                            <div class="memory-bar list-bar" id="listMemoryBar">0MB</div>
+                        </div>
+                        
+                        <div class="loading-spinner" id="listSpinner"></div>
+                        <div class="status-text" id="listStatus">准备中...</div>
+                        <div class="crash-warning" id="listCrashWarning">
+                            ⚠️ 警告：内存不足！浏览器/解释器卡顿/崩溃
+                        </div>
+                    </div>
+
+                    <!-- Range演示卡片 -->
+                    <div class="demo-card range-card">
+                        <h2 class="card-title range-title">生成Range对象（range(0, 1亿, 2)）</h2>
+                        <div class="code-block">
+                            <span class="code-comment"># 仅存储生成规则，不生成元素</span><br>
+                            big_range = range(0, 100000000, 2)<br>
+                            <span class="code-comment"># 迭代时逐个生成元素</span><br>
+                            for num in big_range:<br>
+                            &nbsp;&nbsp;pass
+                        </div>
+                        
+                        <div class="memory-bar-wrapper">
+                            <span class="memory-label">内存占用</span>
+                            <div class="memory-bar range-bar" id="rangeMemoryBar">0B</div>
+                        </div>
+                        
+                        <div class="success-check" id="rangeCheck">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                        </div>
+                        <div class="status-text" id="rangeStatus">准备中...</div>
+                        <div class="success-note" id="rangeSuccessNote">
+                            ✅ 完成！仅占用几十字节内存，无卡顿
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 核心提示 -->
+            <div class="memory-note" id="memoryNote">
+                1亿偶数列表约占4-5GB内存，range仅占约48字节！<br>
+                <img src="./20251204_生成1亿偶数列表的内存崩溃问题和range可迭代对象的轻量优势对比.配图.png">
+                <div class="tips-text">
+                    需要频繁随机访问元素 → 用序列（列表/元组）；<br>
+                    仅需遍历一次、数据量较大 → 用可迭代对象（range/生成器）；<br>
+                    追求内存效率、避免资源浪费 → 优先用可迭代对象。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const startBtn = document.getElementById('startDemo');
+        const listMemoryBar = document.getElementById('listMemoryBar');
+        const rangeMemoryBar = document.getElementById('rangeMemoryBar');
+        const listSpinner = document.getElementById('listSpinner');
+        const rangeCheck = document.getElementById('rangeCheck');
+        const listStatus = document.getElementById('listStatus');
+        const rangeStatus = document.getElementById('rangeStatus');
+        const listCrashWarning = document.getElementById('listCrashWarning');
+        const rangeSuccessNote = document.getElementById('rangeSuccessNote');
+        const listCard = document.querySelector('.list-card');
+        // 新增核心元素
+        const memoryNote = document.getElementById('memoryNote');
+        const demoContent = document.getElementById('demoContent');
+
+        // 初始化状态
+        let demoRunning = false;
+
+        startBtn.addEventListener('click', () => {
+            if (demoRunning) return;
+            demoRunning = true;
+            startBtn.disabled = true;
+            startBtn.style.opacity = '0.6';
+            // 隐藏提示
+            memoryNote.style.display = 'none';
+            
+            // 重置所有状态
+            resetDemo();
+            
+            // 启动Range演示（快速完成）
+            setTimeout(() => {
+                runRangeDemo();
+            }, 300);
+            
+            // 启动列表演示（缓慢增长直到崩溃）
+            setTimeout(() => {
+                runListDemo();
+            }, 500);
+        });
+
+        // 重置演示状态
+        function resetDemo() {
+            // 显示演示内容，隐藏提示
+            demoContent.classList.remove('hidden');
+            memoryNote.style.display = 'none';
+            
+            // 重置列表
+            listMemoryBar.style.width = '0%';
+            listMemoryBar.textContent = '0MB';
+            listStatus.textContent = '准备中...';
+            listSpinner.style.display = 'block';
+            listCrashWarning.style.display = 'none';
+            listCard.classList.remove('shake');
+            
+            // 重置Range
+            rangeMemoryBar.style.width = '0%';
+            rangeMemoryBar.textContent = '0B';
+            rangeStatus.textContent = '准备中...';
+            rangeCheck.style.display = 'none';
+            rangeSuccessNote.style.display = 'none';
+        }
+
+        // 运行Range演示（快速完成）
+        function runRangeDemo() {
+            rangeStatus.textContent = '正在创建...';
+            
+            // 快速填充内存条（仅占1%宽度，代表几十字节）
+            setTimeout(() => {
+                rangeMemoryBar.style.width = '1%';
+                rangeMemoryBar.textContent = '~48B';
+                rangeStatus.textContent = '创建完成！';
+                rangeCheck.style.display = 'block';
+                rangeSuccessNote.style.display = 'block';
+                
+                // 模拟迭代（瞬间完成）
+                setTimeout(() => {
+                    rangeStatus.textContent = '迭代完成！无卡顿';
+                }, 800);
+            }, 500);
+        }
+
+        // 运行列表演示（缓慢增长直到崩溃）
+        function runListDemo() {
+            listStatus.textContent = '正在创建列表...';
+            
+            // 模拟内存增长（逐步到100%）
+            let memorySteps = [
+                { width: '10%', text: '500MB' },
+                { width: '30%', text: '1.5GB' },
+                { width: '60%', text: '3GB' },
+                { width: '80%', text: '4GB' },
+                { width: '100%', text: '>5GB' }
+            ];
+            
+            let stepIndex = 0;
+            const memoryInterval = setInterval(() => {
+                if (stepIndex >= memorySteps.length) {
+                    clearInterval(memoryInterval);
+                    
+                    // 内存满了，触发崩溃效果
+                    listMemoryBar.textContent = '内存溢出！';
+                    listStatus.textContent = '卡顿/崩溃！';
+                    listSpinner.style.display = 'none';
+                    listCrashWarning.style.display = 'block';
+                    listCard.classList.add('shake');
+
+                    // 延迟1秒后隐藏H2及以下内容，显示核心提示
+                    setTimeout(() => {
+                        // 隐藏演示内容（H2及以下）
+                        demoContent.classList.add('hidden');
+                        // 显示核心提示（原展示区域正中间）
+                        memoryNote.style.display = 'block';
+                    }, 1000);
+                    
+                    return;
+                }
+                
+                // 更新内存条
+                const step = memorySteps[stepIndex];
+                listMemoryBar.style.width = step.width;
+                listMemoryBar.textContent = step.text;
+                
+                // 更新状态
+                if (stepIndex === 2) {
+                    listStatus.textContent = '内存占用过高，开始卡顿...';
+                } else if (stepIndex === 3) {
+                    listStatus.textContent = '严重卡顿！';
+                }
+                
+                stepIndex++;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
