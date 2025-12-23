@@ -2,7 +2,7 @@ name: 自动生成Python笔记列表
 on:
   push:
     paths:
-      - 'pythonCourse/*.html'  # 注意：你的目录是pythonCourse（单数），保持一致
+      - 'pythonCourse/*.html'  # 确保目录名正确
 jobs:
   generate-notes:
     runs-on: ubuntu-latest
@@ -10,16 +10,13 @@ jobs:
       - name: 拉取仓库代码
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 新增：拉取所有历史提交，避免分支对比异常
-      
-      - name: 拉取远程最新代码（解决分支落后问题）
-        run: |
-          git pull origin main --rebase  # 拉取main分支最新代码并变基，避免冲突
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}  # 显式指定Token，避免权限问题
       
       - name: 生成笔记列表HTML
         run: |
-          # 进入pythonCourse目录（你的实际目录是单数，务必匹配）
           cd pythonCourse
+          # 生成HTML文件（内容和之前一致）
           echo "<!DOCTYPE html>
           <html lang='zh-CN'>
           <head>
@@ -197,7 +194,7 @@ jobs:
                       <h2>我的笔记列表</h2>
                       <ul class='notes-list'>" > python-notes.html
           
-          # 遍历pythonCourse目录下的HTML文件，排除自身
+          # 遍历HTML文件生成列表
           for file in *.html; do
             if [ "$file" != "python-notes.html" ]; then
               title=$(echo "$file" | sed 's/\.html//g; s/-/ /g; s/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
@@ -217,9 +214,18 @@ jobs:
           </body>
           </html>" >> python-notes.html
       
-      - name: 提交生成的文件
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 自动更新Python笔记列表
-          file_pattern: 'pythonCourse/python-notes.html'  # 确认目录是pythonCourse（单数）
-          push_options: '--force'  # 新增：强制推送（解决non-fast-forward问题，仅建议测试用）
+      - name: 提交并推送文件（原生Git命令）
+        run: |
+          # 配置Git身份
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 拉取最新代码（强制覆盖本地，避免冲突）
+          git fetch --all
+          git reset --hard origin/main
+          # 添加并提交文件
+          git add pythonCourse/python-notes.html
+          git commit -m "自动更新Python笔记列表" || echo "无文件需要提交"
+          # 强制推送（解决分支不同步问题）
+          git push origin main --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 显式传递Token
