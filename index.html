@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一个普通的思考者</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            transition: all 0.3s ease; /* 全局柔和过渡 */
+        }
+
+        body {
+            /* 柔和渐变背景 */
+            background: linear-gradient(120deg, #f5f7fa 0%, #e4eaf5 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 100vh; /* 铺满视口高度 */
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95); /* 半透明白色，贴合渐变背景 */
+            border-radius: 16px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15); /* 更柔和的阴影 */
+            margin-top: 50px;
+            border: 1px solid #e8f4f8; /* 轻边框增加层次 */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            /* 渐变头像背景 */
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); /* 头像发光阴影 */
+        }
+
+        /* 头像hover交互 */
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            /* 文字渐变 */
+            background: linear-gradient(90deg, #2d3748, #4a5568);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+            font-weight: 400;
+            /* 轻微斜体增加质感 */
+            font-style: italic;
+        }
+
+        .profile-section {
+            margin: 30px 0;
+        }
+
+        .profile-section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            /* 标题渐变+边框 */
+            background: linear-gradient(90deg, #38b2ac, #4299e1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-left: 4px solid #38b2ac;
+            padding-left: 10px;
+            font-weight: 600;
+        }
+
+        .profile-card {
+            /* 卡片渐变背景 */
+            background: linear-gradient(180deg, #f0f8fb 0%, #fef7fb 100%);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #f5fafe;
+            box-shadow: 0 2px 8px rgba(224, 231, 255, 0.5);
+        }
+
+        /* 卡片hover交互 */
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(224, 231, 255, 0.8);
+        }
+
+        .profile-card p {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+
+        /* 强调文字配色 */
+        .profile-card p strong {
+            color: #4299e1;
+            font-weight: 600;
+        }
+
+        /* 小信条特殊样式 */
+        .profile-card p::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #9f7aea;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            /* 页脚渐变文字 */
+            background: linear-gradient(90deg, #718096, #a0aec0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 14px;
+            padding-bottom: 20px;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin-top: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 35px;
+            }
+
+            .profile-card {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">🧠</div>
+            <h1>一个普通的思考者</h1>
+            <p class="subtitle">从底层逻辑出发，较真也热爱生活</p>
+        </div>
+
+        <div class="profile-section">
+            <h2>关于我</h2>
+            <div class="profile-card">
+                <p>🔍 <strong>底层逻辑爱好者</strong>：习惯刨根问底，不满足于表面答案，总想去拆解事物的核心逻辑——小到一个功能的实现，大到一件事的底层规律，都想搞明白「为什么」。</p>
+                <p>🧐 <strong>天生爱较真</strong>：对认定的事会抠细节、追本质，不喜欢「差不多就行」，哪怕是小事，也想捋清楚来龙去脉，偶尔会显得「轴」，但这是我对待生活的态度。</p>
+                <p>😴 <strong>重度睡眠爱好者</strong>：再爱思考也抵不过对睡觉的执念，觉得充足的睡眠是理清思路的前提——毕竟脑子转累了，睡一觉才有力气继续「较真」。</p>
+                <p>✨ <strong>终究是普通人</strong>：没有特别的光环，只是带着自己的小坚持，在日常里慢慢探索，一边刨根问底，一边躺平补觉，认真又松弛地活着。</p>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>我的小信条</h2>
+            <div class="profile-card">
+                <p>凡事多问一句「为什么」，答案往往藏在底层逻辑里</p>
+                <p>较真不是抬杠，是对「想明白」的尊重</p>
+                <p>睡觉是最好的重启键，醒了再继续拆解世界</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
+    </div>
+</body>
+</html>
