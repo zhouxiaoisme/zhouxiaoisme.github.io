@@ -216,4 +216,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 自动更新Python笔记列表
-          file_patterns: 'pythonCourse/python-notes.html'
+          file_pattern: 'pythonCourse/python-notes.html'
