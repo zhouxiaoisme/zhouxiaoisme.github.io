@@ -2,17 +2,23 @@ name: 自动生成Python笔记列表
 on:
   push:
     paths:
-      - 'pythonCourse/*.html'  # 监听pythonCourse目录下的HTML文件变化
+      - 'pythonCourse/*.html'  # 注意：你的目录是pythonCourse（单数），保持一致
 jobs:
   generate-notes:
     runs-on: ubuntu-latest
     steps:
       - name: 拉取仓库代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 新增：拉取所有历史提交，避免分支对比异常
+      
+      - name: 拉取远程最新代码（解决分支落后问题）
+        run: |
+          git pull origin main --rebase  # 拉取main分支最新代码并变基，避免冲突
       
       - name: 生成笔记列表HTML
         run: |
-          # 进入pythonCourse目录，筛选所有HTML文件（排除python-notes.html本身）
+          # 进入pythonCourse目录（你的实际目录是单数，务必匹配）
           cd pythonCourse
           echo "<!DOCTYPE html>
           <html lang='zh-CN'>
@@ -191,10 +197,9 @@ jobs:
                       <h2>我的笔记列表</h2>
                       <ul class='notes-list'>" > python-notes.html
           
-          # 遍历pythonCourse目录下的所有HTML文件，排除python-notes.html，生成列表项
+          # 遍历pythonCourse目录下的HTML文件，排除自身
           for file in *.html; do
             if [ "$file" != "python-notes.html" ]; then
-              # 提取文件名（去掉后缀）作为标题，替换连字符/下划线为空格
               title=$(echo "$file" | sed 's/\.html//g; s/-/ /g; s/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
               echo "                          <li><a href='$file'>$title</a></li>" >> python-notes.html
             fi
@@ -216,4 +221,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 自动更新Python笔记列表
-          file_pattern: 'pythonCourse/python-notes.html'
+          file_pattern: 'pythonCourse/python-notes.html'  # 确认目录是pythonCourse（单数）
+          push_options: '--force'  # 新增：强制推送（解决non-fast-forward问题，仅建议测试用）
