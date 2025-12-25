@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机器人伴舞技术原理与具身智能教学讲解 🤖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Mermaid支持流程图渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.0/dist/mermaid.min.js"></script>
+    
+    <!-- 自定义配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',    // 主色调：科技蓝
+                        secondary: '#1e40af',  // 深蓝
+                        accent: '#f97316',     // 强调橙
+                        light: '#f8fafc',      // 浅色背景
+                        dark: '#1e293b',       // 深色文字
+                        warning: '#e53e3e',    // 警示红
+                        success: '#16a34a',    // 成功绿
+                    },
+                    fontFamily: {
+                        sans: ['Microsoft Yahei', 'Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            /* 演讲级字体大小，适配宽屏 */
+            .text-speaker-sm {
+                font-size: clamp(1rem, 1.5vw, 1.1rem);
+            }
+            .text-speaker {
+                font-size: clamp(1.1rem, 2vw, 1.3rem);
+            }
+            .title-speaker {
+                font-size: clamp(1.8rem, 3vw, 2.5rem);
+            }
+            .subtitle-speaker {
+                font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+            }
+            /* 响应式表格 */
+            .responsive-table {
+                overflow-x: auto;
+            }
+            /* 呼吸感布局 */
+            .content-section {
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            /* 16:9比例容器（流程图区域）- 优化最小高度 */
+            .aspect-16-9 {
+                aspect-ratio: 16/9;
+                min-height: 400px; /* 确保小屏幕也有足够高度 */
+            }
+            /* 流程图容器优化 */
+            .mermaid-container {
+                width: 100%;
+                height: 100%;
+                overflow: visible; /* 允许流程图内容完整显示 */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+		
+        .video-link {
+            display: inline-block;
+            margin-right: 1.5rem;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(90deg, #9333ea, #a855f7);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }		
+		
+        .video-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+            background: linear-gradient(90deg, #7e22ce, #9333ea);
+        }		
+    </style>
+</head>
+<body class="bg-gray-50 text-dark">
+    <!-- 主容器：优化布局，减少滚动，保留呼吸感 -->
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg my-4 px-4 md:px-8 lg:px-12 py-6 md:py-8">
+        <!-- 标题区域 -->
+        <h1 class="title-speaker font-bold text-primary text-center mb-8 pb-4 border-b-2 border-primary">
+            王力宏演唱会机器人伴舞技术全解析 🎤🤖
+        </h1>
+		
+        <!-- 新增：权威报道板块 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-newspaper-o mr-2"></i>权威报道与现场素材
+            </h2>
+            
+            <!-- 新闻内容卡片 -->
+            <div class="bg-light rounded-lg p-6 border border-gray-200 mb-6">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- 新闻配图 -->
+                    <div class="md:w-1/2 news-img-container">
+                        <img src="20251225_王力宏演唱会机器人伴舞_p1.png" alt="王力宏演唱会机器人伴舞现场" 
+                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                    </div>
+                    
+                    <!-- 新闻文本与视频链接 -->
+                    <div class="md:w-1/2 flex flex-col ">
+                        <h3 class="text-speaker font-medium text-primary mb-3">【热点新闻】王力宏演唱会引入智能机器人伴舞 </h3>
+                        <p class="text-speaker-sm mb-4">2025年12月18日，王力宏成都演唱会首次引入宇树科技G1人形机器人伴舞，完成高难度韦伯斯特空翻的视频引发全球关注，6台宇树G1机器人身着银色战袍，与人类舞者实现毫秒级动作同步，在《火力全开》表演中完成3.3米/秒移动及后空翻特技，王力宏工作室认证为'全球首个演唱会机器人舞台'。‌‌</p>
+						<p class="text-speaker-sm mb-4">特斯拉CEO马斯克转发点赞称'令人印象深刻'，该视频在X平台获得超4000万播放量，俄媒RT感叹'这不是科幻，这是中国'。</p>
+<p class="text-speaker-sm mb-4"> 这些机器人通过全身53个自由度实现0.1毫米级定位精度，采用仿生脊柱设计和电驱关节，能承受10G瞬时冲击力（相当于战斗机飞行员承受极限）。‌‌</p>
+						<p class="text-speaker-sm mb-4">‌‌6台机器人运用5G-MEC边缘计算技术，实现±5ms同步误差控制，在复杂电磁环境下保持稳定通信。</p>
+                        
+                        <!-- 新闻来源标注 -->
+                        <p class="text-speaker-sm text-gray-500 mt-4 italic">
+                            来源：每日经济新闻 2025-12-25
+                        </p>
+
+                        <!-- 视频链接按钮 -->
+                        <div class="mt-4">
+                            <a href="https://pan.baidu.com/s/1U6-9lKujdlFPrqDvez0MWQ?pwd=gc34" class="video-link">20251218_王力宏演唱会机器人伴舞_现场版.mp4
+                            </a>
+							<p>  - </p>
+                            <a href="https://pan.baidu.com/s/1D7DFfMzcHhOxgxcJXmXH_g?pwd=29tt" class="video-link">20251218_王力宏演唱会机器人伴舞_机器人彩排纯享版.mp4
+                            </a>
+                        </div>
+                        
+                    </div>
+                </div>
+			</div>
+		</section>		
+
+        <!-- 第一部分：技术原理 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-cogs mr-2"></i>一、技术原理：感知-决策-执行的闭环协作
+            </h2>
+            
+            <!-- 流程图模块：16:9比例优化 - 增加overflow-auto确保内容可滚动查看 -->
+            <div class="bg-light rounded-lg p-6 border border-gray-200 mb-6 aspect-16-9 flex flex-col justify-center overflow-auto">
+                <h3 class="text-speaker font-medium text-center mb-4">机器人伴舞核心闭环流程</h3>
+                <!-- 新增mermaid-container类优化渲染 -->
+                <div class="mermaid-container">
+                    <div class="mermaid w-full h-full">
+                        flowchart TB
+                            A[音乐信号输入] --> B[傅里叶变换解析节拍]
+                            B --> C[生成动作时间戳指令]
+                            C --> D[调用预设动作库]
+                            D --> E[转化为关节控制指令]
+                            E --> F[机器人执行动作]
+                            F --> G[多传感器实时监测]
+                            G --> H{是否需要校准?}
+                            H -- 是 --> I[动态调整关节/站位]
+                            H -- 否 --> F
+                            I --> J[多机同步校验]
+                            J --> K{队形/节拍同步?}
+                            K -- 否 --> L[修正时间码/位置]
+                            K -- 是 --> F
+                            L --> F
+                            
+                            style A fill:#e8f4fd,stroke:#3498db,stroke-width:2px
+                            style F fill:#fff3cd,stroke:#f0ad4e,stroke-width:2px
+                            style G fill:#e8f4fd,stroke:#3498db,stroke-width:2px
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-speaker mb-4">
+                机器人伴舞并非简单的"编好程序播放动作"，而是通过四步核心闭环实现精准同步与稳定执行，每一步都与舞台、音乐、队友深度绑定：
+            </p>
+            <ol class="list-decimal pl-6 text-speaker space-y-3">
+                <li>
+                    <strong class="text-secondary">音乐解析：让机器人"听懂"节拍</strong><br>
+                    内置音频采集模块通过<span class="bg-yellow-100 px-2 py-1 rounded font-semibold">傅里叶变换算法</span>提取音乐节拍、重音特征，转化为时间戳指令（如强拍对应跳跃、弱拍对应挥手），延迟控制在<span class="bg-yellow-100 px-2 py-1 rounded font-semibold">8ms以内</span>，避免动作与音乐脱节。
+                </li>
+                <li>
+                    <strong class="text-secondary">动作匹配：把编舞转化为关节指令</strong><br>
+                    先通过人类动作捕捉生成"动作库"，再经算法将人类动作"翻译"为机器人关节转动角度/扭矩指令，最后在仿真环境预演，排查重心不稳、碰撞等问题。
+                </li>
+                <li>
+                    <strong class="text-secondary">实时校准：让机器人"站稳、不跑偏"</strong><br>
+                    依托多传感器融合修正动作：<br>
+                    - 惯性测量单元（IMU）监测重心变化，偏移超5mm即刻调整关节；<br>
+                    - 脚底力传感器感知地面摩擦力，滑面自动减小动作幅度；<br>
+                    - 头部深度相机扫描环境，1.5米内有人靠近则切换安全模式。
+                </li>
+                <li>
+                    <strong class="text-secondary">多机同步：让一群机器人"跳得像一个人"</strong><br>
+                    中央控制器下发统一时间码，机器人通过激光雷达扫描队友位置，实时调整站位，确保6机同步误差&lt;0.1秒，队形偏差&lt;2mm。
+                </li>
+            </ol>
+        </section>
+
+        <!-- 第二部分：关键核心技术 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-microchip mr-2"></i>二、关键核心技术：4大硬核支撑+2个隐藏细节
+            </h2>
+            
+            <!-- 响应式表格优化 -->
+            <div class="responsive-table mb-6">
+                <table class="w-full border-collapse text-speaker-sm">
+                    <thead>
+                        <tr class="bg-primary/10">
+                            <th class="border border-gray-300 p-3 text-left font-semibold text-secondary">技术类别</th>
+                            <th class="border border-gray-300 p-3 text-left font-semibold text-secondary">核心作用（朴实解释）</th>
+                            <th class="border border-gray-300 p-3 text-left font-semibold text-secondary">演唱会场景指标</th>
+                            <th class="border border-gray-300 p-3 text-left font-semibold text-secondary">智能制造迁移应用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-gray-100">
+                            <td class="border border-gray-300 p-3">高自由度关节硬件</td>
+                            <td class="border border-gray-300 p-3">实现跳舞、空翻等灵活动作</td>
+                            <td class="border border-gray-300 p-3">17+自由度，电机扭矩360N·m，抗4倍自重冲击</td>
+                            <td class="border border-gray-300 p-3">工业协作机器人精密装配、打磨</td>
+                        </tr>
+                        <tr class="hover:bg-gray-100">
+                            <td class="border border-gray-300 p-3">动态平衡算法</td>
+                            <td class="border border-gray-300 p-3">解决"站稳"问题，相当于机器人"小脑"</td>
+                            <td class="border border-gray-300 p-3">动态动作重心偏移控制在5mm内</td>
+                            <td class="border border-gray-300 p-3">仓储机器人狭窄通道转弯、避障</td>
+                        </tr>
+                        <tr class="hover:bg-gray-100">
+                            <td class="border border-gray-300 p-3">多机协同控制技术</td>
+                            <td class="border border-gray-300 p-3">确保多机步调一致、避免碰撞</td>
+                            <td class="border border-gray-300 p-3">同步误差&lt;0.1秒，队形偏差&lt;2mm</td>
+                            <td class="border border-gray-300 p-3">产线多机器人协同装配</td>
+                        </tr>
+                        <tr class="hover:bg-gray-100">
+                            <td class="border border-gray-300 p-3">实时场景感知技术</td>
+                            <td class="border border-gray-300 p-3">应对突发情况，保障安全</td>
+                            <td class="border border-gray-300 p-3">8ms内识别障碍物，触发安全模式</td>
+                            <td class="border border-gray-300 p-3">工厂人机协作安全防护</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 技术细节提示框 -->
+            <div class="bg-primary/5 border-l-4 border-primary p-4 rounded-r-lg mb-6">
+                <h3 class="text-speaker font-medium text-secondary mb-2">
+                    <i class="fa fa-lightbulb-o mr-1"></i>易忽略的核心技术细节
+                </h3>
+                <p class="text-speaker-sm">
+                    1. <strong>低延迟通信技术</strong>：采用5G+本地局域网双备份，通信延迟&lt;5ms，若超10ms会出现队形混乱；<br>
+                    2. <strong>能源管理技术</strong>：高密度锂电池供电+舞台隐藏式快充，中场补电保障整场续航，与AGV机器人快充逻辑一致。
+                </p>
+            </div>
+        </section>
+
+        <!-- 第三部分：AI现状 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-robot mr-2"></i>三、AI现状：结构化场景"封神"，开放场景"拉胯"
+            </h2>
+            
+            <h3 class="text-speaker font-medium text-primary mb-3">1. 核心优势（结构化场景）</h3>
+            <ul class="list-disc pl-6 text-speaker space-y-2 mb-4">
+                <li>一致性：跳100遍动作无差异，无疲劳、无失误；</li>
+                <li>精准度：毫米级动作误差，远超人类；</li>
+                <li>安全性：预设场景下风险可完全预判。</li>
+            </ul>
+            
+            <h3 class="text-speaker font-medium text-primary mb-3">2. 核心短板（开放场景）</h3>
+            <ul class="list-disc pl-6 text-speaker space-y-2">
+                <li>无即兴能力：无法根据观众反应调整舞蹈风格，更不能自主编舞；</li>
+                <li>无灵活应变：舞台道具移位、音乐改拍会直接"懵圈"；</li>
+                <li>无情感理解：仅能"跳对动作"，无法表达欢快/抒情等情绪。</li>
+            </ul>
+        </section>
+
+        <!-- 第四部分：具身智能 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-brain mr-2"></i>四、具身智能：弱具身智能的典型代表
+            </h2>
+            
+            <p class="text-speaker mb-4">
+                伴舞机器人<strong>既是AI机器人，也是具身智能体</strong>（具身智能是AI机器人的进阶形态），核心特征与能力边界如下：
+            </p>
+            
+            <h3 class="text-speaker font-medium text-primary mb-3">1. 符合具身智能的3个核心特征</h3>
+            <ul class="list-disc pl-6 text-speaker space-y-2 mb-4">
+                <li>依赖物理身体：无关节/传感器等硬件，"跳舞智能"完全失效；</li>
+                <li>依赖环境交互：通过传感器感知舞台/队友，实时调整动作；</li>
+                <li>感知-执行闭环：边感知边做动作（如旋转时实时校准重心）。</li>
+            </ul>
+            
+            <h3 class="text-speaker font-medium text-primary mb-3">2. 离"强具身智能"的3个关键差距</h3>
+            <ul class="list-disc pl-6 text-speaker space-y-2">
+                <li>无自主学习：需人类动作捕捉"教"，无法看一遍就学会；</li>
+                <li>无自主决策：突发情况仅执行预设安全程序，不会"思考"；</li>
+                <li>无通用智能：仅会跳舞，无法完成走路、搬东西等其他任务。</li>
+            </ul>
+        </section>
+
+        <!-- 第五部分：技术洞见 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-eye mr-2"></i>五、技术洞见与行业启示
+            </h2>
+            
+            <div class="bg-primary/5 border-l-4 border-primary p-4 rounded-r-lg">
+                <p class="text-speaker">
+                    1. <strong>仿真先行（数字孪生）是落地必经之路</strong>：机器人动作先在仿真软件试跳上百遍，再落地现实，大幅降低试错成本（与智能制造逻辑一致）；<br>
+                    2. <strong>专用化比通用化更易商业化</strong>：舍弃通用功能、专注跳舞，成本更低、可靠性更高；<br>
+                    3. <strong>人机协同是未来方向</strong>：机器人做高难度/高一致性动作，人类做情感/创意类动作，而非完全取代人类。
+                </p>
+            </div>
+        </section>
+
+        <!-- 第六部分：核心问答 -->
+        <section class="content-section">
+            <h2 class="subtitle-speaker font-semibold text-secondary mb-6">
+                <i class="fa fa-question-circle mr-2"></i>六、核心问答：巩固关键认知
+            </h2>
+            
+            <!-- 问答1 -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-speaker font-medium text-dark">Q1：伴舞机器人是AI机器人还是具身智能体？</h3>
+                    <button class="answer-btn bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition">
+                        查看答案
+                    </button>
+                </div>
+                <div class="answer hidden bg-white p-4 rounded border border-gray-200 text-speaker-sm">
+                    A：两者都是，且是「包含与被包含」的关系——<strong>所有具身智能体都属于AI机器人，但不是所有AI机器人都是具身智能体</strong>。<br><br>
+                    1. 说它是「AI机器人」：<br>
+                    因为它依靠音频识别（听懂音乐节拍）、运动控制（调整关节动作）、多机协同（对齐队形）等AI算法实现核心功能，这是所有智能机器人的基础特征，只要靠AI算法自主完成任务的机器人，都可称为AI机器人。<br><br>
+                    2. 说它是「具身智能体」：<br>
+                    核心不是“有物理身体”，而是「它的智能必须通过物理身体和环境的<strong>深度、实时、闭环交互</strong>才能产生」——没有关节/传感器这些身体硬件，或者脱离舞台环境，它的“跳舞智能”就完全失效；<br>
+                    而普通AI机器人（比如酒店送货机器人）的智能更多是“指令执行”，即使脱离酒店环境，把算法移植到其他机器人上依然能运行，智能不依赖特定身体/环境。<br><br>
+                    
+                    <!-- 响应式表格 -->
+                    <div class="responsive-table my-3">
+                        <table class="w-full border-collapse text-sm">
+                            <tr>
+                                <th class="border border-gray-300 p-2 bg-gray-100">维度</th>
+                                <th class="border border-gray-300 p-2 bg-gray-100">基础属性（AI机器人）</th>
+                                <th class="border border-gray-300 p-2 bg-gray-100">进阶属性（具身智能体）</th>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">核心逻辑</td>
+                                <td class="border border-gray-300 p-2">算法驱动：输入指令→执行动作（线性逻辑）</td>
+                                <td class="border border-gray-300 p-2">交互驱动：感知环境→身体调整→再感知→再调整（闭环）</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">智能载体</td>
+                                <td class="border border-gray-300 p-2">算法是核心，身体只是“执行工具”</td>
+                                <td class="border border-gray-300 p-2">身体+算法+环境，三者共同产生智能</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">举例对比</td>
+                                <td class="border border-gray-300 p-2">酒店送货机器人：按预设路线走，避障只是“被动反应”</td>
+                                <td class="border border-gray-300 p-2">伴舞机器人：旋转时靠IMU传感器感知重心偏移，实时调整关节角度才能站稳</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="bg-pink-50 border-l-4 border-warning p-3 rounded-r mt-2">
+                        💡 通俗类比：<br>
+                        - 普通AI机器人（酒店送货）：像照着菜谱按步骤炒菜，菜糊了只会关火（被动反应），不会调整火候/翻炒方式；<br>
+                        - 具身智能体（伴舞机器人）：像大厨靠手感（身体）感知锅的温度、食材的软硬（环境），实时调整翻炒力度和火候——没有手（身体）、没有锅（环境），“做饭的智能”就不存在。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 问答2 -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-speaker font-medium text-dark">Q2：当前机器人伴舞的核心技术短板是什么？</h3>
+                    <button class="answer-btn bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition">
+                        查看答案
+                    </button>
+                </div>
+                <div class="answer hidden bg-white p-4 rounded border border-gray-200 text-speaker-sm">
+                    A：核心短板是开放场景适应能力弱——仅能在预设舞台/音乐/队形下工作，无自主创新、灵活应变、情感理解能力。具体来说：<br>
+                    1. 无即兴能力：无法根据观众反应调整舞蹈风格，更不能自主编舞；<br>
+                    2. 无灵活应变：舞台道具移位、音乐改拍会直接“懵圈”；<br>
+                    3. 无情感理解：仅能“跳对动作”，无法表达欢快/抒情等情绪。
+                </div>
+            </div>
+            
+            <!-- 问答3 -->
+            <div class="bg-gray-50 rounded-lg p-4 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-speaker font-medium text-dark">Q3：机器人伴舞对智能制造的最大启示是什么？</h3>
+                    <button class="answer-btn bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition">
+                        查看答案
+                    </button>
+                </div>
+                <div class="answer hidden bg-white p-4 rounded border border-gray-200 text-speaker-sm">
+                    A：先做专用机器人（聚焦单一场景），再通过数字孪生降低试错成本，最终走向人机协同的生产模式。具体包括：<br>
+                    1. 专用化优先：舍弃通用功能、专注单一任务（如跳舞/装配），成本更低、可靠性更高；<br>
+                    2. 仿真先行：通过数字孪生在虚拟环境预演，大幅降低现实试错成本；<br>
+                    3. 人机协同：机器人做高难度/高一致性动作，人类做创意/决策类工作，而非完全取代人类。
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心总结 -->
+        <section class="content-section">
+            <div class="bg-gray-100 rounded-lg p-6 border border-gray-200">
+                <h2 class="subtitle-speaker font-semibold text-secondary mb-4">
+                    <i class="fa fa-list-alt mr-2"></i>核心总结
+                </h2>
+                <ol class="list-decimal pl-6 text-speaker space-y-2">
+                    <li>机器人伴舞的核心是"音乐解析-动作匹配-实时校准-多机同步"闭环，依赖高自由度硬件+低延迟通信等核心技术；</li>
+                    <li>当前AI在结构化场景（如固定舞台）表现卓越，但开放场景自主决策/泛化能力仍薄弱；</li>
+                    <li>伴舞机器人是弱具身智能体（智能依赖身体-环境闭环交互），验证了"专用机器人+数字孪生+人机协同"的商业化可行性；</li>
+                    <li>具身智能体属于AI机器人的进阶形态，判断关键是"智能是否依赖身体-环境交互产生"，而非单纯"是否有交互"。</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 新增：交互式练习题区域 -->
+        <section class="mt-8 pb-4">
+            <h2 class="subtitle-speaker font-bold text-secondary mb-6 text-center border-b-2 border-accent pb-2">
+                📝 机器人伴舞技术原理与具身智能 巩固练习题
+            </h2>
+            
+            <!-- 一、单选题 -->
+            <div class="mb-8">
+                <h3 class="text-speaker font-semibold text-primary mb-4">
+                    <i class="fa fa-check-square-o mr-1"></i>一、单选题
+                </h3>
+                
+                <!-- 单选题1 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">1. 机器人伴舞时实现 “听懂” 音乐节拍的核心算法是（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single1" value="A" class="w-4 h-4 mr-2">
+                            A. 深度学习图像识别
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single1" value="B" class="w-4 h-4 mr-2">
+                            B. 傅里叶变换音频分析
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single1" value="C" class="w-4 h-4 mr-2">
+                            C. 强化学习动作生成
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single1" value="D" class="w-4 h-4 mr-2">
+                            D. 模型预测控制算法
+                        </label>
+                    </div>
+                    <button onclick="checkSingle(1)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-single1" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 单选题2 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">2. 演唱会机器人完成空翻动作后保持平衡，主要依赖的传感器是（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single2" value="A" class="w-4 h-4 mr-2">
+                            A. 激光雷达
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single2" value="B" class="w-4 h-4 mr-2">
+                            B. 惯性测量单元（IMU）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single2" value="C" class="w-4 h-4 mr-2">
+                            C. 深度相机
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single2" value="D" class="w-4 h-4 mr-2">
+                            D. 力传感器
+                        </label>
+                    </div>
+                    <button onclick="checkSingle(2)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-single2" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 单选题3 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">3. 多台伴舞机器人实现 “步调一致、队形偏差 < 2mm” 的核心技术是（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single3" value="A" class="w-4 h-4 mr-2">
+                            A. 5G + 本地局域网低延迟通信
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single3" value="B" class="w-4 h-4 mr-2">
+                            B. 高密度锂电池供电
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single3" value="C" class="w-4 h-4 mr-2">
+                            C. 高自由度关节硬件
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single3" value="D" class="w-4 h-4 mr-2">
+                            D. 仿真预演技术
+                        </label>
+                    </div>
+                    <button onclick="checkSingle(3)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-single3" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 单选题4 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">4. 下列关于当前伴舞机器人具身智能水平的描述，正确的是（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single4" value="A" class="w-4 h-4 mr-2">
+                            A. 属于强具身智能，可自主编舞
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single4" value="B" class="w-4 h-4 mr-2">
+                            B. 属于弱具身智能，依赖预设场景与动作库
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single4" value="C" class="w-4 h-4 mr-2">
+                            C. 不具备具身智能特征
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single4" value="D" class="w-4 h-4 mr-2">
+                            D. 可实现跨场景自主适应
+                        </label>
+                    </div>
+                    <button onclick="checkSingle(4)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-single4" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 单选题5 -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <p class="text-speaker mb-3">5. 机器人伴舞技术与智能制造的共性核心技术是（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single5" value="A" class="w-4 h-4 mr-2">
+                            A. 音乐解析算法
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single5" value="B" class="w-4 h-4 mr-2">
+                            B. 数字孪生（仿真先行）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single5" value="C" class="w-4 h-4 mr-2">
+                            C. 舞蹈动作捕捉
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="single5" value="D" class="w-4 h-4 mr-2">
+                            D. 观众情绪识别
+                        </label>
+                    </div>
+                    <button onclick="checkSingle(5)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-single5" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+            </div>
+            
+            <!-- 二、多选题 -->
+            <div class="mb-8">
+                <h3 class="text-speaker font-semibold text-primary mb-4">
+                    <i class="fa fa-check-square-o mr-1"></i>二、多选题（每题 3 分，多选、少选、错选均不得分）
+                </h3>
+                
+                <!-- 多选题1 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">1. 伴舞机器人实现 “实时校准、避免摔倒” 的关键传感器组合包括（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi1" value="A" class="w-4 h-4 mr-2">
+                            A. 惯性测量单元（IMU）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi1" value="B" class="w-4 h-4 mr-2">
+                            B. 脚底力传感器
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi1" value="C" class="w-4 h-4 mr-2">
+                            C. 头部深度相机
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi1" value="D" class="w-4 h-4 mr-2">
+                            D. 温度传感器
+                        </label>
+                    </div>
+                    <button onclick="checkMulti(1)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-multi1" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 多选题2 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">2. 下列属于机器人伴舞核心技术短板的是（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi2" value="A" class="w-4 h-4 mr-2">
+                            A. 无法应对舞台道具临时移位
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi2" value="B" class="w-4 h-4 mr-2">
+                            B. 不能根据观众反应即兴调整动作
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi2" value="C" class="w-4 h-4 mr-2">
+                            C. 多机同步误差无法控制
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi2" value="D" class="w-4 h-4 mr-2">
+                            D. 依赖离线预演与结构化场景
+                        </label>
+                    </div>
+                    <button onclick="checkMulti(2)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-multi2" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 多选题3 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">3. 具身智能的核心特征是 “智能依赖身体与环境交互”，伴舞机器人符合该特征的表现有（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi3" value="A" class="w-4 h-4 mr-2">
+                            A. 靠关节硬件完成动作，无身体则无法执行
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi3" value="B" class="w-4 h-4 mr-2">
+                            B. 通过传感器感知舞台摩擦力，调整动作幅度
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi3" value="C" class="w-4 h-4 mr-2">
+                            C. 动作完全由预设程序控制，与环境无关
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi3" value="D" class="w-4 h-4 mr-2">
+                            D. 实时扫描队友位置，动态调整站位
+                        </label>
+                    </div>
+                    <button onclick="checkMulti(3)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-multi3" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 多选题4 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">4. 演唱会机器人能源管理的核心方案包括（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi4" value="A" class="w-4 h-4 mr-2">
+                            A. 高密度锂电池供电
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi4" value="B" class="w-4 h-4 mr-2">
+                            B. 舞台隐藏式快充接口补电
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi4" value="C" class="w-4 h-4 mr-2">
+                            C. 太阳能电池板供电
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi4" value="D" class="w-4 h-4 mr-2">
+                            D. 观众手机无线充电
+                        </label>
+                    </div>
+                    <button onclick="checkMulti(4)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-multi4" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 多选题5 -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <p class="text-speaker mb-3">5. 机器人伴舞技术对智能制造的启示有（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi5" value="A" class="w-4 h-4 mr-2">
+                            A. 专用化机器人比通用化机器人更易商业化落地
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi5" value="B" class="w-4 h-4 mr-2">
+                            B. 仿真预演（数字孪生）可降低现实试错成本
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi5" value="C" class="w-4 h-4 mr-2">
+                            C. 人机协同是未来主流方向
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="checkbox" name="multi5" value="D" class="w-4 h-4 mr-2">
+                            D. 机器人可完全取代人类工作
+                        </label>
+                    </div>
+                    <button onclick="checkMulti(5)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-multi5" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+            </div>
+            
+            <!-- 三、判断题 -->
+            <div class="mb-8">
+                <h3 class="text-speaker font-semibold text-primary mb-4">
+                    <i class="fa fa-check-square-o mr-1"></i>三、判断题
+                </h3>
+                
+                <!-- 判断题1 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">1. 伴舞机器人的所有动作都是实时自主创作，无需人类动作捕捉。（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge1" value="√" class="w-4 h-4 mr-2">
+                            √（正确）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge1" value="×" class="w-4 h-4 mr-2">
+                            ×（错误）
+                        </label>
+                    </div>
+                    <button onclick="checkJudge(1)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-judge1" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 判断题2 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">2. 低延迟通信是多机同步的关键，延迟超过 10ms 会导致队形混乱。（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge2" value="√" class="w-4 h-4 mr-2">
+                            √（正确）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge2" value="×" class="w-4 h-4 mr-2">
+                            ×（错误）
+                        </label>
+                    </div>
+                    <button onclick="checkJudge(2)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-judge2" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 判断题3 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">3. 当前伴舞机器人属于 AI 机器人，但不属于具身智能体。（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge3" value="√" class="w-4 h-4 mr-2">
+                            √（正确）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge3" value="×" class="w-4 h-4 mr-2">
+                            ×（错误）
+                        </label>
+                    </div>
+                    <button onclick="checkJudge(3)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-judge3" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 判断题4 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 shadow-sm">
+                    <p class="text-speaker mb-3">4. 数字孪生技术在机器人伴舞中的应用，体现为 “先仿真预演，再现实落地”。（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge4" value="√" class="w-4 h-4 mr-2">
+                            √（正确）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge4" value="×" class="w-4 h-4 mr-2">
+                            ×（错误）
+                        </label>
+                    </div>
+                    <button onclick="checkJudge(4)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-judge4" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+                
+                <!-- 判断题5 -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <p class="text-speaker mb-3">5. 机器人伴舞的优势是动作一致性强、精度高，可连续工作无疲劳。（）</p>
+                    <div class="space-y-2 mb-3">
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge5" value="√" class="w-4 h-4 mr-2">
+                            √（正确）
+                        </label>
+                        <label class="flex items-center text-speaker-sm cursor-pointer">
+                            <input type="radio" name="judge5" value="×" class="w-4 h-4 mr-2">
+                            ×（错误）
+                        </label>
+                    </div>
+                    <button onclick="checkJudge(5)" class="bg-primary text-white px-4 py-2 rounded text-sm hover:bg-secondary transition">
+                        提交答案 <i class="fa fa-paper-plane-o ml-1"></i>
+                    </button>
+                    <div id="feedback-judge5" class="mt-3 text-speaker-sm font-medium hidden"></div>
+                </div>
+            </div>
+            
+            <!-- 参考答案与解析 -->
+            <div class="mt-8 bg-gray-100 rounded-lg p-6 border border-gray-200">
+                <h3 class="text-speaker font-semibold text-secondary mb-4">
+                    <i class="fa fa-book mr-1"></i>参考答案与解析
+                </h3>
+                
+                <div class="text-speaker-sm space-y-4">
+                    <div>
+                        <h4 class="font-medium text-primary mb-2">一、单选题</h4>
+                        <p>1. B 解析：傅里叶变换可提取音频的节拍、重音等特征，转化为机器人动作时间戳指令。</p>
+                        <p>2. B 解析：惯性测量单元（IMU）负责监测机器人重心变化，实时调整关节角度保持平衡。</p>
+                        <p>3. A 解析：5G + 本地局域网双备份通信，确保指令延迟 < 5ms，实现多机毫秒级同步。</p>
+                        <p>4. B 解析：伴舞机器人依赖预设场景和动作库，无自主创新能力，属于弱具身智能。</p>
+                        <p>5. B 解析：仿真预演（数字孪生）是机器人和智能制造的共性技术，可提前排查问题。</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-primary mb-2">二、多选题</h4>
+                        <p>1. ABC 解析：IMU 监测重心、力传感器感知地面摩擦力、深度相机扫描环境，共同实现实时校准。</p>
+                        <p>2. ABD 解析：当前机器人无法应对非结构化场景、无即兴能力，多机同步误差可控制在 < 0.1 秒。</p>
+                        <p>3. ABD 解析：具身智能依赖物理身体与环境交互，C 选项与具身智能核心特征相悖。</p>
+                        <p>4. AB 解析：演唱会机器人采用锂电池 + 快充方案，太阳能和手机充电不适用舞台场景。</p>
+                        <p>5. ABC 解析：人机协同是未来方向，机器人无法完全取代人类的创意和决策工作。</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-primary mb-2">三、判断题</h4>
+                        <p>1. × 解析：机器人动作需先通过人类动作捕捉建立动作库，再经算法优化执行。</p>
+                        <p>2. √ 解析：延迟超过 10ms 会出现 “步调不一” 的情况，影响表演效果。</p>
+                        <p>3. × 解析：伴舞机器人既是 AI 机器人，也是典型的弱具身智能体。</p>
+                        <p>4. √ 解析：仿真预演是数字孪生的核心应用，可降低现实落地的试错成本。</p>
+                        <p>5. √ 解析：机器人的一致性、精度和耐力远超人类，是其在舞台场景的核心优势。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 脚本逻辑 -->
+    <script>
+        // 初始化Mermaid，优化配置确保流程图完整渲染
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                nodeSpacing: 15,       // 减小节点间距，适配更多内容
+                rankSpacing: 25,       // 减小层级间距
+                curve: 'linear',
+                useMaxWidth: true,
+                htmlLabels: true       // 启用HTML标签支持，提升渲染兼容性
+            },
+            themeVariables: {
+                primaryColor: '#e8f4fd',
+                primaryBorderColor: '#3498db',
+                secondaryColor: '#fff3cd',
+                secondaryBorderColor: '#f0ad4e',
+                tertiaryColor: '#f8f9fa'
+            },
+            // 关键优化：增加渲染超时时间，确保复杂流程图能完整渲染
+            securityLevel: 'loose',
+            timeout: 30000
+        });
+
+        // 原有问答展开/隐藏逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const answerBtns = document.querySelectorAll('.answer-btn');
+            answerBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const answer = this.parentElement.nextElementSibling;
+                    if (answer.style.display === 'block') {
+                        answer.style.display = 'none';
+                        this.textContent = '查看答案';
+                    } else {
+                        answer.style.display = 'block';
+                        this.textContent = '隐藏答案';
+                    }
+                });
+            });
+
+            // 额外优化：确保Mermaid渲染完成后调整容器尺寸
+            setTimeout(() => {
+                const mermaidElements = document.querySelectorAll('.mermaid');
+                mermaidElements.forEach(el => {
+                    el.style.width = '100%';
+                    el.style.height = '100%';
+                });
+            }, 1000);
+        });
+
+        // 练习题正确答案配置
+        const singleAnswers = {1:"B", 2:"B", 3:"A", 4:"B", 5:"B"};
+        const multiAnswers = {
+            1: ["A","B","C"],
+            2: ["A","B","D"],
+            3: ["A","B","D"],
+            4: ["A","B"],
+            5: ["A","B","C"]
+        };
+        const judgeAnswers = {1:"×", 2:"√", 3:"×", 4:"√", 5:"√"};
+
+        // 单选题检查函数
+        function checkSingle(questionNum) {
+            const feedbackEl = document.getElementById(`feedback-single${questionNum}`);
+            const selectedOption = document.querySelector(`input[name="single${questionNum}"]:checked`);
+            
+            feedbackEl.classList.remove('hidden');
+            
+            if (!selectedOption) {
+                feedbackEl.textContent = "❌ 请选择一个答案！";
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-warning";
+                return;
+            }
+
+            if (selectedOption.value === singleAnswers[questionNum]) {
+                feedbackEl.textContent = "✅ 回答正确！🎉";
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-success";
+            } else {
+                feedbackEl.textContent = `❌ 回答错误，正确答案是：${singleAnswers[questionNum]} 📖`;
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-warning";
+            }
+        }
+
+        // 多选题检查函数
+        function checkMulti(questionNum) {
+            const feedbackEl = document.getElementById(`feedback-multi${questionNum}`);
+            const selectedOptions = document.querySelectorAll(`input[name="multi${questionNum}"]:checked`);
+            const selectedVals = Array.from(selectedOptions).map(option => option.value);
+            
+            feedbackEl.classList.remove('hidden');
+            
+            if (selectedVals.length === 0) {
+                feedbackEl.textContent = "❌ 请至少选择一个答案！";
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-warning";
+                return;
+            }
+
+            // 排序后比较
+            const correctSorted = multiAnswers[questionNum].sort();
+            const selectedSorted = selectedVals.sort();
+            
+            const isCorrect = JSON.stringify(correctSorted) === JSON.stringify(selectedSorted);
+            
+            if (isCorrect) {
+                feedbackEl.textContent = "✅ 回答正确！🎉";
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-success";
+            } else {
+                feedbackEl.textContent = `❌ 回答错误，正确答案是：${multiAnswers[questionNum].join('、')} 📖`;
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-warning";
+            }
+        }
+
+        // 判断题检查函数
+        function checkJudge(questionNum) {
+            const feedbackEl = document.getElementById(`feedback-judge${questionNum}`);
+            const selectedOption = document.querySelector(`input[name="judge${questionNum}"]:checked`);
+            
+            feedbackEl.classList.remove('hidden');
+            
+            if (!selectedOption) {
+                feedbackEl.textContent = "❌ 请选择一个答案！";
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-warning";
+                return;
+            }
+
+            if (selectedOption.value === judgeAnswers[questionNum]) {
+                feedbackEl.textContent = "✅ 回答正确！🎉";
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-success";
+            } else {
+                feedbackEl.textContent = `❌ 回答错误，正确答案是：${judgeAnswers[questionNum]} 📖`;
+                feedbackEl.className = "mt-3 text-speaker-sm font-medium text-warning";
+            }
+        }
+    </script>
+</body>
+</html>
