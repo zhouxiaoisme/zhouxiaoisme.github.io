@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maven & Jenkins 协作关系 | CI/CD 核心流程 🚀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <!-- 引入思源黑体提升中文显示效果 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap">
+    <style>
+        /* 16:9 宽屏适配容器 - 精准比例控制（优化高度适配） */
+        .container-16-9 {
+            width: 95vw;
+            max-width: 1440px;
+            aspect-ratio: 16/9;
+            margin: 1.5rem auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #ffffff;
+            position: relative;
+            /* 增加最小高度保障流程图展示 */
+            min-height: 600px;
+        }
+        
+        /* 流程图板块子标题样式 */
+        .flow-chart-title {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: linear-gradient(90deg, #4299e1 0%, #38b2ac 100%);
+            color: white;
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 600;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f4f8 100%);
+            padding: 1.5rem 0;
+            color: #2d3748;
+        }
+        
+        .tool-card {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        /* 优化字体大小 - 适配演讲场景 */
+        .title-xl {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            line-height: 1.3;
+        }
+        
+        .title-lg {
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            line-height: 1.4;
+        }
+        
+        .text-base {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.6;
+        }
+        
+        .text-sm {
+            font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+            line-height: 1.5;
+        }
+        
+        /* 流程图容器自适应（优化内边距和高度） */
+        .mermaid-container {
+            width: 100%;
+            /* 适配子标题，调整顶部内边距 */
+            height: calc(100% - 60px);
+            padding: 1rem;
+            margin-top: 60px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 交互按钮样式 */
+        .btn-toggle {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 1rem auto;
+            display: block;
+        }
+        
+        .btn-toggle:hover {
+            background-color: #3182ce;
+        }
+        
+        /* 隐藏/显示区域样式 - 核心修复：增大最大高度+添加滚动 */
+        .detail-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 0 1.5rem;
+            margin: 1rem auto;
+            width: 95%;
+            max-width: 1440px;
+        }
+        
+        .detail-section.open {
+            max-height: 800px; /* 增大最大高度 */
+            padding: 1.5rem;
+            overflow-y: auto; /* 添加垂直滚动，内容过多时可滚动 */
+            max-height: 80vh; /* 限制最大高度为视口80%，避免超出屏幕 */
+        }
+        
+        /* 练习题容器 - 确保每题独立且有足够空间 */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem; /* 增大题目间距 */
+            padding: 1rem 0;
+        }
+        
+        /* 单个题目卡片样式 */
+        .quiz-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            flex-shrink: 0; /* 防止卡片被压缩 */
+        }
+        
+        /* 练习题即时反馈样式 */
+        .feedback {
+            margin-top: 0.8rem;
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-size: clamp(0.9rem, 1.8vw, 1rem);
+            display: none;
+            width: 100%; /* 确保反馈区域占满宽度 */
+            box-sizing: border-box;
+        }
+        
+        .feedback.correct {
+            background-color: #c8e6c9;
+            color: #2e7d32;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background-color: #ffcdd2;
+            color: #c62828;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- 标题优化 - 增加emoji和层级 -->
+        <h1 class="text-center title-xl font-bold text-gray-800 mb-4">
+            🛠️ Maven & Jenkins 核心定位与协作流程 🌀
+        </h1>
+        <p class="text-center text-gray-600 text-base mb-8">CI/CD 自动化流水线核心组件解析</p>
+        
+        <!-- 工具定义说明 - 优化布局和视觉 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="tool-card border-l-6 border-blue-500">
+                <h2 class="title-lg font-semibold text-blue-700 mb-3">
+                    📦 Maven 核心定位
+                </h2>
+                <p class="text-base text-gray-700 mb-3">
+                    Maven 是 <b>Java 项目构建与依赖管理工具</b>，本身不自带编译器，通过调用 JDK 的 javac 完成代码编译，核心功能包括：
+                </p>
+                <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2 text-base">
+                    <li>✅ 自动化完成项目编译、打包、测试</li>
+                    <li>✅ 统一管理项目依赖包，解决 jar 包冲突</li>
+                    <li>✅ 通过 pom.xml 配置构建规则，标准化构建流程</li>
+                </ul>
+            </div>
+            <div class="tool-card border-l-6 border-green-500">
+                <h2 class="title-lg font-semibold text-green-700 mb-3">
+                    🤖 Jenkins 核心定位
+                </h2>
+                <p class="text-base text-gray-700 mb-3">
+                    Jenkins 是 <b>CI/CD 自动化流程调度工具</b>，作为持续集成/持续部署的核心引擎，核心功能包括：
+                </p>
+                <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2 text-base">
+                    <li>✅ 拉取代码仓库中的最新代码</li>
+                    <li>✅ 调用 Maven 完成项目构建，获取构建产物</li>
+                    <li>✅ 执行自动化测试、部署到测试/生产环境</li>
+                    <li>✅ 形成代码提交-构建-测试-部署的闭环</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 16:9 流程图容器 - 优化比例和样式（增加子标题+优化高度） -->
+        <div class="container-16-9">
+            <!-- 新增流程图板块子标题 -->
+            <div class="flow-chart-title">🔄 Maven & Jenkins CI/CD 完整协作流程</div>
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    graph TD
+                        A[👨💻 开发者提交代码到Git仓库] --> B[🔄 Jenkins触发任务<br>控制流：拉取最新代码]
+                        B --> C[⚙️ Jenkins调用Maven<br>控制流：执行mvn clean package]
+                        C --> D[📦 Maven输出构建包<br>数据流：生成jar/war包]
+                        D --> E[📥 Jenkins获取构建包<br>数据流：接管产物]
+                        E --> F[🧪 Jenkins执行自动化测试<br>控制流：单元测试/集成测试]
+                        F -->|✅ 测试通过| G[🚀 Jenkins部署构建包<br>数据流：推送至测试/生产环境]
+                        F -->|❌ 测试失败| H[📩 反馈结果给开发者<br>终止流程]
+                        G --> I[🖥️ 生产/测试环境运行应用]
+                        I --> J[📊 持续监控/日志收集]
+                        J --> A[🔁 开发者根据反馈迭代代码<br>形成闭环]
+                        style A fill:#e1f5fe,stroke:#2196f3,stroke-width:2px
+                        style G fill:#c8e6c9,stroke:#4CAF50,stroke-width:2px
+                        style H fill:#ffcdd2,stroke:#f44336,stroke-width:2px
+                        style F fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+                </div>
+            </div>
+        </div>
+        
+        <!-- 交互按钮 - 显示/隐藏详细说明 -->
+        <button class="btn-toggle" id="toggleDetails">
+            🔍 查看 CI/CD 流程详细说明
+        </button>
+        
+        <!-- 可折叠的详细说明区域 -->
+        <div class="detail-section" id="detailSection">
+            <h3 class="title-lg font-semibold text-purple-700 mb-2">📋 CI/CD 流程关键说明</h3>
+            <p class="text-base text-gray-700 mb-3">
+                上述流程图清晰区分了 <b>控制流</b>（Jenkins 调度）与 <b>数据流</b>（构建包传递），贴合实际生产场景的核心要点：
+            </p>
+            <ol class="list-decimal list-inside text-gray-600 space-y-2 text-base">
+                <li>Jenkins 作为「总指挥」，负责整个流程的调度和控制，不直接处理代码构建</li>
+                <li>Maven 作为「构建工人」，专注于代码编译、打包等具体构建任务</li>
+                <li>控制流是 Jenkins 发出的指令，数据流是构建产物的传递过程</li>
+                <li>测试环节是质量门禁，失败则立即终止流程并反馈，避免有问题的代码上线</li>
+                <li>整个流程形成闭环，支持持续集成和持续部署的自动化迭代</li>
+            </ol>
+            
+            <!-- 交互式练习题（修复布局问题） -->
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <h4 class="title-lg font-semibold text-orange-600 mb-3">🧩 小练习：CI/CD 流程认知</h4>
+                <!-- 核心修复：新增quiz-container包裹所有题目，确保间距和布局 -->
+                <div class="quiz-container">
+                    <div class="quiz-card">
+                        <p class="text-base font-medium mb-2">1. 在 CI/CD 流程中，哪个工具负责调度整个自动化流程？</p>
+                        <div class="space-y-2">
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="q1" value="maven" class="mr-2"> Maven
+                            </label>
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="q1" value="jenkins" class="mr-2"> Jenkins
+                            </label>
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="q1" value="git" class="mr-2"> Git
+                            </label>
+                        </div>
+                        <!-- 第一题即时反馈区域 -->
+                        <div id="feedback1" class="feedback"></div>
+                    </div>
+                    <div class="quiz-card">
+                        <p class="text-base font-medium mb-2">2. Maven 的核心作用是什么？</p>
+                        <div class="space-y-2">
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="q2" value="deploy" class="mr-2"> 部署应用到生产环境
+                            </label>
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="q2" value="build" class="mr-2"> 构建项目并管理依赖
+                            </label>
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="q2" value="test" class="mr-2"> 执行自动化测试
+                            </label>
+                        </div>
+                        <!-- 第二题即时反馈区域 -->
+                        <div id="feedback2" class="feedback"></div>
+                    </div>
+                </div>
+                <button class="btn-toggle mt-4" id="checkAnswers" style="background-color: #9f7aea;">
+                    📝 提交答案并查看完整解析
+                </button>
+                <div id="answerFeedback" class="mt-3 text-base text-center"></div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // 初始化mermaid - 优化样式和配置（适配更大容器）
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            themeVariables: {
+                primaryColor: '#4299e1',
+                primaryTextColor: '#2d3748',
+                primaryBorderColor: '#4299e1',
+                lineColor: '#718096',
+                secondaryColor: '#48bb78',
+                tertiaryColor: '#ed8936',
+                fontSize: '16px'
+            },
+            flowchart: {
+                nodeSpacing: 25,
+                rankSpacing: 35,
+                curve: 'basis'
+            },
+            // 增加流程图缩放适配
+            width: '100%',
+            height: '100%'
+        });
+
+        // 交互功能 - 显示/隐藏详细说明
+        const toggleBtn = document.getElementById('toggleDetails');
+        const detailSection = document.getElementById('detailSection');
+        
+        toggleBtn.addEventListener('click', () => {
+            detailSection.classList.toggle('open');
+            if (detailSection.classList.contains('open')) {
+                toggleBtn.textContent = '🔼 收起 CI/CD 流程详细说明';
+            } else {
+                toggleBtn.textContent = '🔍 查看 CI/CD 流程详细说明';
+            }
+        });
+
+        // 练习题即时反馈功能
+        const q1Options = document.querySelectorAll('input[name="q1"]');
+        const q2Options = document.querySelectorAll('input[name="q2"]');
+        const feedback1 = document.getElementById('feedback1');
+        const feedback2 = document.getElementById('feedback2');
+        
+        // 第一题即时反馈
+        q1Options.forEach(option => {
+            option.addEventListener('change', () => {
+                if (option.value === 'jenkins') {
+                    feedback1.className = 'feedback correct';
+                    feedback1.textContent = '✅ 回答正确！Jenkins 是 CI/CD 流程的总调度工具。';
+                } else {
+                    feedback1.className = 'feedback incorrect';
+                    feedback1.textContent = '❌ 回答错误！正确答案是 Jenkins，Maven 仅负责构建，Git 仅负责代码版本管理。';
+                }
+            });
+        });
+        
+        // 第二题即时反馈
+        q2Options.forEach(option => {
+            option.addEventListener('change', () => {
+                if (option.value === 'build') {
+                    feedback2.className = 'feedback correct';
+                    feedback2.textContent = '✅ 回答正确！Maven 核心作用是项目构建和依赖管理。';
+                } else {
+                    feedback2.className = 'feedback incorrect';
+                    feedback2.textContent = '❌ 回答错误！部署和测试主要由 Jenkins 负责，Maven 专注于构建。';
+                }
+            });
+        });
+
+        // 练习题答案验证（完整解析）
+        const checkBtn = document.getElementById('checkAnswers');
+        const answerFeedback = document.getElementById('answerFeedback');
+        
+        checkBtn.addEventListener('click', () => {
+            const q1Answer = document.querySelector('input[name="q1"]:checked');
+            const q2Answer = document.querySelector('input[name="q2"]:checked');
+            
+            if (!q1Answer || !q2Answer) {
+                answerFeedback.innerHTML = '<span style="color: #e53e3e;">⚠️ 请回答所有问题后再提交！</span>';
+                return;
+            }
+            
+            let score = 0;
+            let feedback = '';
+            
+            // 验证第一题
+            if (q1Answer.value === 'jenkins') {
+                score++;
+                feedback += '✅ 第1题回答正确！Jenkins 负责整个 CI/CD 流程的调度和控制，是自动化流水线的核心引擎。<br>';
+            } else {
+                feedback += '❌ 第1题回答错误！正确答案是 Jenkins：<br>→ Maven 仅负责项目构建，不参与流程调度；<br>→ Git 仅负责代码版本管理，无调度能力。<br>';
+            }
+            
+            // 验证第二题
+            if (q2Answer.value === 'build') {
+                score++;
+                feedback += '✅ 第2题回答正确！Maven 核心作用是项目构建（编译、打包）和依赖包管理。<br>';
+            } else {
+                feedback += '❌ 第2题回答错误！正确答案是构建项目并管理依赖：<br>→ 部署应用是 Jenkins 的核心功能之一；<br>→ 自动化测试也主要由 Jenkins 调度执行。<br>';
+            }
+            
+            feedback += `<br>🎯 总得分：${score}/2，${score === 2 ? '🎉 满分！你已掌握核心知识点' : '继续加油，理解 Maven & Jenkins 的核心定位'}！`;
+            answerFeedback.innerHTML = feedback;
+        });
+    </script>
+</body>
+</html>
