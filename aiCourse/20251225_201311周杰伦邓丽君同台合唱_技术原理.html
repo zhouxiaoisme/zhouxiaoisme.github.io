@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跨时空合唱技术原理 | 周杰伦×邓丽君</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        /* 全局基础优化 - 增强质感+呼吸感 */
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(180deg, #f8fafc 0%, #f0f2f5 100%);
+            background-attachment: fixed;
+            padding: 2rem 0 4rem;
+            font-size: 18px;
+            line-height: 1.8;
+            letter-spacing: 0.4px;
+            color: #1f2937;
+        }
+
+        /* 16:9 宽屏容器 - 增强视觉质感 */
+        .container-16-9 {
+            width: 90vw;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            margin: 2.5rem auto;
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: #ffffff;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .container-1600px {
+            width: 90vw;
+            max-width: 1600px;
+            margin: 2.5rem auto;
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: #ffffff;
+            padding: 2.5rem;
+            position: relative;
+        }
+		
+        /* 容器装饰元素 */
+        .container-16-9::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #9333ea, #c084fc, #a855f7);
+        }
+
+        /* 标题样式优化 - 增强层次感 */
+        .main-title {
+            background: linear-gradient(90deg, #7e22ce, #9333ea);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(147, 51, 234, 0.1);
+        }
+
+        /* 技术原理卡片 - 全新视觉设计+呼吸感 */
+        .principle-card {
+            position: relative;
+            margin: 2rem auto;
+            max-width: 900px;
+            padding: 2.2rem 2rem 2.2rem 2.5rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.05);
+            border: 1px solid #f3e8ff;
+            transition: all 0.3s ease;
+        }
+
+        .principle-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(147, 51, 234, 0.1);
+        }
+
+        /* 卡片左侧装饰条 */
+        .principle-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background: linear-gradient(180deg, #9333ea, #a855f7);
+            border-radius: 12px 0 0 12px;
+        }
+
+        /* 卡片标题装饰 */
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.2rem;
+            color: #7e22ce;
+        }
+
+        .card-title::before {
+            content: "";
+            width: 4px;
+            height: 24px;
+            background-color: #c084fc;
+            border-radius: 2px;
+        }
+
+        /* 列表样式优化 */
+        .principle-list {
+            padding-left: 1.5rem;
+        }
+
+        .principle-list li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 0.8rem;
+        }
+
+        .principle-list li::before {
+            content: "•";
+            position: absolute;
+            left: -0.8rem;
+            color: #a855f7;
+            font-size: 1.2rem;
+        }
+
+        /* 新闻报道卡片样式 */
+        .news-card {
+            position: relative;
+            margin: 2.5rem auto;
+            max-width: 900px;
+            padding: 2.5rem 2.2rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.05);
+            border: 1px solid #f3e8ff;
+        }
+
+        .news-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6, #9333ea);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .news-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3e8ff;
+        }
+
+        .news-content {
+            color: #4b5563;
+            line-height: 1.9;
+            font-size: 1.05rem;
+        }
+
+        .news-content p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+        }
+
+        /* 视频链接样式 */
+        .video-links {
+            margin: 2rem auto;
+            max-width: 900px;
+            padding: 1.8rem 2rem;
+            background: #faf5ff;
+            border-radius: 12px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .video-links-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #7e22ce;
+            margin-bottom: 1rem;
+        }
+
+        .video-link {
+            display: inline-block;
+            margin-right: 1.5rem;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(90deg, #9333ea, #a855f7);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .video-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+            background: linear-gradient(90deg, #7e22ce, #9333ea);
+        }
+
+        /* 响应式表格/代码块（保留） */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 2rem auto;
+            max-width: 900px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th, td {
+            padding: 1.2rem;
+            text-align: left;
+            border-bottom: 1px solid #f3e8ff;
+        }
+
+        th {
+            background-color: #faf5ff;
+            font-weight: 600;
+            color: #7e22ce;
+        }
+
+        .code-block {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            padding: 1.8rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 17px;
+            line-height: 1.7;
+            margin: 2rem auto;
+            max-width: 900px;
+            border: 1px solid #374151;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+                padding: 1.5rem 0 3rem;
+            }
+
+            .container-16-9 {
+                width: 95vw;
+                padding: 1.5rem;
+                margin: 1.5rem auto;
+            }
+
+            .principle-card {
+                padding: 1.8rem 1.5rem 1.8rem 2rem;
+                margin: 1.5rem auto;
+            }
+
+            .news-card {
+                padding: 1.8rem 1.5rem;
+                margin: 1.8rem auto;
+            }
+
+            .news-title {
+                font-size: 1.5rem;
+            }
+
+            .video-link {
+                display: block;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+	<!-- 权威新闻报道板块 -->
+	<div class="max-w-7xl mx-auto px-4 md:px-8">
+	<h1 class="main-title text-center text-[clamp(2rem,5vw,3.5rem)] mb-8 leading-normal">周杰伦与虚拟邓丽君跨时空对唱：<br>技术与情怀的完美融合</h1>
+	<div class="principle-card">
+	
+            <h2 class="card-title text-2xl font-bold">权威新闻报道</h2>
+			<img src="202512_201311周杰伦邓丽君同台合唱.jpg" alt="描述文字">
+			<p>2013年9月6日晚，周杰伦“摩天伦”世界巡演台北站现场，一场震撼华语乐坛的跨时空合唱惊艳亮相——身着白色旗袍的“虚拟邓丽君”缓缓升起，与周杰伦联袂演绎《你怎么说》《红尘客栈》《千里之外》三首金曲，3分30秒的表演让现场一万多名观众真假难辨，演出视频24小时内浏览量破百万。此次表演由曾打造《泰坦尼克号》《变形金刚》等大片特效的奥斯卡特效公司“数字王国”操刀，是“虚拟影像重建技术”在亚洲的首次亮相，耗资新台币1亿元（约合人民币2千万元），45名特效师历时3个月奋战，攻克形神、语言、头发三大难题，绘制7000幅图像制作头发动态，最终呈现的虚拟邓丽君与真人相似度达98%。</p>
+			<p>据悉，该团队由奥斯卡视觉特效奖得主带队，因中文嘴形同步难度大，历经百余个版本修正才实现完美同步效果，虚拟邓丽君的歌声虽非原音，但通过匹配歌手录制与后期音色调校，高度还原了邓丽君的经典唱腔。邓丽君的哥哥邓长富亲临现场，全程跟着哼唱并盛赞特效技术惊人，他透露最快2014年9月将以此技术举办邓丽君专属虚拟演唱会。值得一提的是，该技术曾于2012年用于美国Coachella音乐节，成功“复活”说唱歌手Tupac，此次是其首次用于华人歌手。作为华语乐坛两代标志性人物，周杰伦与邓丽君的跨时空合作被网友称为“技术、艺术与情怀的完美结合”，演出中虚拟邓丽君对唱结束后化作白色蝴蝶消失的设计浪漫又震撼，周杰伦表示，砸重金打造这一表演只为向邓丽君致敬，而这也引领了虚拟人演出的新潮流。</p>
+		</div>
+	</div>
+
+	<!-- 视频链接板块 -->
+	<div class="principle-card">
+		<h2 class="card-title text-2xl font-bold">点击观看演唱会精彩片段：</h2>	
+		<a href="https://pan.baidu.com/s/1mvJUwQhq1vvPpE3xd8gTmw?pwd=pghq" class="video-link">201311_周杰伦和邓丽君隔空合唱.mp4</a>
+	</div>
+        
+
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+        <!-- 主标题 - 增强视觉效果 -->
+        <h1 class="main-title text-center text-[clamp(2rem,5vw,3.5rem)] mb-8 leading-normal">
+            核心技术原理
+        </h1>
+        
+        <div class="principle-card">
+            <h2 class="card-title text-2xl font-bold">跨时空合唱技术实现流程</h2>
+			<img src="202512_201311周杰伦邓丽君同台合唱_核心技术原理.png" alt="描述文字">
+		</div>
+
+        <!-- 核心技术1 - 单列展示+呼吸感 -->
+        <div class="principle-card">
+            <h2 class="card-title text-2xl font-bold">核心技术1：虚拟人CG重建</h2>
+            <ul class="principle-list text-lg text-gray-700">
+                <li>采集邓丽君经典影像/老照片，通过AI算法提取面部轮廓、肢体特征、声线特质</li>
+                <li>基于采集数据进行高精度3D建模，单独制作7000+帧头发动态动画，还原真实质感</li>
+                <li>声线还原：匹配原唱歌喉录制+专业后期音色调校，复刻标志性声线</li>
+                <li>通过动作捕捉技术，实现虚拟人像口型、肢体动作与演唱节奏精准同步</li>
+            </ul>
+        </div>
+
+        <!-- 核心技术2 - 单列展示+呼吸感 -->
+        <div class="principle-card">
+            <h2 class="card-title text-2xl font-bold">核心技术2：佩珀尔幻象（Pepper’s Ghost）</h2>
+            <ul class="principle-list text-lg text-gray-700">
+                <li>采用45°倾斜安装的半透半反光学膜，反射虚拟人像投影画面至舞台中央</li>
+                <li>通过暗舞台环境设计隐藏膜材，消除视觉干扰，增强虚实融合的沉浸感</li>
+                <li>反射光与舞台实景（周杰伦现场演唱）叠加，裸眼呈现“同台合唱”视觉效果</li>
+                <li>区别于传统全息投影（依赖干涉衍射），佩珀尔幻象成本更低、效果更稳定</li>
+            </ul>
+        </div>
+
+
+    <script>
+        // 初始化mermaid - 优化流程图样式
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            themeVariables: {
+                primaryColor: '#faf5ff',
+                primaryTextColor: '#7e22ce',
+                primaryBorderColor: '#c084fc',
+                lineColor: '#a855f7',
+                secondaryColor: '#f3e8ff',
+                tertiaryColor: '#ffffff',
+                fontSize: '16px'
+            },
+            flowchart: {
+                nodeSpacing: 30,
+                rankSpacing: 40
+            }
+        });
+    </script>
+</body>
+</html>
