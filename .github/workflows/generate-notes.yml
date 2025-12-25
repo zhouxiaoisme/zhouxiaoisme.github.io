@@ -1,11 +1,9 @@
-name: 自动生成多课程笔记列表
+name: 自动生成所有子目录笔记列表
 on:
   push:
     paths:
-      - 'pythonCourse/*.html'   # 监听pythonCourse目录的HTML文件变化
-      - 'aiCourse/*.html'       # 监听aiCourse目录的HTML文件变化
-      - 'aigcCourse/*.html'     # 监听aigcCourse目录的HTML文件变化
-  workflow_dispatch:            # 新增：允许手动触发（解决旧配置复用问题）
+      - '**/*.html'  # 监听仓库中所有HTML文件的变化（任意目录）
+  workflow_dispatch:  # 允许手动触发，解决配置复用问题
 jobs:
   generate-notes:
     runs-on: ubuntu-latest
@@ -14,44 +12,46 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}  # 显式指定Token，避免权限问题
+          token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: 生成多目录笔记列表HTML
+      - name: 自动扫描并生成所有子目录笔记列表
         run: |
-          # 定义需要生成笔记列表的目标目录（可扩展）
-          TARGET_DIRS=("pythonCourse" "aiCourse" "aigcCourse")
+          # 定义需要排除的目录（系统目录/非课程目录）
+          EXCLUDE_DIRS=(".github" "node_modules" "assets" "images" ".git")
           
-          # 遍历每个目录，生成对应的笔记列表
-          for dir in "${TARGET_DIRS[@]}"; do
-            # 检查目录是否存在，不存在则创建
-            if [ ! -d "$dir" ]; then
-              mkdir -p "$dir"
-              echo "目录 $dir 不存在，已创建"
+          # 获取仓库根目录下的所有子目录（仅一级目录）
+          ALL_DIRS=$(find . -maxdepth 1 -type d | sed 's|^\./||' | grep -v '^\.$')
+          
+          # 遍历所有目录，过滤掉排除项
+          for dir in $ALL_DIRS; do
+            # 跳过排除目录
+            if [[ " ${EXCLUDE_DIRS[@]} " =~ " $dir " ]]; then
+              echo "跳过排除目录：$dir"
+              continue
             fi
+            
+            echo "开始处理目录：$dir"
             
             # 进入当前目录
             cd "$dir"
             
-            # 定义每个目录的个性化配置（标题/副标题/图标）
-            case $dir in
-              "pythonCourse")
-                PAGE_TITLE="Python学习笔记"
-                SUB_TITLE="从底层逻辑拆解Python，较真每一个知识点"
-                AVATAR_EMOJI="🐍"
-                ;;
-              "aiCourse")
-                PAGE_TITLE="AI学习笔记"
-                SUB_TITLE="从底层逻辑拆解AI，较真每一个知识点"
-                AVATAR_EMOJI="🤖"
-                ;;
-              "aigcCourse")
-                PAGE_TITLE="AIGC学习笔记"
-                SUB_TITLE="从底层逻辑拆解AIGC，较真每一个知识点"
-                AVATAR_EMOJI="🎨"
-                ;;
+            # 为目录生成个性化配置（自动从目录名提取标题）
+            # 目录名转标题：去掉Course后缀 + 首字母大写 + 补充描述
+            DIR_NAME_CLEAN=$(echo "$dir" | sed 's/Course//g')
+            PAGE_TITLE=$(echo "$DIR_NAME_CLEAN" | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')学习笔记
+            SUB_TITLE="从底层逻辑拆解$PAGE_TITLE，较真每一个知识点"
+            
+            # 为不同目录匹配个性化图标
+            case $DIR_NAME_CLEAN in
+              "python") AVATAR_EMOJI="🐍" ;;
+              "ai") AVATAR_EMOJI="🤖" ;;
+              "aigc") AVATAR_EMOJI="🎨" ;;
+              "java") AVATAR_EMOJI="☕" ;;
+              "web") AVATAR_EMOJI="🌐" ;;
+              *) AVATAR_EMOJI="📚" ;; # 默认图标
             esac
             
-            # 生成笔记列表HTML文件
+            # 生成笔记列表HTML文件（统一命名为notes.html）
             echo "<!DOCTYPE html>
             <html lang='zh-CN'>
             <head>
@@ -255,7 +255,7 @@ jobs:
             cd ..
           done
       
-      - name: 提交并推送文件（原生Git命令）
+      - name: 提交并推送所有生成的文件
         run: |
           # 配置Git身份
           git config --global user.name "github-actions[bot]"
@@ -263,11 +263,11 @@ jobs:
           # 拉取最新代码（强制覆盖本地，避免冲突）
           git fetch --all
           git reset --hard origin/main
-          # 添加所有目录下生成的notes.html文件
-          git add pythonCourse/notes.html aiCourse/notes.html aigcCourse/notes.html
+          # 添加所有子目录下的notes.html（排除系统目录）
+          git add $(find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules")
           # 提交（无变更时不报错）
-          git commit -m "自动更新多课程笔记列表" || echo "无文件需要提交"
+          git commit -m "自动更新所有子目录笔记列表" || echo "无文件需要提交"
           # 强制推送（解决分支不同步问题）
           git push origin main --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 显式传递Token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
