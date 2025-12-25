@@ -251,6 +251,137 @@
             border: 1px solid #374151;
         }
 
+        /* 练习题样式 - 新增 */
+        .exercise-card {
+            position: relative;
+            margin: 3rem auto;
+            max-width: 900px;
+            padding: 2.5rem 2.2rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.08);
+            border: 1px solid #f3e8ff;
+        }
+
+        .exercise-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #8b5cf6, #d946ef);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .exercise-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #7e22ce;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exercise-title::after {
+            content: "📝";
+            font-size: 1.5rem;
+        }
+
+        .question-block {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f3e8ff;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .option-item {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .option-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.8rem;
+            accent-color: #9333ea;
+        }
+
+        .option-label {
+            font-size: 1rem;
+            color: #4b5563;
+        }
+
+        /* 每道题的即时反馈样式 */
+        .question-feedback {
+            margin-top: 0.8rem;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: none;
+            transition: all 0.2s ease;
+        }
+
+        .feedback-correct {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .feedback-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .exercise-btn-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .exercise-btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .answer-btn {
+            background: #faf5ff;
+            color: #7e22ce;
+            border: 1px solid #c084fc;
+        }
+
+        .answer-btn:hover {
+            background: #f3e8ff;
+            transform: translateY(-2px);
+        }
+
+        .answer-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: #faf5ff;
+            border: 1px solid #c084fc;
+            color: #7e22ce;
+            display: none;
+        }
+
         /* 移动端适配 */
         @media (max-width: 768px) {
             body {
@@ -282,6 +413,21 @@
                 display: block;
                 margin-right: 0;
             }
+
+            /* 练习题移动端适配 */
+            .exercise-card {
+                padding: 1.8rem 1.5rem;
+                margin: 2rem auto;
+            }
+
+            .exercise-title {
+                font-size: 1.5rem;
+            }
+
+            .exercise-btn {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -292,16 +438,16 @@
 	<h1 class="main-title text-center text-[clamp(2rem,5vw,3.5rem)] mb-8 leading-normal">周杰伦与虚拟邓丽君跨时空对唱：<br>技术与情怀的完美融合</h1>
 	<div class="principle-card">
 	
-            <h2 class="card-title text-2xl font-bold">权威新闻报道</h2>
-			<img src="202512_201311周杰伦邓丽君同台合唱.jpg" alt="描述文字">
+            <h2 class="card-title text-2xl font-bold">权威新闻报道 📰</h2>
+			<img src="202512_201311周杰伦邓丽君同台合唱.jpg" alt="周杰伦与虚拟邓丽君跨时空合唱现场">
 			<p>2013年9月6日晚，周杰伦“摩天伦”世界巡演台北站现场，一场震撼华语乐坛的跨时空合唱惊艳亮相——身着白色旗袍的“虚拟邓丽君”缓缓升起，与周杰伦联袂演绎《你怎么说》《红尘客栈》《千里之外》三首金曲，3分30秒的表演让现场一万多名观众真假难辨，演出视频24小时内浏览量破百万。此次表演由曾打造《泰坦尼克号》《变形金刚》等大片特效的奥斯卡特效公司“数字王国”操刀，是“虚拟影像重建技术”在亚洲的首次亮相，耗资新台币1亿元（约合人民币2千万元），45名特效师历时3个月奋战，攻克形神、语言、头发三大难题，绘制7000幅图像制作头发动态，最终呈现的虚拟邓丽君与真人相似度达98%。</p>
-			<p>据悉，该团队由奥斯卡视觉特效奖得主带队，因中文嘴形同步难度大，历经百余个版本修正才实现完美同步效果，虚拟邓丽君的歌声虽非原音，但通过匹配歌手录制与后期音色调校，高度还原了邓丽君的经典唱腔。邓丽君的哥哥邓长富亲临现场，全程跟着哼唱并盛赞特效技术惊人，他透露最快2014年9月将以此技术举办邓丽君专属虚拟演唱会。值得一提的是，该技术曾于2012年用于美国Coachella音乐节，成功“复活”说唱歌手Tupac，此次是其首次用于华人歌手。作为华语乐坛两代标志性人物，周杰伦与邓丽君的跨时空合作被网友称为“技术、艺术与情怀的完美结合”，演出中虚拟邓丽君对唱结束后化作白色蝴蝶消失的设计浪漫又震撼，周杰伦表示，砸重金打造这一表演只为向邓丽君致敬，而这也引领了虚拟人演出的新潮流。</p>
+			<p>据悉，该团队由奥斯卡视觉特效奖得主带队，因中文嘴形同步难度大，历经百余个版本修正才实现完美同步效果，虚拟邓丽君的歌声虽非原音，但通过匹配歌手录制与后期音色调校，高度还原了邓丽君的经典唱腔。邓丽君的哥哥邓长富亲临现场，全程跟着哼唱并盛赞特效技术惊人，他透露最快2014年9月将以此技术举办邓丽君专属虚拟演唱会。值得一提的是，该技术曾于2012年用于美国Coachella音乐节，成功“复活”说唱歌手Tupac，此次是其首次用于华人歌手。作为华语乐坛两代标志性人物，周杰伦与邓丽君的跨时空合作被网友称为“技术、艺术与情怀的完美结合”🎭，演出中虚拟邓丽君对唱结束后化作白色蝴蝶消失的设计浪漫又震撼，周杰伦表示，砸重金打造这一表演只为向邓丽君致敬，而这也引领了虚拟人演出的新潮流。</p>
 		</div>
 	</div>
 
 	<!-- 视频链接板块 -->
 	<div class="principle-card">
-		<h2 class="card-title text-2xl font-bold">点击观看演唱会精彩片段：</h2>	
+		<h2 class="card-title text-2xl font-bold">点击观看演唱会精彩片段 🎬：</h2>	
 		<a href="https://pan.baidu.com/s/1O_ipsuTR2LBmfmD0x2bP1g?pwd=e94d" class="video-link">202512_201311周杰伦和邓丽君隔空合唱.mp4</a>
 	</div>
         
@@ -309,17 +455,17 @@
     <div class="max-w-7xl mx-auto px-4 md:px-8">
         <!-- 主标题 - 增强视觉效果 -->
         <h1 class="main-title text-center text-[clamp(2rem,5vw,3.5rem)] mb-8 leading-normal">
-            跨时空合唱技术原理
+            跨时空合唱技术原理 🔧
         </h1>
         
         <div class="principle-card">
             <h2 class="card-title text-2xl font-bold">核心技术流程</h2>
-			<img src="202512_201311周杰伦邓丽君同台合唱_核心技术原理.png" alt="描述文字">
+			<img src="202512_201311周杰伦邓丽君同台合唱_核心技术原理.png" alt="跨时空合唱核心技术原理示意图">
 		</div>
 
         <!-- 核心技术1 - 单列展示+呼吸感 -->
         <div class="principle-card">
-            <h2 class="card-title text-2xl font-bold">核心技术1：虚拟人CG重建</h2>
+            <h2 class="card-title text-2xl font-bold">核心技术1：虚拟人CG重建 🎭</h2>
             <ul class="principle-list text-lg text-gray-700">
                 <li>采集邓丽君经典影像/老照片，通过AI算法提取面部轮廓、肢体特征、声线特质</li>
                 <li>基于采集数据进行高精度3D建模，单独制作7000+帧头发动态动画，还原真实质感</li>
@@ -330,7 +476,7 @@
 
         <!-- 核心技术2 - 单列展示+呼吸感 -->
         <div class="principle-card">
-            <h2 class="card-title text-2xl font-bold">核心技术2：佩珀尔幻象（Pepper’s Ghost）</h2>
+            <h2 class="card-title text-2xl font-bold">核心技术2：佩珀尔幻象（Pepper’s Ghost）🔍</h2>
             <ul class="principle-list text-lg text-gray-700">
                 <li>采用45°倾斜安装的半透半反光学膜，反射虚拟人像投影画面至舞台中央</li>
                 <li>通过暗舞台环境设计隐藏膜材，消除视觉干扰，增强虚实融合的沉浸感</li>
@@ -340,9 +486,146 @@
         </div>
 
         <div class="principle-card">
-            <h2 class="card-title text-2xl font-bold">详细工作流程</h2>
-			<img src="202512_201311周杰伦邓丽君同台合唱_详细工作流程.png" alt="描述文字">
+            <h2 class="card-title text-2xl font-bold">详细工作流程 📋</h2>
+			<img src="202512_201311周杰伦邓丽君同台合唱_详细工作流程.png" alt="跨时空合唱详细工作流程示意图">
 		</div>
+
+        <!-- 新增练习题板块 -->
+        <div class="exercise-card">
+            <h2 class="exercise-title">技术原理练习题</h2>
+            
+            <!-- 单项选择题 -->
+            <div class="question-block">
+                <h3 class="question-text">一、单项选择题</h3>
+                
+                <!-- 第1题 -->
+                <div class="question-block" data-question="q1" data-correct="B">
+                    <p class="question-text">1. 周杰伦与虚拟邓丽君跨时空对唱，核心采用的光学投影技术是？（ ）</p>
+                    <div class="option-item">
+                        <input type="radio" name="q1" value="A" class="option-input">
+                        <label class="option-label">A. 传统全息投影（光的干涉与衍射）</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q1" value="B" class="option-input">
+                        <label class="option-label">B. 佩珀尔幻象（Pepper’s Ghost）</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q1" value="C" class="option-input">
+                        <label class="option-label">C. 3D偏振投影</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q1" value="D" class="option-input">
+                        <label class="option-label">D. 激光扫描投影</label>
+                    </div>
+                    <div class="question-feedback" id="feedback-q1"></div>
+                </div>
+
+                <!-- 第2题 -->
+                <div class="question-block" data-question="q2" data-correct="B">
+                    <p class="question-text">2. 虚拟邓丽君的头发动态效果，是通过以下哪种方式实现的？（ ）</p>
+                    <div class="option-item">
+                        <input type="radio" name="q2" value="A" class="option-input">
+                        <label class="option-label">A. 真人模特佩戴假发拍摄</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q2" value="B" class="option-input">
+                        <label class="option-label">B. 绘制7000+幅图像制作动态动画</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q2" value="C" class="option-input">
+                        <label class="option-label">C. AI自动生成毛发效果</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q2" value="D" class="option-input">
+                        <label class="option-label">D. 后期剪辑合成</label>
+                    </div>
+                    <div class="question-feedback" id="feedback-q2"></div>
+                </div>
+
+                <!-- 第3题 -->
+                <div class="question-block" data-question="q3" data-correct="B">
+                    <p class="question-text">3. 佩珀尔幻象技术中，用于反射虚拟人像的核心器材是？（ ）</p>
+                    <div class="option-item">
+                        <input type="radio" name="q3" value="A" class="option-input">
+                        <label class="option-label">A. 普通透明玻璃</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q3" value="B" class="option-input">
+                        <label class="option-label">B. 45°倾斜半透半反膜</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q3" value="C" class="option-input">
+                        <label class="option-label">C. 反光镜</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="q3" value="D" class="option-input">
+                        <label class="option-label">D. 投影幕布</label>
+                    </div>
+                    <div class="question-feedback" id="feedback-q3"></div>
+                </div>
+            </div>
+
+            <!-- 多项选择题 -->
+            <div class="question-block">
+                <h3 class="question-text">二、多项选择题</h3>
+                
+                <!-- 第5题 -->
+                <div class="question-block" data-question="q5" data-correct="A,B,C,D">
+                    <p class="question-text">5. 虚拟人CG重建的核心流程包括以下哪些环节？（ ）</p>
+                    <div class="option-item">
+                        <input type="checkbox" name="q5" value="A" class="option-input">
+                        <label class="option-label">A. 采集人物影像/照片，提取面部、肢体特征</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" name="q5" value="B" class="option-input">
+                        <label class="option-label">B. 高精度3D建模</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" name="q5" value="C" class="option-input">
+                        <label class="option-label">C. 声线录制与后期音色调校</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" name="q5" value="D" class="option-input">
+                        <label class="option-label">D. 口型、动作与演唱节奏同步调校</label>
+                    </div>
+                    <div class="question-feedback" id="feedback-q5"></div>
+                </div>
+
+                <!-- 第6题 -->
+                <div class="question-block" data-question="q6" data-correct="A,B,D">
+                    <p class="question-text">6. 关于佩珀尔幻象技术的特点，说法正确的有？（ ）</p>
+                    <div class="option-item">
+                        <input type="checkbox" name="q6" value="A" class="option-input">
+                        <label class="option-label">A. 需45°倾斜放置半透半反膜</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" name="q6" value="B" class="option-input">
+                        <label class="option-label">B. 需暗舞台环境隐藏膜材，增强虚实融合感</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" name="q6" value="C" class="option-input">
+                        <label class="option-label">C. 观众需佩戴3D眼镜才能观看</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" name="q6" value="D" class="option-input">
+                        <label class="option-label">D. 反射光与舞台实景叠加，实现裸眼“同台”效果</label>
+                    </div>
+                    <div class="question-feedback" id="feedback-q6"></div>
+                </div>
+            </div>
+
+            <!-- 按钮组 -->
+            <div class="exercise-btn-group">
+                <button class="exercise-btn answer-btn" id="showAnswers">查看参考答案 📖</button>
+            </div>
+
+            <!-- 参考答案 -->
+            <div class="answer-container" id="answerContainer">
+                <h3 style="font-weight: 600; margin-bottom: 1rem;">参考答案：</h3>
+                <p>1. B &nbsp;&nbsp; 2. B &nbsp;&nbsp; 3. B &nbsp;&nbsp; 5. ABCD &nbsp;&nbsp; 6. ABD</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         // 初始化mermaid - 优化流程图样式
@@ -363,6 +646,86 @@
                 rankSpacing: 40
             }
         });
+
+        // 页面加载完成后立即执行
+        window.onload = function() {
+            const showAnswerBtn = document.getElementById('showAnswers');
+            const answerContainer = document.getElementById('answerContainer');
+
+            // 正确答案映射
+            const correctAnswers = {
+                q1: 'B',
+                q2: 'B',
+                q3: 'B',
+                q5: ['A','B','C','D'],
+                q6: ['A','B','D']
+            };
+
+            // ========== 修复核心：单选按钮即时反馈 ==========
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('click', function() {
+                    // 获取当前题目的ID和选中值
+                    const questionId = this.getAttribute('name');
+                    const selectedValue = this.value;
+                    const feedbackEl = document.getElementById(`feedback-${questionId}`);
+                    const correctValue = correctAnswers[questionId];
+
+                    // 显示反馈
+                    feedbackEl.style.display = 'block';
+                    if (selectedValue === correctValue) {
+                        feedbackEl.className = 'question-feedback feedback-correct';
+                        feedbackEl.textContent = `🎉 回答正确！`;
+                    } else {
+                        feedbackEl.className = 'question-feedback feedback-error';
+                        feedbackEl.textContent = `❌ 回答错误，正确答案是 ${correctValue}。`;
+                    }
+                });
+            });
+
+            // ========== 修复核心：复选框即时反馈 ==========
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function() {
+                    const questionId = this.getAttribute('name');
+                    const correctValues = correctAnswers[questionId];
+                    const feedbackEl = document.getElementById(`feedback-${questionId}`);
+                    
+                    // 获取当前选中的所有选项
+                    const selectedValues = [];
+                    document.querySelectorAll(`input[name="${questionId}"]`).forEach(cb => {
+                        if (cb.checked) {
+                            selectedValues.push(cb.value);
+                        }
+                    });
+
+                    // 排序后对比
+                    const selectedSorted = selectedValues.sort().join(',');
+                    const correctSorted = correctValues.sort().join(',');
+
+                    // 显示反馈
+                    feedbackEl.style.display = 'block';
+                    if (selectedSorted === correctSorted) {
+                        feedbackEl.className = 'question-feedback feedback-correct';
+                        feedbackEl.textContent = `🎉 回答正确！`;
+                    } else {
+                        feedbackEl.className = 'question-feedback feedback-error';
+                        feedbackEl.textContent = `❌ 回答错误，正确答案是 ${correctValues.join('、')}。`;
+                    }
+                });
+            });
+
+            // 查看参考答案按钮
+            showAnswerBtn.addEventListener('click', function() {
+                if (answerContainer.style.display === 'block') {
+                    answerContainer.style.display = 'none';
+                    showAnswerBtn.textContent = '查看参考答案 📖';
+                } else {
+                    answerContainer.style.display = 'block';
+                    showAnswerBtn.textContent = '收起参考答案 📕';
+                }
+            });
+        };
     </script>
 </body>
 </html>
