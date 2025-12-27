@@ -2,8 +2,9 @@ name: 自动生成所有子目录笔记列表
 on:
   push:
     paths:
-      - '**/*.html'  # 监听仓库中所有HTML文件的变化（任意目录）
-  workflow_dispatch:  # 允许手动触发，解决配置复用问题
+      - '**/*.html'  # 监听所有HTML文件（包括新增/修改/删除）
+      - '.github/workflows/generate-notes.yml' # 配置文件变更也触发
+  workflow_dispatch:  # 手动触发兜底
 jobs:
   generate-notes:
     runs-on: ubuntu-latest
@@ -16,13 +17,13 @@ jobs:
       
       - name: 自动扫描并生成所有子目录笔记列表
         run: |
-          # 定义需要排除的目录（系统目录/非课程目录）
+          # 定义需要排除的目录
           EXCLUDE_DIRS=(".github" "node_modules" "assets" "images" ".git")
           
-          # 获取仓库根目录下的所有子目录（仅一级目录）
+          # 获取根目录下所有一级子目录
           ALL_DIRS=$(find . -maxdepth 1 -type d | sed 's|^\./||' | grep -v '^\.$')
           
-          # 遍历所有目录，过滤掉排除项
+          # 遍历每个目录
           for dir in $ALL_DIRS; do
             # 跳过排除目录
             if [[ " ${EXCLUDE_DIRS[@]} " =~ " $dir " ]]; then
@@ -31,27 +32,31 @@ jobs:
             fi
             
             echo "开始处理目录：$dir"
+            # 目录无法进入则跳过
+            cd "$dir" || continue
             
-            # 进入当前目录
-            cd "$dir"
-            
-            # 为目录生成个性化配置（自动从目录名提取标题）
-            # 目录名转标题：去掉Course后缀 + 首字母大写 + 补充描述
+            # 生成个性化标题
             DIR_NAME_CLEAN=$(echo "$dir" | sed 's/Course//g')
-            PAGE_TITLE=$(echo "$DIR_NAME_CLEAN" | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')学习笔记
-            SUB_TITLE="从底层逻辑拆解$PAGE_TITLE，较真每一个知识点"
+            DIR_TITLE=$(echo "$DIR_NAME_CLEAN" | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
+            PAGE_TITLE="${DIR_TITLE}学习笔记"
+            SUB_TITLE="从底层逻辑拆解${PAGE_TITLE}，较真每一个知识点"
             
-            # 为不同目录匹配个性化图标
+            # 个性化图标
             case $DIR_NAME_CLEAN in
               "python") AVATAR_EMOJI="🐍" ;;
               "ai") AVATAR_EMOJI="🤖" ;;
               "aigc") AVATAR_EMOJI="🎨" ;;
               "java") AVATAR_EMOJI="☕" ;;
               "web") AVATAR_EMOJI="🌐" ;;
-              *) AVATAR_EMOJI="📚" ;; # 默认图标
+              *) AVATAR_EMOJI="📚" ;;
             esac
+
+            # 关键1：强制清空旧的notes.html，确保完全重新生成（核心修复）
+            rm -f notes.html
+            # 重新创建空的notes.html
+            touch notes.html
             
-            # 生成笔记列表HTML文件（统一命名为notes.html）
+            # 写入HTML头部
             echo "<!DOCTYPE html>
             <html lang='zh-CN'>
             <head>
@@ -227,18 +232,23 @@ jobs:
                     </div>
                     <div class='notes-section'>
                         <h2>我的笔记列表</h2>
-                        <ul class='notes-list'>" > notes.html
+                        <ul class='notes-list'>" >> notes.html
             
-            # 遍历当前目录下的HTML文件，排除生成的notes.html
+            # 关键2：容错遍历，确保捕获所有HTML文件（包括新增的a.html）
+            shopt -s nullglob
+            # 显式列出所有HTML文件，便于日志排查
+            echo "当前目录 $dir 下的HTML文件："
+            ls -la *.html || echo "无HTML文件"
             for file in *.html; do
               if [ "$file" != "notes.html" ]; then
-                # 格式化文件名作为标题（去掉后缀、替换连字符/下划线为空格、首字母大写）
                 title=$(echo "$file" | sed 's/\.html//g; s/-/ /g; s/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
+                echo "添加文件链接：$file -> $title"
                 echo "                            <li><a href='$file'>$title</a></li>" >> notes.html
               fi
             done
+            shopt -u nullglob
             
-            # 补充HTML尾部内容
+            # 写入HTML尾部
             echo "                        </ul>
                     </div>
                     <div class='back-btn'>
@@ -251,7 +261,6 @@ jobs:
             </body>
             </html>" >> notes.html
             
-            # 返回上级目录，继续处理下一个目录
             cd ..
           done
       
@@ -260,14 +269,15 @@ jobs:
           # 配置Git身份
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # 拉取最新代码（强制覆盖本地，避免冲突）
+          # 关键3：拉取最新代码后，强制添加所有notes.html（确保捕获变更）
           git fetch --all
           git reset --hard origin/main
-          # 添加所有子目录下的notes.html（排除系统目录）
-          git add $(find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules")
-          # 提交（无变更时不报错）
-          git commit -m "自动更新所有子目录笔记列表" || echo "无文件需要提交"
-          # 强制推送（解决分支不同步问题）
+          # 显式查找并添加所有notes.html，避免漏传
+          find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules|assets|images" | xargs git add 2>/dev/null
+          # 提交时显示变更日志，便于排查
+          git status
+          git commit -m "自动更新所有子目录笔记列表（包含新增文件）：$(date +%Y-%m-%d\ %H:%M:%S)" || echo "无文件需要提交"
+          # 强制推送，确保变更生效
           git push origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
