@@ -44,12 +44,12 @@ jobs:
             # 关键修复1：替换Emoji为HTML实体/纯文本，避免编码乱码
             # 不再使用原生Emoji，改用HTML实体或文字描述，确保兼容性
             case $DIR_NAME_CLEAN in
-              "python") AVATAR_CONTENT="&#128013;" ;; # ?? 的HTML实体
-              "ai") AVATAR_CONTENT="&#129302;" ;;     # ?? 的HTML实体
-              "aigc") AVATAR_CONTENT="&#127912;" ;;   # ?? 的HTML实体
-              "java") AVATAR_CONTENT="&#9749;" ;;      # ? 的HTML实体
-              "web") AVATAR_CONTENT="&#127760;" ;;     # ?? 的HTML实体
-              *) AVATAR_CONTENT="&#128218;" ;;         # ?? 的HTML实体（默认）
+              "python") AVATAR_CONTENT="&#128013;" ;; # 🐍 的HTML实体
+              "ai") AVATAR_CONTENT="&#129302;" ;;     # 🤖 的HTML实体
+              "aigc") AVATAR_CONTENT="&#127912;" ;;   # 🎨 的HTML实体
+              "java") AVATAR_CONTENT="&#9749;" ;;      # ☕ 的HTML实体
+              "web") AVATAR_CONTENT="&#127760;" ;;     # 🌐 的HTML实体
+              *) AVATAR_CONTENT="&#128218;" ;;         # 📚 的HTML实体（默认）
             esac
             
             # 强制清空旧的notes.html，确保完全重新生成
@@ -166,7 +166,7 @@ jobs:
                     }
                     /* 关键修复3：笔记前缀改用HTML实体，替换原生Emoji */
                     .notes-list a::before {
-                        content: '&#128213;'; /* ?? 的HTML实体，避免乱码 */
+                        content: '\1F4D5'; /* 替换 &#128213;，CSS识别的Unicode转义序列，对应📚表情 */
                         margin-right: 12px;
                         font-size: 18px;
                     }
@@ -260,7 +260,7 @@ jobs:
                     </div>
                 </div>
                 <div class='footer'>
-                    <p>一个爱思考、爱较真、爱睡觉的普通人 ? 2025</p>
+                    <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
                 </div>
             </body>
             </html>" >> notes.html
