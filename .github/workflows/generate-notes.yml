@@ -41,26 +41,28 @@ jobs:
             PAGE_TITLE="${DIR_TITLE}学习笔记"
             SUB_TITLE="从底层逻辑拆解${PAGE_TITLE}，较真每一个知识点"
             
-            # 个性化图标
+            # 关键修复1：替换Emoji为HTML实体/纯文本，避免编码乱码
+            # 不再使用原生Emoji，改用HTML实体或文字描述，确保兼容性
             case $DIR_NAME_CLEAN in
-              "python") AVATAR_EMOJI="??" ;;
-              "ai") AVATAR_EMOJI="??" ;;
-              "aigc") AVATAR_EMOJI="??" ;;
-              "java") AVATAR_EMOJI="?" ;;
-              "web") AVATAR_EMOJI="??" ;;
-              *) AVATAR_EMOJI="??" ;;
+              "python") AVATAR_CONTENT="&#128013;" ;; # ?? 的HTML实体
+              "ai") AVATAR_CONTENT="&#129302;" ;;     # ?? 的HTML实体
+              "aigc") AVATAR_CONTENT="&#127912;" ;;   # ?? 的HTML实体
+              "java") AVATAR_CONTENT="&#9749;" ;;      # ? 的HTML实体
+              "web") AVATAR_CONTENT="&#127760;" ;;     # ?? 的HTML实体
+              *) AVATAR_CONTENT="&#128218;" ;;         # ?? 的HTML实体（默认）
             esac
-
+            
             # 强制清空旧的notes.html，确保完全重新生成
             rm -f notes.html
             # 重新创建空的notes.html
             touch notes.html
             
-            # 写入HTML头部
+            # 写入HTML头部（关键修复2：指定UTF-8编码，确保特殊字符正常渲染）
             echo "<!DOCTYPE html>
             <html lang='zh-CN'>
             <head>
-                <meta charset='UTF-8'>
+                <meta charset='UTF-8'> <!-- 强制指定UTF-8编码，核心保障 -->
+                <meta http-equiv='Content-Type' content='text/html; charset=utf-8'> <!-- 兼容旧浏览器 -->
                 <meta name='viewport' content='width=device-width, initial-scale=1.0'>
                 <title>$PAGE_TITLE | 一个普通的思考者</title>
                 <style>
@@ -82,6 +84,7 @@ jobs:
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
+                        charset: utf-8; /* 额外保障编码一致性 */
                     }
                     .container {
                         background: rgba(255, 255, 255, 0.95);
@@ -161,8 +164,9 @@ jobs:
                         text-decoration: none;
                         font-size: 16px;
                     }
+                    /* 关键修复3：笔记前缀改用HTML实体，替换原生Emoji */
                     .notes-list a::before {
-                        content: '??';
+                        content: '&#128213;'; /* ?? 的HTML实体，避免乱码 */
                         margin-right: 12px;
                         font-size: 18px;
                     }
@@ -226,7 +230,7 @@ jobs:
             <body>
                 <div class='container'>
                     <div class='header'>
-                        <div class='avatar'>$AVATAR_EMOJI</div>
+                        <div class='avatar'>$AVATAR_CONTENT</div> <!-- 使用HTML实体替代原生Emoji -->
                         <h1>$PAGE_TITLE</h1>
                         <p class='subtitle'>$SUB_TITLE</p>
                     </div>
@@ -248,7 +252,7 @@ jobs:
             done
             shopt -u nullglob
             
-            # 写入HTML尾部
+            # 补充HTML尾部内容
             echo "                        </ul>
                     </div>
                     <div class='back-btn'>
@@ -270,19 +274,19 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # 关键修复1：先暂存所有本地变更（解决未暂存变更报错）
+          # 先暂存所有本地变更（解决未暂存变更报错）
           find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules|assets|images" | xargs git add 2>/dev/null
           
-          # 关键修复2：先提交本地变更（若有），再拉取远程代码
+          # 先提交本地变更（若有），再拉取远程代码
           git commit -m "临时提交本地生成的notes.html" || echo "无本地变更需提前提交"
           
-          # 关键修复3：拉取远程最新代码（此时本地已无未暂存变更，可安全rebase）
+          # 拉取远程最新代码（此时本地已无未暂存变更，可安全rebase）
           git pull origin main --rebase || (git rebase --abort && echo "rebase冲突，放弃拉取远程代码")
           
-          # 关键修复4：再次添加并提交（确保rebase后变更仍被捕获）
+          # 再次添加并提交（确保rebase后变更仍被捕获）
           find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules|assets|images" | xargs git add 2>/dev/null
           git status
-          git commit -m "自动更新所有子目录笔记列表（包含新增文件）：$(date +%Y-%m-%d\ %H:%M:%S)" || echo "无文件需要提交"
+          git commit -m "自动更新所有子目录笔记列表（包含新增文件，修复Emoji乱码）：$(date +%Y-%m-%d\ %H:%M:%S)" || echo "无文件需要提交"
           
           # 推送变更
           git push origin main
