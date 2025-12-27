@@ -1,7 +1,8 @@
 <!DOCTYPE html>
   <html lang='zh-CN'>
   <head>
-      <meta charset='UTF-8'>
+      <meta charset='UTF-8'> <!-- 强制指定UTF-8编码，核心保障 -->
+      <meta http-equiv='Content-Type' content='text/html; charset=utf-8'> <!-- 兼容旧浏览器 -->
       <meta name='viewport' content='width=device-width, initial-scale=1.0'>
       <title>Python学习笔记 | 一个普通的思考者</title>
       <style>
@@ -23,6 +24,7 @@
               display: flex;
               flex-direction: column;
               justify-content: center;
+              charset: utf-8; /* 额外保障编码一致性 */
           }
           .container {
               background: rgba(255, 255, 255, 0.95);
@@ -102,8 +104,9 @@
               text-decoration: none;
               font-size: 16px;
           }
+          /* 关键修复3：笔记前缀改用HTML实体，替换原生Emoji */
           .notes-list a::before {
-              content: '??';
+              content: '&#128213;'; /* ?? 的HTML实体，避免乱码 */
               margin-right: 12px;
               font-size: 18px;
           }
@@ -167,7 +170,7 @@
   <body>
       <div class='container'>
           <div class='header'>
-              <div class='avatar'>??</div>
+              <div class='avatar'>&#128013;</div> <!-- 使用HTML实体替代原生Emoji -->
               <h1>Python学习笔记</h1>
               <p class='subtitle'>从底层逻辑拆解Python学习笔记，较真每一个知识点</p>
           </div>
