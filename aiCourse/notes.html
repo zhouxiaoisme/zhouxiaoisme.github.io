@@ -106,7 +106,7 @@
           }
           /* 关键修复3：笔记前缀改用HTML实体，替换原生Emoji */
           .notes-list a::before {
-              content: '&#128213;'; /* ?? 的HTML实体，避免乱码 */
+              content: '\1F4D5'; /* 替换 &#128213;，CSS识别的Unicode转义序列，对应📚表情 */
               margin-right: 12px;
               font-size: 18px;
           }
@@ -186,7 +186,7 @@
           </div>
       </div>
       <div class='footer'>
-          <p>一个爱思考、爱较真、爱睡觉的普通人 ? 2025</p>
+          <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
       </div>
   </body>
   </html>
