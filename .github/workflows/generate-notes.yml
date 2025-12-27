@@ -43,12 +43,12 @@ jobs:
             
             # 个性化图标
             case $DIR_NAME_CLEAN in
-              "python") AVATAR_EMOJI="🐍" ;;
-              "ai") AVATAR_EMOJI="🤖" ;;
-              "aigc") AVATAR_EMOJI="🎨" ;;
-              "java") AVATAR_EMOJI="☕" ;;
-              "web") AVATAR_EMOJI="🌐" ;;
-              *) AVATAR_EMOJI="📚" ;;
+              "python") AVATAR_EMOJI="??" ;;
+              "ai") AVATAR_EMOJI="??" ;;
+              "aigc") AVATAR_EMOJI="??" ;;
+              "java") AVATAR_EMOJI="?" ;;
+              "web") AVATAR_EMOJI="??" ;;
+              *) AVATAR_EMOJI="??" ;;
             esac
 
             # 强制清空旧的notes.html，确保完全重新生成
@@ -162,7 +162,7 @@ jobs:
                         font-size: 16px;
                     }
                     .notes-list a::before {
-                        content: '📝';
+                        content: '??';
                         margin-right: 12px;
                         font-size: 18px;
                     }
@@ -256,7 +256,7 @@ jobs:
                     </div>
                 </div>
                 <div class='footer'>
-                    <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
+                    <p>一个爱思考、爱较真、爱睡觉的普通人 ? 2025</p>
                 </div>
             </body>
             </html>" >> notes.html
@@ -270,18 +270,21 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # 关键修复：移除 git reset --hard origin/main（不再覆盖本地新生成的文件）
-          # 仅拉取远程最新代码（不覆盖本地变更），解决分支冲突的同时保留本地生成的notes.html
-          git pull origin main --rebase || git rebase --abort
-          
-          # 显式查找并添加所有notes.html，避免漏传
+          # 关键修复1：先暂存所有本地变更（解决未暂存变更报错）
           find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules|assets|images" | xargs git add 2>/dev/null
           
-          # 提交时显示变更日志，便于排查
+          # 关键修复2：先提交本地变更（若有），再拉取远程代码
+          git commit -m "临时提交本地生成的notes.html" || echo "无本地变更需提前提交"
+          
+          # 关键修复3：拉取远程最新代码（此时本地已无未暂存变更，可安全rebase）
+          git pull origin main --rebase || (git rebase --abort && echo "rebase冲突，放弃拉取远程代码")
+          
+          # 关键修复4：再次添加并提交（确保rebase后变更仍被捕获）
+          find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules|assets|images" | xargs git add 2>/dev/null
           git status
           git commit -m "自动更新所有子目录笔记列表（包含新增文件）：$(date +%Y-%m-%d\ %H:%M:%S)" || echo "无文件需要提交"
           
-          # 推送变更（无需--force，rebase后已解决分支冲突）
+          # 推送变更
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
