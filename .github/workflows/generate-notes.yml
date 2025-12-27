@@ -51,7 +51,7 @@ jobs:
               *) AVATAR_EMOJI="📚" ;;
             esac
 
-            # 关键1：强制清空旧的notes.html，确保完全重新生成（核心修复）
+            # 强制清空旧的notes.html，确保完全重新生成
             rm -f notes.html
             # 重新创建空的notes.html
             touch notes.html
@@ -234,7 +234,7 @@ jobs:
                         <h2>我的笔记列表</h2>
                         <ul class='notes-list'>" >> notes.html
             
-            # 关键2：容错遍历，确保捕获所有HTML文件（包括新增的a.html）
+            # 容错遍历，确保捕获所有HTML文件（包括新增的a.html）
             shopt -s nullglob
             # 显式列出所有HTML文件，便于日志排查
             echo "当前目录 $dir 下的HTML文件："
@@ -269,15 +269,19 @@ jobs:
           # 配置Git身份
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # 关键3：拉取最新代码后，强制添加所有notes.html（确保捕获变更）
-          git fetch --all
-          git reset --hard origin/main
+          
+          # 关键修复：移除 git reset --hard origin/main（不再覆盖本地新生成的文件）
+          # 仅拉取远程最新代码（不覆盖本地变更），解决分支冲突的同时保留本地生成的notes.html
+          git pull origin main --rebase || git rebase --abort
+          
           # 显式查找并添加所有notes.html，避免漏传
           find . -maxdepth 2 -name "notes.html" | grep -vE "\.github|\.git|node_modules|assets|images" | xargs git add 2>/dev/null
+          
           # 提交时显示变更日志，便于排查
           git status
           git commit -m "自动更新所有子目录笔记列表（包含新增文件）：$(date +%Y-%m-%d\ %H:%M:%S)" || echo "无文件需要提交"
-          # 强制推送，确保变更生效
-          git push origin main --force
+          
+          # 推送变更（无需--force，rebase后已解决分支冲突）
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
