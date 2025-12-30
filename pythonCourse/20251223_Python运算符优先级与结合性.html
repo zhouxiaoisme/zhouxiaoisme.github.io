@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Python运算符优先级与结合性 - 智能制造场景教学</title>
+
     <style>
         * {
             margin: 0;
@@ -15,15 +16,15 @@
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
-            line-height: 1.5; /* 略微减小行高 */
+            line-height: 1.5;
             padding: 0;
             margin: 0;
         }
         
         .container {
-            max-width: 1920px; /* 适配16:9宽屏 */
+            max-width: 1920px;
             width: 100%;
-            height: 100vh; /* 全屏显示 */
+            height: 100vh;
             margin: 0 auto;
             background: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -33,12 +34,12 @@
         }
         
         .slide {
-            flex: 1; /* 占满容器高度 */
-            padding: 30px 60px; /* 优化内边距，左右更大，上下更小 */
+            flex: 1;
+            padding: 30px 60px;
             display: none;
-            overflow-y: auto; /* 仅在内容溢出时显示滚动条 */
+            overflow-y: auto;
             width: 100%;
-            max-height: calc(100vh - 80px); /* 预留导航栏空间 */
+            max-height: calc(100vh - 80px);
         }
         
         .slide.active {
@@ -47,7 +48,7 @@
         
         h1 {
             color: #2c3e50;
-            font-size: 2.5em; /* 略微减小标题大小 */
+            font-size: 2.5em;
             margin-bottom: 20px;
             text-align: center;
             border-bottom: 4px solid #3498db;
@@ -158,10 +159,10 @@
             margin-right: 6px;
         }
         
-        .priority-1 { background: #e74c3c; } /* 最高优先级 */
-        .priority-5 { background: #f39c12; } /* 中等 */
-        .priority-13 { background: #2ecc71; } /* 逻辑运算符 */
-        .priority-15 { background: #9b59b6; } /* 赋值 */
+        .priority-1 { background: #e74c3c; }
+        .priority-5 { background: #f39c12; }
+        .priority-13 { background: #2ecc71; }
+        .priority-15 { background: #9b59b6; }
         
         .scene-analogy {
             background: #e8f4fc;
@@ -258,7 +259,36 @@
             display: inline-block;
         }
 
-        /* 16:9宽屏优化 */
+		.link-button {
+			/* 更换更鲜艳醒目的蓝色（可根据需求调整，此处选用高饱和度蓝色） */
+			color: #0d6efd;
+			cursor: pointer;
+			text-decoration: underline;
+			font-weight: 700;
+			/* 新增：轻微背景高亮，增强视觉存在感 */
+			background-color: rgba(13, 110, 253, 0.1);
+			/* 新增：内边距，让点击区域更大，视觉更饱满 */
+			padding: 2px 6px;
+			/* 新增：圆角，样式更柔和美观 */
+			border-radius: 4px;
+			/* 新增：边框（可选，进一步突出） */
+			border: 1px solid transparent;
+			/* 新增：hover 动效，交互更友好，视觉更突出 */
+			transition: all 0.2s ease-in-out;
+		}
+
+		/* 新增：鼠标悬浮时的强化效果，进一步提升突出度 */
+		.link-button:hover {
+			/* 悬浮时加深文字颜色 */
+			color: #0a58ca;
+			/* 悬浮时加深背景色 */
+			background-color: rgba(13, 110, 253, 0.2);
+			/* 悬浮时显示边框，强化轮廓 */
+			border-color: #0d6efd;
+			/* 轻微上移，增加动感 */
+			transform: translateY(-1px);
+		}
+
         @media screen and (min-aspect-ratio: 16/9) {
             .content-wrapper {
                 display: grid;
@@ -293,7 +323,6 @@
             }
         }
 
-        /* 优化列表显示 */
         ul, ol {
             margin-left: 20px;
             padding-left: 10px;
@@ -304,7 +333,6 @@
             margin-bottom: 5px;
         }
 
-        /* 滚动条优化 */
         .slide::-webkit-scrollbar {
             width: 8px;
         }
@@ -322,7 +350,85 @@
         .slide::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+		
+        /* 新增：练习题折叠样式 */
+        .practice-question {
+            display: none;
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            padding: 8px 16px;
+            margin: 5px 10px 5px 0;
+            background: #bbdefb;
+            color: #2c3e50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            background: #90caf9;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }		
+		
+        /* 新增：小测试卡片样式 */
+        .test-card {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1f5fe 100%);
+            border: 2px solid #8e24aa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-question {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .test-question.active {
+            display: block;
+        }
+        .test-progress {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #4a148c;
+        }
+		
     </style>
+	
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'neutral',
+			securityLevel: 'loose', // 增加此配置
+            flowchart: {
+                nodeSpacing: 50,
+                rankSpacing: 80
+            }
+        });
+    </script>		
 </head>
 <body>
     <div class="container">
@@ -332,13 +438,11 @@
             <h2>智能制造场景专项教学</h2>
             
             <div class="content-wrapper">
-                <div class="full-width" style="text-align: center; margin: 20px 0;">
                     <div style="font-size: 1.2em; color: #2c3e50; margin: 20px 0;">
                         适用于：智能制造、机电一体化、自动化控制专业
                     </div>
-                </div>
                 
-                <div class="example-box">
+                <div class="example-box full-width">
                     <h3>🚀 课程目标</h3>
                     <ul style="font-size: 1.1em; line-height: 1.6; margin-left: 15px;">
                         <li>掌握Python运算符的优先级与结合性规则</li>
@@ -349,7 +453,7 @@
                     </ul>
                 </div>
                 
-                <div class="scene-analogy">
+                <div class="scene-analogy full-width">
                     <h3>💡 核心思想</h3>
                     <p>Python中的运算符优先级就像<strong>电气控制中的信号处理顺序</strong>，结合性就像<strong>电路中的电流流向</strong>。掌握这些规则，你就能用代码精确地描述控制逻辑，也能轻松应对考试考点！</p>
                 </div>
@@ -389,7 +493,7 @@ print(f"转速2: {转速2:.1f} rpm")
                     <p>没有统一的优先级规则，同样的公式会产生<strong class="emphasis">不同的计算结果</strong>！</p>
                 </div>
                 
-                <div class="exam-example-box">
+                <div class="exam-example-box full-width">
                     <h3>📝 考试常见题型示例</h3>
                     <div class="code">
 <pre>
@@ -406,7 +510,7 @@ print(f"c = {c}")  # 输出？
                     <p><strong>答案</strong>：a=15.0，b=30.0，c=15.0（乘除优先级高于加减）</p>
                 </div>
                 
-                <div class="scene-analogy">
+                <div class="scene-analogy full-width">
                     <h3>🏭 工业控制类比</h3>
                     <p><strong>电气控制中的优先级</strong>：急停信号 > 安全门信号 > 启动信号</p>
                     <p><strong>Python中的优先级</strong>：括号 > 幂 > 单目 > 乘除 > 加减 > 比较 > 逻辑</p>
@@ -440,96 +544,232 @@ print(f"c = {c}")  # 输出？
                         <tbody>
                             <tr>
                                 <td><span class="priority-badge priority-1">1</span>最高</td>
-                                <td><code>**</code></td>
+                                <td><code><span style="color: red; font-weight: bold">**</span>幂运算</code></td>
                                 <td>幂运算</td>
                                 <td><strong>从右向左</strong></td>
-                                <td>放大系数计算：<code>增益 = 2 ** 3</code></td>
-                                <td><code>2 ** 3 ** 2 = 512</code></td>
+                                <td>放大系数计算：<code>增益 = 2 <span style="color: red; font-weight: bold">**</span> 3</code></td>
+                                <td><code>2 <span style="color: red; font-weight: bold">**</span> 3 <span style="color: red; font-weight: bold">**</span> 2 结果为 512</code></td>
                             </tr>
                             <tr>
                                 <td><span class="priority-badge">2</span></td>
-                                <td><code>~ + -</code></td>
+                                <td><code><span style="color: red; font-weight: bold">~</span>按位取反，<span style="color: red; font-weight: bold">+</span>正号运算，<span style="color: red; font-weight: bold">-</span>负号运算</code></td>
                                 <td>单目运算符</td>
                                 <td><strong>从右向左</strong></td>
                                 <td>信号取反：<code>急停 = not 安全信号</code></td>
-                                <td><code>-3 ** 2 = -9</code></td>
+                                <td><code><span style="color: red; font-weight: bold">-</span>3 <span style="color: red; font-weight: bold">**</span> 2 结果为 -9</code></td>
                             </tr>
                             <tr>
                                 <td><span class="priority-badge">3</span></td>
-                                <td><code>* / % //</code></td>
+                                <td><code><span style="color: red; font-weight: bold">*</span>乘法，<span style="color: red; font-weight: bold">/</span>小数除，<span style="color: red; font-weight: bold">%</span>取余，<span style="color: red; font-weight: bold">//</span>整除</code></td>
                                 <td>乘除类</td>
                                 <td>从左向右</td>
-                                <td>产量计算：<code>总产量 = 批次 * 每批数量</code></td>
-                                <td><code>10 / 2 * 5 = 25</code></td>
+                                <td>产量计算：<code>总产量 = 批次 <span style="color: red; font-weight: bold">*</span> 每批数量</code></td>
+                                <td><code>10 <span style="color: red; font-weight: bold">/</span> 2 <span style="color: red; font-weight: bold">*</span> 5 结果为 25</code></td>
                             </tr>
                             <tr>
                                 <td><span class="priority-badge">4</span></td>
-                                <td><code>+ -</code></td>
+                                <td><code><span style="color: red; font-weight: bold">+</span>加法，<span style="color: red; font-weight: bold">-</span>减法</code></td>
                                 <td>加减类</td>
                                 <td>从左向右</td>
-                                <td>累计统计：<code>总计 = 当前值 + 增量</code></td>
-                                <td><code>10 - 5 + 3 = 8</code></td>
+                                <td>累计统计：<code>总计 = 当前值 <span style="color: red; font-weight: bold">+</span> 增量</code></td>
+                                <td><code>10 <span style="color: red; font-weight: bold">-</span> 5 <span style="color: red; font-weight: bold">+</span> 3 结果为 8</code></td>
                             </tr>
                             <tr>
                                 <td><span class="priority-badge">5</span></td>
-                                <td><code><< >></code></td>
+                                <td><code><span style="color: red; font-weight: bold"><<</span>按位左移，<span style="color: red; font-weight: bold">>></span>按位右移</code></td>
                                 <td>位移运算</td>
                                 <td>从左向右</td>
-                                <td>状态字操作：<code>状态 = 标志 << 2</code></td>
-                                <td><code>8 << 1 >> 2 = 4</code></td>
+                                <td>状态字操作：<code>状态 = 标志 <span style="color: red; font-weight: bold"><<</span> 2</code></td>
+                                <td><code>8 <span style="color: red; font-weight: bold"><<</span> 1 <span style="color: red; font-weight: bold">>></span> 2 结果为 4</code></td>
                             </tr>
                             <tr>
-                                <td><span class="priority-badge">6-8</span></td>
-                                <td><code>& ^ |</code></td>
+                                <td><span class="priority-badge">6</span></td>
+                                <td><code><span style="color: red; font-weight: bold">&</span>按位与</code></td>
                                 <td>位运算</td>
                                 <td>从左向右</td>
-                                <td>IO控制：<code>输出 = 输入 & 掩码</code></td>
-                                <td><code>3 & 5 | 1 = 1</code></td>
+                                <td>IO控制：<code>输出 = 输入 <span style="color: red; font-weight: bold">&</span> 掩码</code></td>
+                                <td><code>3 <span style="color: red; font-weight: bold">&</span> 5 <span style="color: red; font-weight: bold">|</span> 1 结果为 1</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="priority-badge">7</span></td>
+                                <td><code><span style="color: red; font-weight: bold">^</span>按位异或</code></td>
+                                <td>位运算</td>
+                                <td>从左向右</td>
+                                <td>IO控制：<code>输出 = 输入 <span style="color: red; font-weight: bold">&</span> 掩码</code></td>
+                                <td><code>3 <span style="color: red; font-weight: bold">&</span> 5 <span style="color: red; font-weight: bold">|</span> 1 结果为 1</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="priority-badge">8</span></td>
+                                <td><code><span style="color: red; font-weight: bold">|</span>按位或</code></td>
+                                <td>位运算</td>
+                                <td>从左向右</td>
+                                <td>IO控制：<code>输出 = 输入 <span style="color: red; font-weight: bold">&</span> 掩码</code></td>
+                                <td><code>3 <span style="color: red; font-weight: bold">&</span> 5 <span style="color: red; font-weight: bold">|</span> 1 结果为 1</code></td>
                             </tr>
                             <tr>
                                 <td><span class="priority-badge">9</span></td>
-                                <td><code>> < == 等</code></td>
+                                <td><code><span style="color: red; font-weight: bold">></span>大于，<span style="color: red; font-weight: bold"><</span>小于，<span style="color: red; font-weight: bold">==</span>等于，<span style="color: red; font-weight: bold">>=</span>, <span style="color: red; font-weight: bold"><=</span>, <span style="color: red; font-weight: bold">!=</span></code></td>
                                 <td>比较运算</td>
                                 <td>链式展开</td>
-                                <td>阈值判断：<code>if 下限 <= 测量值 <= 上限</code></td>
-                                <td><code>3 < 5 < 10 = True</code></td>
+                                <td>阈值判断：<code>if 下限 <span style="color: red; font-weight: bold"><=</span> 测量值 <span style="color: red; font-weight: bold"><=</span> 上限</code></td>
+                                <td><code>3 <span style="color: red; font-weight: bold"><</span> 5 <span style="color: red; font-weight: bold"><</span> 10 结果为 True</code></td>
                             </tr>
                             <tr>
-                                <td><span class="priority-badge">10-11</span></td>
-                                <td><code>is in</code></td>
+                                <td><span class="priority-badge">10</span></td>
+                                <td><code><span style="color: red; font-weight: bold">is</span>身份运算</code></td>
                                 <td>身份/成员</td>
                                 <td>链式展开</td>
-                                <td>设备识别：<code>if 当前工具 is 铣刀</code></td>
-                                <td><code>5 in [1,3,5] is True = False</code></td>
+                                <td>设备识别：<code>if 当前工具 <span style="color: red; font-weight: bold">is</span> 铣刀</code></td>
+                                <td><code>5 <span style="color: red; font-weight: bold">in</span> [1,3,5] <span style="color: red; font-weight: bold">is</span> True 结果为 False</code></td>
                             </tr>
                             <tr>
-                                <td><span class="priority-badge priority-13">12-14</span></td>
-                                <td><code>not and or</code></td>
+                                <td><span class="priority-badge">11</span></td>
+                                <td><code><span style="color: red; font-weight: bold">in</span>成员运算</code></td>
+                                <td>身份/成员</td>
+                                <td>链式展开</td>
+                                <td>设备识别：<code>if 当前工具 <span style="color: red; font-weight: bold">is</span> 铣刀</code></td>
+                                <td><code>5 <span style="color: red; font-weight: bold">in</span> [1,3,5] <span style="color: red; font-weight: bold">is</span> True 结果为 False</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="priority-badge">12</span></td>
+                                <td><code><span style="color: red; font-weight: bold">not</span>非</code></td>
                                 <td>逻辑运算</td>
                                 <td><code>not</code>右结合<br><code>and/or</code>左结合</td>
-                                <td>安全连锁：<code>if 门关闭 and 气压正常 or 维护模式</code></td>
-                                <td><code>True or False and False = True</code></td>
+                                <td>安全连锁：<code>if 门关闭 <span style="color: red; font-weight: bold">and</span> 气压正常 <span style="color: red; font-weight: bold">or</span> 维护模式</code></td>
+                                <td><code>True <span style="color: red; font-weight: bold">or</span> False <span style="color: red; font-weight: bold">and</span> False 结果为 True</code></td>
                             </tr>
                             <tr>
-                                <td><span class="priority-badge priority-15">15</span>最低</td>
-                                <td><code>= += 等</code></td>
+                                <td><span class="priority-badge">13</span></td>
+                                <td><code><span style="color: red; font-weight: bold">and</span>与</code></td>
+                                <td>逻辑运算</td>
+                                <td><code>not</code>右结合<br><code>and/or</code>左结合</td>
+                                <td>安全连锁：<code>if 门关闭 <span style="color: red; font-weight: bold">and</span> 气压正常 <span style="color: red; font-weight: bold">or</span> 维护模式</code></td>
+                                <td><code>True <span style="color: red; font-weight: bold">or</span> False <span style="color: red; font-weight: bold">and</span> False 结果为 True</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="priority-badge">14</span></td>
+                                <td><code><span style="color: red; font-weight: bold">or</span>或</code></td>
+                                <td>逻辑运算</td>
+                                <td><code>not</code>右结合<br><code>and/or</code>左结合</td>
+                                <td>安全连锁：<code>if 门关闭 <span style="color: red; font-weight: bold">and</span> 气压正常 <span style="color: red; font-weight: bold">or</span> 维护模式</code></td>
+                                <td><code>True <span style="color: red; font-weight: bold">or</span> False <span style="color: red; font-weight: bold">and</span> False 结果为 True</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="priority-badge">15</span>最低</td>
+                                <td><code><span style="color: red; font-weight: bold">=</span>，<span style="color: red; font-weight: bold">+=</span>，<span style="color: red; font-weight: bold">-=</span>，<span style="color: red; font-weight: bold">*=</span>，<span style="color: red; font-weight: bold">/=</span>，<span style="color: red; font-weight: bold">//=</span>，<span style="color: red; font-weight: bold">%=</span>，<span style="color: red; font-weight: bold">**=</span> 等</code></td>
                                 <td>赋值运算</td>
                                 <td><strong>从右向左</strong></td>
-                                <td>参数设置：<code>速度 = 加速度 = 默认值</code></td>
-                                <td><code>a = b = c = 0</code></td>
+                                <td>参数设置：<code>速度 <span style="color: red; font-weight: bold">+=</span> 加速度；速度 <span style="color: red; font-weight: bold">=</span> 默认值</code></td>
+                                <td><code>a <span style="color: red; font-weight: bold">=</span> b <span style="color: red; font-weight: bold">=</span> c <span style="color: red; font-weight: bold">=</span> 0（链式赋值，最终a、b、c均为0）</code></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="memory-tips full-width">
                     <h3>🎯 记忆口诀</h3>
-                    <p><strong>"幂赋单目向右走，其他大多向左看。<br>比较链式是特例，逻辑非与或有高低。"</strong></p>
+                    <p><strong>幂赋单目从右算，其他大多从左算。<br>比较链式是特例，逻辑非与或有高低。</strong></p>
                     <p style="margin-top: 10px;">解释：<br>
                     1. <span class="emphasis">幂运算、赋值、单目运算符</span>（正负号、取反）是<strong>从右向左</strong>计算<br>
                     2. 其他大部分运算符是<strong>从左向右</strong>计算<br>
-                    3. 比较运算符有<strong>链式比较</strong>特殊规则<br>
-                    4. 逻辑运算符中：<code>not > and > or</code></p>
+                    3. 比较运算符有<strong>链式比较</strong>特殊规则。<span class="link-button" onclick="goToSlide('slide6')">详细解释-链式比较是什么</span><br>
+                    4. 逻辑运算符中优先级顺序：<code>not > and > or</code>
+					<span class="link-button" onclick="togglePractice()">马上练习下！</span>
+					</p>
+					
+                    <!-- 新增：折叠练习题 -->
+                    <div class="practice-question" id="quickPractice">
+                        <h4>4 > 3 or 2 == 1 and 5 < 0 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkAnswer('quick', 'A')">A. 正确</button>
+                        <button class="option-btn" onclick="checkAnswer('quick', 'B')">B. 错误</button>
+                        <div class="feedback" id="quickFeedback"></div>
+                    </div>
+				</div>
+					
+                <!-- 新增：小测试独立卡片 -->
+                <div class="test-card full-width">
+                    <h3>📝 小测试（10道题，巩固运算符优先级与结合性）</h3>
+                    <div class="test-progress" id="testProgress">第 1 题 / 共 10 题</div>
+                    
+                    <!-- 测试题1 -->
+                    <div class="test-question active" id="q1">
+                        <h4>1. 7 > 5 == 13 < 70 结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(1, 'A')">A. True</button>
+                        <button class="option-btn" onclick="checkTestAnswer(1, 'B')">B. False</button>
+                        <div class="feedback" id="q1Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题2 -->
+                    <div class="test-question" id="q2">
+                        <h4>2. not 5 > 3 + 1 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(2, 'A')">A. True</button>
+                        <button class="option-btn" onclick="checkTestAnswer(2, 'B')">B. False</button>
+                        <div class="feedback" id="q2Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题3 -->
+                    <div class="test-question" id="q3">
+                        <h4>3. 10 % 3 == 1 and 2 * 3 == 5 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(3, 'A')">A. True</button>
+                        <button class="option-btn" onclick="checkTestAnswer(3, 'B')">B. False</button>
+                        <div class="feedback" id="q3Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题4 -->
+                    <div class="test-question" id="q4">
+                        <h4>4. 4 > 3 or 2 == 1 and 5 < 0 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(4, 'A')">A. True</button>
+                        <button class="option-btn" onclick="checkTestAnswer(4, 'B')">B. False</button>
+                        <div class="feedback" id="q4Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题5 -->
+                    <div class="test-question" id="q5">
+                        <h4>5. not (True or not True) 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(5, 'A')">A. True</button>
+                        <button class="option-btn" onclick="checkTestAnswer(5, 'B')">B. False</button>
+                        <div class="feedback" id="q5Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题6 -->
+                    <div class="test-question" id="q6">
+                        <h4>6. 2 ** 3 ** 2 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(6, 'A')">A. 512</button>
+                        <button class="option-btn" onclick="checkTestAnswer(6, 'B')">B. 64</button>
+                        <div class="feedback" id="q6Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题7 -->
+                    <div class="test-question" id="q7">
+                        <h4>7. 10 - 5 + 3 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(7, 'A')">A. 8</button>
+                        <button class="option-btn" onclick="checkTestAnswer(7, 'B')">B. 2</button>
+                        <div class="feedback" id="q7Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题8 -->
+                    <div class="test-question" id="q8">
+                        <h4>8. -3 ** 2 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(8, 'A')">A. -9</button>
+                        <button class="option-btn" onclick="checkTestAnswer(8, 'B')">B. 9</button>
+                        <div class="feedback" id="q8Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题9 -->
+                    <div class="test-question" id="q9">
+                        <h4>9. 8 // 2 % 3 的结果是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(9, 'A')">A. 1</button>
+                        <button class="option-btn" onclick="checkTestAnswer(9, 'B')">B. 0</button>
+                        <div class="feedback" id="q9Feedback"></div>
+                    </div>
+                    
+                    <!-- 测试题10 -->
+                    <div class="test-question" id="q10">
+                        <h4>10. a = b = c = 10 执行后，a的值是什么？</h4>
+                        <button class="option-btn" onclick="checkTestAnswer(10, 'A')">A. 10</button>
+                        <button class="option-btn" onclick="checkTestAnswer(10, 'B')">B. 报错</button>
+                        <div class="feedback" id="q10Feedback"></div>
+                    </div>
                 </div>
             </div>
             
@@ -548,15 +788,61 @@ print(f"c = {c}")  # 输出？
                     <h2>什么是结合性？</h2>
                     <p>当多个<strong>相同优先级</strong>的运算符连续出现时，先算哪个？这就是结合性决定的。</p>
                     
-                    <div class="circuit-diagram">
-                        <h3>⚡ 电气控制类比</h3>
-                        <div style="margin: 10px; padding: 15px; background: white; border-radius: 10px; display: inline-block;">
-                            <div style="font-family: monospace; font-size: 1.1em;">
-                                <p>左结合 → 串联电路：<span style="color: #e74c3c;">[开关A]─[开关B]─[开关C]</span></p>
-                                <p>右结合 → 嵌套控制：<span style="color: #3498db;">主控[分控[执行器]]</span></p>
-                            </div>
-                        </div>
-                    </div>
+					<div class="circuit-diagram">
+						<h3>⚡ 电气控制类比</h3>
+						<div style="margin: 10px; padding: 15px; background: white; border-radius: 10px; display: flex; gap: 30px; /* 增大间距，强化隔开效果 */">
+							<div style="flex: 1; font-family: monospace; font-size: 1.1em; padding: 12px; border-radius: 8px; background-color: #fdf2f2; /* 浅红背景，区分右栏 */">
+								<div style="font-size: 1.5em; font-weight: bold; color: #e74c3c; margin-bottom: 15px;">左结合</div>
+								<div class="mermaid" style="margin-bottom: 15px;">
+								graph LR
+									A[开关A] --- B[开关B]
+									B --- C[开关C]
+									C --- D["负载/灯泡"]
+									style A fill:#fdf2f2,stroke:#e74c3c,stroke-width:2px
+									style B fill:#fdf2f2,stroke:#e74c3c,stroke-width:2px
+									style C fill:#fdf2f2,stroke:#e74c3c,stroke-width:2px
+									style D fill:#fdf2f2,stroke:#e74c3c,stroke-width:2px
+								</div>
+								<p>逻辑：必须A、B、C都闭合，电路才通</p>
+								<p>像运算里从左到右依次执行</p>
+								<p>代码示例：<code style="color: #e74c3c; font-weight: bold;">10 - 5 + 3</code>（加减运算为左结合）</p>
+								<p>执行顺序：先算 10 - 5 = 5，再算 5 + 3 = 8，结果为 8</p>
+							</div>
+							<div style="flex: 1; font-family: monospace; font-size: 1.1em; padding: 12px; border-radius: 8px; background-color: #f0f8ff; /* 浅蓝背景，区分左栏 */">
+								<div style="font-size: 1.5em; font-weight: bold; color: #3498db; margin-bottom: 15px;">右结合</div>
+								<div class="mermaid" style="margin-bottom: 15px;">
+									graph LR
+										%% 三层嵌套：对应幂运算 2**3**2（外层[中间[内层]]）
+										subgraph 外层
+											A["主开关1（外层控制）"]
+											subgraph 中间层
+												B["主开关2（中间控制）"]
+												subgraph 内层
+													C["分开关（内层执行）"]
+													D["执行器/负载"]
+												end
+											end
+										end
+										%% 连接关系：只有先确认内层生效，外层才会真正起作用（对应右结合运算顺序）
+										C --- D
+										B --> 内层
+										A --> 中间层
+										%% 样式匹配：三层嵌套设置不同深浅的蓝色填充色，从外到内逐渐变深
+										style A fill:#f0f8ff,stroke:#3498db,stroke-width:2px
+										style B fill:#f0f8ff,stroke:#3498db,stroke-width:2px
+										style C fill:#f0f8ff,stroke:#3498db,stroke-width:2px
+										style D fill:#f0f8ff,stroke:#3498db,stroke-width:2px
+										style 外层 fill:#ffebee,stroke:#c62828,stroke-width:2px
+										style 中间层 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+										style 内层 fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+								</div>
+								<p>逻辑：要让外层控制生效，必须先确认内层（最右侧）已生效；从最内层（右）往外层（左）逐层验证</p>
+								<p>像运算里从右向左“先里后外”执行</p>
+								<p>代码示例：<code style="color: #3498db; font-weight: bold;">2 ** 3 ** 2</code>（幂运算为右结合）</p>
+								<p>执行顺序：先算 最右侧（内层）3 ** 2 = 9，再算 左侧（外层）2 ** 9 = 512，结果为 512</p>
+							</div>
+						</div>
+					</div>
                 </div>
                 
                 <div class="example-box">
@@ -682,7 +968,7 @@ print(f"result3={result3}")  # result3=False（无报错）
                     <p><strong>考试要点</strong>：短路求值会跳过后续表达式的执行，常考变量值是否变化、是否触发异常等。</p>
                 </div>
                 
-                <div class="warning-box">
+                <div class="warning-box full-width">
                     <h3>⚠️ 安全第一！短路求值的重要性</h3>
                     <p>在工业控制中，<strong>安全条件必须放在最前面</strong>：</p>
                     <div class="code">
@@ -697,20 +983,56 @@ if not 急停按下 and 检查传感器() and 启动电机():
 </pre>
                     </div>
                 </div>
-                
-                <div class="scene-analogy">
-                    <h3>🔌 电气控制中的"短路"类比</h3>
-                    <p><strong>急停串联电路</strong>：急停按钮必须放在电路最前面！<br>
-                    一旦急停按下，后续所有操作立即停止。</p>
-                    
-                    <div style="text-align: center; margin: 10px; font-family: monospace; font-size: 1.1em;">
-                        [电源]──[急停]──[门开关]──[传感器]──[电机]<br>
-                        ↑<br>
-                        急停必须放在第一位！
-                    </div>
-                </div>
-                
-                <div class="practice-box">
+
+				
+				<div class="scene-analogy full-width" style="padding: 25px; margin: 20px 0;">
+					<h3 style="font-size: 1.5em; margin-bottom: 18px; color: #2980b9; display: flex; align-items: center; gap: 10px;">
+						🔌 电气控制中的"短路"类比
+					</h3>
+					<p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 25px; padding: 0 10px;">
+						<strong style="color: #e74c3c; font-size: 1.1em;">急停串联电路</strong>：急停按钮必须放在电路最前面！<br>
+						一旦急停按下，后续所有操作立即停止，这与Python逻辑运算符的"短路求值"特性完全一致。
+					</p>
+
+					<!-- Mermaid 电路图（急停串联电路） -->
+					<div style="
+						background-color: #f9f9f9;
+						border-radius: 12px;
+						padding: 20px;
+						margin: 0 auto;
+						max-width: 800px;
+						box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+					">
+						<div class="mermaid" style="font-size: 1.1em; text-align: center;">
+							graph LR
+								A["🔋 电源"] --> B["🛑 急停按钮（优先级最高）"]
+								B --> C["🚪 安全门开关"]
+								C --> D["📡 传感器检测"]
+								D --> E["⚙️ 电机执行器"]
+								
+								%% 样式美化
+								style A fill:#f1c40f,stroke:#d4ac0d,stroke-width:2px,rx:10,ry:10
+								style B fill:#e74c3c,stroke:#c0392b,stroke-width:3px,rx:10,ry:10,color:#ffffff
+								style C fill:#3498db,stroke:#2980b9,stroke-width:2px,rx:10,ry:10,color:#ffffff
+								style D fill:#2ecc71,stroke:#27ae60,stroke-width:2px,rx:10,ry:10,color:#ffffff
+								style E fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,rx:10,ry:10,color:#ffffff
+						</div>
+					</div>
+
+					<!-- 备注说明，提升排版层次感 -->
+					<p style="
+						text-align: center;
+						font-size: 0.95em;
+						color: #7f8c8d;
+						margin-top: 15px;
+						font-style: italic;
+					">
+						注：急停按钮（红色）为最高优先级，对应Python中短路求值的"前置安全判断"
+					</p>
+				</div>
+				
+            
+                <div class="practice-box  full-width">
                     <h3>📝 练习：优化设备启动逻辑 + 考试题型练习</h3>
                     <p>1. 以下启动逻辑有什么问题？如何优化？</p>
                     <div class="code">
@@ -765,14 +1087,14 @@ def 启动设备():
                     </div>
                 </div>
             </div>
-            
+
+			
             <div class="nav-buttons">
                 <button onclick="prevSlide()">← 上一页</button>
                 <button onclick="nextSlide()">下一页 →</button>
             </div>
         </div>
-        
-        <!-- 幻灯片6：链式比较与工业应用 -->
+                <!-- 幻灯片6：链式比较与工业应用 -->
         <div class="slide" id="slide6">
             <h1>链式比较：智能制造中的范围判断</h1>
             
@@ -794,7 +1116,26 @@ if 下限 <= 测量值 <= 上限:
                     </div>
                 </div>
                 
-                <div class="example-box">
+                <div class="warning-box full-width">
+                    <h3>💡 重要原理：链式比较如何工作？</h3>
+                    <p>链式比较<code>a < b < c</code>会被Python解释为：<code>(a < b) and (b < c)</code></p>
+                    <p><strong>注意</strong>：中间的变量<code>b</code>只计算一次！</p>
+                    
+                    <div class="code">
+<pre>
+# 这个表达式
+if 0 <= 传感器读数() <= 100:
+    处理数据()
+
+# 等价于（但传感器读数()只调用一次）
+temp = 传感器读数()
+if 0 <= temp and temp <= 100:
+    处理数据()
+</pre>
+                    </div>
+                </div>
+				
+                <div class="example-box full-width">
                     <h3>🏭 工业应用场景示例</h3>
                     <div class="code">
 <pre>
@@ -843,24 +1184,7 @@ print(10 > b + 1 > 8)    # False (10 > 9 > 8 → True and True → True？不！
                     3. 注意布尔值与数字的比较陷阱（True=1，False=0）</p>
                 </div>
                 
-                <div class="warning-box full-width">
-                    <h3>💡 重要原理：链式比较如何工作？</h3>
-                    <p>链式比较<code>a < b < c</code>会被Python解释为：<code>(a < b) and (b < c)</code></p>
-                    <p><strong>注意</strong>：中间的变量<code>b</code>只计算一次！</p>
-                    
-                    <div class="code">
-<pre>
-# 这个表达式
-if 0 <= 传感器读数() <= 100:
-    处理数据()
 
-# 等价于（但传感器读数()只调用一次）
-temp = 传感器读数()
-if 0 <= temp and temp <= 100:
-    处理数据()
-</pre>
-                    </div>
-                </div>
             </div>
             
             <div class="nav-buttons">
@@ -868,7 +1192,7 @@ if 0 <= temp and temp <= 100:
                 <button onclick="nextSlide()">下一页 →</button>
             </div>
         </div>
-        
+
         <!-- 幻灯片7：综合应用与总结 -->
         <div class="slide" id="slide7">
             <h1>综合应用与总结</h1>
@@ -950,7 +1274,7 @@ print(f"expr3 = {expr3}")  # 输出: True
                     </ol>
                 </div>
                 
-                <div class="memory-tips">
+                <div class="memory-tips full-width">
                     <h3>🎓 核心知识点总结（场景+考试）</h3>
                     <table class="comparison-table">
                         <tr>
@@ -986,8 +1310,8 @@ print(f"expr3 = {expr3}")  # 输出: True
                     </table>
                 </div>
                 
-                <div class="scene-analogy">
-                    <h3>🚀 给智能制造工程师+备考学生的建议</h3>
+                <div class="scene-analogy full-width">
+                    <h3>🚀 吐血建议</h3>
                     <ul style="margin-left: 15px; font-size: 1em;">
                         <li><strong>多用括号</strong>：复杂表达式用括号明确意图（场景+考试通用）</li>
                         <li><strong>安全第一</strong>：紧急停止条件放在逻辑最前面（场景特有）</li>
@@ -1005,61 +1329,16 @@ print(f"expr3 = {expr3}")  # 输出: True
             </div>
         </div>
         
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / 7
-        </div>
+        <div class="slide-counter" id="slideCounter">第 1 页 / 共 7 页</div>
     </div>
 
     <script>
         let currentSlide = 1;
-        const totalSlides = 7;
+        const totalSlides = 7;  // 更新总页数
         
-        function showSlide(n) {
-            // 隐藏所有幻灯片
-            document.querySelectorAll('.slide').forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // 显示当前幻灯片
-            document.getElementById(`slide${n}`).classList.add('active');
-            
-            // 更新计数器
-            document.getElementById('current-slide').textContent = n;
-            
-            // 更新按钮状态
-            const buttons = document.querySelectorAll('.nav-buttons button');
-            const prevBtn = buttons[0];
-            const nextBtn = buttons[1];
-            
-            if (n === 1) {
-                prevBtn.disabled = true;
-                prevBtn.innerHTML = '← 上一页';
-            } else {
-                prevBtn.disabled = false;
-                prevBtn.innerHTML = '← 上一页';
-            }
-            
-            if (n === totalSlides) {
-                nextBtn.innerHTML = '完成课程';
-                nextBtn.onclick = () => alert('课程结束！祝您教学顺利，考试高分！');
-            } else {
-                nextBtn.innerHTML = '下一页 →';
-                nextBtn.onclick = nextSlide;
-            }
-        }
-        
-        function nextSlide() {
-            if (currentSlide < totalSlides) {
-                currentSlide++;
-                showSlide(currentSlide);
-            }
-        }
-        
-        function prevSlide() {
-            if (currentSlide > 1) {
-                currentSlide--;
-                showSlide(currentSlide);
-            }
+        // 更新幻灯片计数器
+        function updateCounter() {
+            document.getElementById('slideCounter').textContent = `第 ${currentSlide} 页 / 共 ${totalSlides} 页`;
         }
         
         function toggleAnswer(id) {
@@ -1069,24 +1348,179 @@ print(f"expr3 = {expr3}")  # 输出: True
             } else {
                 answer.style.display = 'block';
             }
+        }		
+        // 显示指定幻灯片
+        function showSlide(n) {
+            // 隐藏所有幻灯片
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // 显示指定幻灯片
+            document.getElementById(`slide${n}`).classList.add('active');
+            
+            // 更新当前页码并刷新计数器
+            currentSlide = n;
+            updateCounter();
         }
         
-        // 初始化显示第一张幻灯片
-        showSlide(1);
+        // 下一页
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                showSlide(currentSlide + 1);
+            }
+        }
         
-        // 添加键盘导航
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowRight' || event.key === ' ') {
+        // 上一页
+        function prevSlide() {
+            if (currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        // 跳转到指定幻灯片
+        function goToSlide(slideId) {
+            // 从ID中提取页码
+            const slideNum = parseInt(slideId.replace('slide', ''));
+            if (!isNaN(slideNum) && slideNum >= 1 && slideNum <= totalSlides) {
+                showSlide(slideNum);
+            }
+        }
+        
+        // 初始化计数器
+        updateCounter();
+        
+        // 支持键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') {
                 nextSlide();
-            } else if (event.key === 'ArrowLeft') {
+            } else if (e.key === 'ArrowLeft') {
                 prevSlide();
             }
         });
 
-        // 优化窗口大小变化时的布局
-        window.addEventListener('resize', function() {
-            showSlide(currentSlide);
-        });
+        // 新增：切换快速练习的显示/隐藏
+        function togglePractice() {
+            const practiceBox = document.getElementById('quickPractice');
+            if (practiceBox.style.display === 'none' || practiceBox.style.display === '') {
+                practiceBox.style.display = 'block';
+            } else {
+                practiceBox.style.display = 'none';
+                // 隐藏反馈
+                document.getElementById('quickFeedback').style.display = 'none';
+            }
+        }
+
+
+        // 新增：检查快速练习答案
+        function checkAnswer(type, userAnswer) {
+            const feedbackEl = document.getElementById('quickFeedback');
+            feedbackEl.style.display = 'block';
+            
+            // 快速练习的正确答案是A（True/正确）
+            if (userAnswer === 'A') {
+                feedbackEl.className = 'feedback correct';
+                feedbackEl.innerHTML = `✅ 回答正确！<br>原因：<br>根据运算符优先级 not > and > or，<br>(1) 先计算 and 部分：即计算 2 == 1 and 5 < 0，这得到 False and False ，进一步得到 False；<br>(2) 再计算 or 部分：即计算 4 > 3 or False, 这得到 True or False，进一步得到 True<br>因此，正确答案是A。`;
+            } else {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.innerHTML = `❌ 回答错误！<br>原因：<br>根据运算符优先级 not > and > or，<br>(1) 先计算 and 部分：即计算 2 == 1 and 5 < 0, 这得到 False and False ，进一步得到 False；<br>(2) 再计算 or 部分：即计算 4 > 3 or False, 这得到 True or False，进一步得到 True<br>因此，正确答案是A。`;
+            }
+        }
+
+        // 新增：检查测试题答案并切换下一题
+        function checkTestAnswer(qNum, userAnswer) {
+            const feedbackEl = document.getElementById(`q${qNum}Feedback`);
+            const currentQEl = document.getElementById(`q${qNum}`);
+            feedbackEl.style.display = 'block';
+            let isCorrect = false;
+            let reason = '';
+
+            // 按题目编号判断正确答案和原因
+            switch(qNum) {
+                case 1:
+                    isCorrect = userAnswer === 'B';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：链式比较等价于 (7 > 5) and (5 == 13) and (13 < 70) → True and False and True → False。` :
+                        `❌ 回答错误！<br>原因：链式比较等价于 (7 > 5) and (5 == 13) and (13 < 70) → True and False and True → False，正确答案是B。`;
+                    break;
+                case 2:
+                    isCorrect = userAnswer === 'B';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：先算加法 3 + 1 = 4，再算比较 5 > 4 → True，最后算 not True → False。` :
+                        `❌ 回答错误！<br>原因：先算加法 3 + 1 = 4，再算比较 5 > 4 → True，最后算 not True → False，正确答案是B。`;
+                    break;
+                case 3:
+                    isCorrect = userAnswer === 'B';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：先算两侧表达式，10 % 3 == 1 → 1 == 1 → True；2 * 3 == 5 → 6 == 5 → False；再算 and 运算：True and False → False。` :
+                        `❌ 回答错误！<br>原因：先算两侧表达式，10 % 3 == 1 → 1 == 1 → True；2 * 3 == 5 → 6 == 5 → False；再算 and 运算：True and False → False，正确答案是B。`;
+                    break;
+                case 4:
+                    isCorrect = userAnswer === 'A';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：优先级 and > or，先算 2 == 1 and 5 < 0 → False and False → False；再算 4 > 3 or False → True or False → True。` :
+                        `❌ 回答错误！<br>原因：优先级 and > or，先算 2 == 1 and 5 < 0 → False and False → False；再算 4 > 3 or False → True or False → True，正确答案是A。`;
+                    break;
+                case 5:
+                    isCorrect = userAnswer === 'B';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：先算内层 not True → False；再算 True or False → True；最后算 not True → False。` :
+                        `❌ 回答错误！<br>原因：先算内层 not True → False；再算 True or False → True；最后算 not True → False，正确答案是B。`;
+                    break;
+                case 6:
+                    isCorrect = userAnswer === 'A';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：幂运算右结合，等价于 2 ** (3 ** 2) → 2 ** 9 → 512。` :
+                        `❌ 回答错误！<br>原因：幂运算右结合，等价于 2 ** (3 ** 2) → 2 ** 9 → 512，正确答案是A。`;
+                    break;
+                case 7:
+                    isCorrect = userAnswer === 'A';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：加减左结合，等价于 (10 - 5) + 3 → 5 + 3 → 8。` :
+                        `❌ 回答错误！<br>原因：加减左结合，等价于 (10 - 5) + 3 → 5 + 3 → 8，正确答案是A。`;
+                    break;
+                case 8:
+                    isCorrect = userAnswer === 'A';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：幂运算优先级高于负号，等价于 -(3 ** 2) → -9。` :
+                        `❌ 回答错误！<br>原因：幂运算优先级高于负号，等价于 -(3 ** 2) → -9，正确答案是A。`;
+                    break;
+                case 9:
+                    isCorrect = userAnswer === 'A';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：乘除取余左结合，等价于 (8 // 2) % 3 → 4 % 3 → 1。` :
+                        `❌ 回答错误！<br>原因：乘除取余左结合，等价于 (8 // 2) % 3 → 4 % 3 → 1，正确答案是A。`;
+                    break;
+                case 10:
+                    isCorrect = userAnswer === 'A';
+                    reason = isCorrect ? 
+                        `✅ 回答正确！<br>原因：赋值运算右结合，等价于 c=10; b=c; a=b，最终a=10。` :
+                        `❌ 回答错误！<br>原因：赋值运算右结合，等价于 c=10; b=c; a=b，最终a=10，正确答案是A。`;
+                    break;
+            }
+
+            // 设置反馈样式和内容
+            if (isCorrect) {
+                feedbackEl.className = 'feedback correct';
+            } else {
+                feedbackEl.className = 'feedback incorrect';
+            }
+            feedbackEl.innerHTML = reason;
+
+            // 延迟切换到下一题（让用户看到反馈）
+            setTimeout(() => {
+                currentQEl.classList.remove('active');
+                if (qNum < 10) {
+                    currentTestQ = qNum + 1;
+                    document.getElementById(`q${currentTestQ}`).classList.add('active');
+                    document.getElementById('testProgress').textContent = `第 ${currentTestQ} 题 / 共 10 题`;
+                } else {
+                    // 所有题目完成
+                    document.getElementById('testProgress').textContent = `测试完成！恭喜你完成所有10道题！`;
+                }
+            }, 2000);
+        }
     </script>
+
 </body>
 </html>
