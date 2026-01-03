@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ 重载(Overload) vs 重写(Override) 简明讲解（教学版）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", "Microsoft YaHei", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 0;
+            line-height: 1.8;
+            color: #333;
+            font-size: 16px;
+        }
+
+        /* 开场白容器 */
+        .intro-wrap {
+            max-width: 900px;
+            margin: 100px auto;
+            background-color: #fff;
+            padding: 50px 60px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            text-align: center;
+            display: block;
+        }
+
+        .intro-title {
+            font-size: 2.2em;
+            color: #2c689c;
+            margin-bottom: 20px;
+        }
+
+        .intro-desc {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            color: #555;
+        }
+
+        .intro-question {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c689c;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4aa0d5;
+            text-align: left;
+        }
+
+        .intro-options {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .intro-option {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+        .intro-option input {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .intro-btn {
+            padding: 12px 30px;
+            font-size: 1.2em;
+            background-color: #4aa0d5;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .intro-btn:hover {
+            background-color: #2c689c;
+        }
+
+        .intro-feedback {
+            font-size: 1.2em;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .feedback-correct {
+            background-color: #e6f4ea;
+            color: #2d8659;
+            border: 1px solid #b9e1cd;
+        }
+
+        .feedback-error {
+            background-color: #fce8e6;
+            color: #d93025;
+            border: 1px solid #fbc4c0;
+        }
+
+        .enter-btn {
+            display: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            background-color: #2c689c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .enter-btn:hover {
+            background-color: #1f4b6e;
+        }
+
+        /* 粘性导航栏 */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background-color: #2c689c;
+            color: #fff;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 999;
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+			text-align: center;
+            display: none;
+        }
+
+        .nav-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            display: inline-block;
+            margin: 0 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .nav-item a:hover {
+            color: #bde0fe;
+            text-decoration: underline;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 50px 80px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            margin-bottom: 50px;
+            display: none;
+        }
+
+        h1 {
+            color: #2c689c;
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #4aa0d5;
+            font-size: 2.8em;
+        }
+
+        h2 {
+            color: #2c689c;
+            margin: 40px 0 20px;
+            font-size: 2em;
+            border-left: 5px solid #4aa0d5;
+            padding-left: 20px;
+            line-height: 1.5;
+        }
+
+        h3 {
+            color: #3a7ca8;
+            margin: 30px 0 15px;
+            font-size: 1.6em;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            line-height: 1.9;
+        }
+
+        /* 对比表格样式（响应式优化） */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 1.1em;
+            border: 2px solid #d0d7e0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 2px solid #d0d7e0;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #4aa0d5;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        tr:hover {
+            background-color: #e8f4fd;
+            transition: background-color 0.2s ease;
+        }
+
+        /* 代码块样式（深色背景+响应式+自动换行） */
+        pre {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
+            border-left: 4px solid #4aa0d5;
+            padding: 25px;
+            margin: 25px 0;
+            overflow-x: auto;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 1.1em;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.8;
+        }
+
+        code {
+            background-color: #4a5568;
+            color: #f7fafc;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 1.1em;
+        }
+
+        /* 口诀样式 */
+        .formula {
+            background-color: #e8f4fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c689c;
+            border: 2px dashed #4aa0d5;
+            line-height: 2;
+        }
+
+        .tip {
+            color: #d9534f;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        /* 练习题样式 */
+        .exercise-wrap {
+            margin: 50px 0;
+        }
+
+        .single-exercise {
+            background-color: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #d0d7e0;
+        }
+
+        .exercise-title {
+            font-size: 1.5em;
+            color: #2c689c;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4aa0d5;
+            font-weight: bold;
+        }
+
+        .question-desc {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        .option-list {
+            margin-left: 30px;
+            margin-bottom: 25px;
+        }
+
+        .option-item {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .option-item input {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .exercise-btn {
+            padding: 10px 25px;
+            font-size: 1.2em;
+            background-color: #4aa0d5;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .exercise-btn:hover {
+            background-color: #2c689c;
+        }
+
+        .exercise-feedback {
+            font-size: 1.2em;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* 响应式适配 */
+        @media screen and (max-width: 1200px) {
+            .container {
+                padding: 40px 50px;
+                max-width: 1000px;
+            }
+            h1 {
+                font-size: 2.4em;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+            h3 {
+                font-size: 1.4em;
+            }
+            .nav-item {
+                margin: 0 12px;
+                font-size: 1em;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .intro-wrap {
+                padding: 30px 20px;
+                margin: 50px auto;
+            }
+            .intro-title {
+                font-size: 1.8em;
+            }
+            .intro-desc, .intro-question {
+                font-size: 1.1em;
+            }
+            .container {
+                padding: 30px 20px;
+                margin-top: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.6em;
+                padding-left: 15px;
+            }
+            h3 {
+                font-size: 1.3em;
+            }
+            p, table, pre, .formula {
+                font-size: 1.1em;
+            }
+            .nav-item {
+                margin: 0 8px;
+                font-size: 0.9em;
+            }
+            .single-exercise {
+                padding: 20px;
+            }
+            .question-desc {
+                font-size: 1.1em;
+            }
+            .option-item {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 开场白部分 -->
+    <div class="intro-wrap" id="introWrap">
+        <h2 class="intro-title">🤔 课前小提问：你能区分重载和重写吗？</h2>
+        <p class="intro-desc">在开始正式讲解前，先测试一下你的初步认知吧！</p>
+
+        <div class="intro-question">
+            下列关于C++函数重载（Overload）和重写（Override）的描述，哪个是正确的？
+        </div>
+
+        <div class="intro-options">
+            <div class="intro-option">
+                <input type="radio" name="introQ" id="q1" value="1">
+                <label for="q1">A.  重载和重写都需要父类加virtual关键字</label>
+            </div>
+            <div class="intro-option">
+                <input type="radio" name="introQ" id="q2" value="2">
+                <label for="q2">B.  重载在父子类中，重写在同一个类中</label>
+            </div>
+            <div class="intro-option">
+                <input type="radio" name="introQ" id="q3" value="3">
+                <label for="q3">C.  重载参数不同，重写参数完全相同</label>
+            </div>
+            <div class="intro-option">
+                <input type="radio" name="introQ" id="q4" value="4">
+                <label for="q4">D.  两者都能实现多态特性</label>
+            </div>
+        </div>
+
+        <button class="intro-btn" onclick="checkIntroQ()">✅ 提交答案</button>
+        <div class="intro-feedback" id="introFeedback"></div>
+        <button class="enter-btn" id="enterBtn" onclick="enterMainContent()">🚀 进入正文讲解</button>
+    </div>
+
+    <!-- 粘性导航栏 -->
+    <div class="sticky-nav" id="stickyNav">
+        <div class="nav-container">
+            <div class="nav-item"><a href="#concept">📚 核心概念</a></div>
+            <div class="nav-item"><a href="#compare">🆚 核心区别</a></div>
+            <div class="nav-item"><a href="#code">🔍 代码示例</a></div>
+            <div class="nav-item"><a href="#formula">📖 记忆口诀</a></div>
+            <div class="nav-item"><a href="#exercise">📝 课后练习</a></div>
+        </div>
+    </div>
+
+    <!-- 主内容容器 -->
+    <div class="container" id="mainContainer">
+        <h1>C++ 函数重载(Overload) 与 虚函数重写(Override) 简明讲解</h1>
+
+        <h2 id="concept">一、 核心概念（通俗易懂 🗣️）</h2>
+
+        <h3>1. 函数重载（Overload）—— 同名不同参，简化命名 📛</h3>
+        <p>通俗理解：同一个类里，给函数起相同的名字，通过<mark>不同的参数</mark>（个数、类型、顺序）区分它们，实现类似的功能，不用记多个不同函数名。</p>
+        <p class="tip">关键要点：同一类、同名、参数不同（返回值不算），无需关键字。</p>
+        <p>例子：计算器的加法函数，既能加两个整数，也能加两个小数，函数名都叫 <code>add</code>。</p>
+
+        <h3>2. 虚函数重写（Override）—— 父子类同参，实现多态 🐾</h3>
+        <p>通俗理解：父类定义一个“通用接口”（加 <code>virtual</code> 关键字），子类继承后，<mark>用相同的函数名和参数</mark>，重新实现这个接口的具体功能，满足子类的个性化需求。</p>
+        <p class="tip">关键要点：父子类、同名、参数完全相同、父类加 <code>virtual</code>，实现多态。</p>
+        <p>例子：父类 <code>Animal</code> 有叫声接口 <code>makeSound()</code>，子类 <code>Dog</code> 重写为“汪汪汪”，<code>Cat</code> 重写为“喵喵喵”。</p>
+
+        <h2 id="compare">二、 核心区别对比表（一目了然 📊）</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>对比维度</th>
+                    <th>函数重载（Overload）</th>
+                    <th>虚函数重写（Override）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>存在位置</td>
+                    <td>同一个类中</td>
+                    <td>父子类之间（需继承）</td>
+                </tr>
+                <tr>
+                    <td>函数名</td>
+                    <td>必须相同</td>
+                    <td>必须相同</td>
+                </tr>
+                <tr>
+                    <td>参数列表</td>
+                    <td>必须不同（个数/类型/顺序）</td>
+                    <td>必须完全相同</td>
+                </tr>
+                <tr>
+                    <td>父类关键字</td>
+                    <td>不需要任何关键字</td>
+                    <td>父类函数必须加 <code>virtual</code></td>
+                </tr>
+                <tr>
+                    <td>核心目的</td>
+                    <td>简化函数命名，无需记多名称</td>
+                    <td>实现个性化功能，达成多态</td>
+                </tr>
+                <tr>
+                    <td>通俗比喻</td>
+                    <td>同名不同“装备”，干同类小事</td>
+                    <td>子承父业，改造成自己的风格</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="code">三、 简单代码示例（可直接编译运行 💻）</h2>
+
+        <h3>1. 函数重载（Overload）示例</h3>
+        <pre>#include &lt;iostream&gt;
+using namespace std;
+
+// 同一个类中的重载函数
+class Calculator {
+public:
+    // 重载1：两个整数相加
+    int add(int a, int b) {
+        cout &lt;&lt; "整数相加：";
+        return a + b;
+    }
+
+    // 重载2：两个小数相加（参数类型不同）
+    double add(double a, double b) {
+        cout &lt;&lt; "小数相加：";
+        return a + b;
+    }
+
+    // 重载3：三个整数相加（参数个数不同）
+    int add(int a, int b, int c) {
+        cout &lt;&lt; "三个整数相加：";
+        return a + b + c;
+    }
+};
+
+int main() {
+    Calculator cal;
+    // 编译器自动根据参数匹配重载函数
+    cout &lt;&lt; cal.add(10, 20) &lt;&lt; endl;     // 调用两个int的重载
+    cout &lt;&lt; cal.add(3.14, 6.28) &lt;&lt; endl; // 调用两个double的重载
+    cout &lt;&lt; cal.add(1, 2, 3) &lt;&lt; endl;    // 调用三个int的重载
+    return 0;
+}</pre>
+
+        <h3>2. 虚函数重写（Override）示例</h3>
+        <pre>#include &lt;iostream&gt;
+using namespace std;
+
+// 父类：动物类（定义虚函数接口）
+class Animal {
+public:
+    // virtual关键字：标记可被重写的接口
+    virtual void makeSound() {
+        cout &lt;&lt; "动物发出叫声" &lt;&lt; endl;
+    }
+};
+
+// 子类：狗类（重写父类接口）
+class Dog : public Animal {
+public:
+    // 重写：函数名、参数与父类完全一致
+    void makeSound() {
+        cout &lt;&lt; "狗：汪汪汪~" &lt;&lt; endl;
+    }
+};
+
+// 子类：猫类（重写父类接口）
+class Cat : public Animal {
+public:
+    // 重写：函数名、参数与父类完全一致
+    void makeSound() {
+        cout &lt;&lt; "猫：喵喵喵~" &lt;&lt; endl;
+    }
+};
+
+int main() {
+    // 父类指针指向子类对象（多态关键）
+    Animal* dog = new Dog();
+    Animal* cat = new Cat();
+
+    // 自动调用子类重写后的函数
+    dog->makeSound(); // 输出：狗：汪汪汪~
+    cat->makeSound(); // 输出：猫：喵喵喵~
+
+    delete dog;
+    delete cat;
+    return 0;
+}</pre>
+
+        <h2 id="formula">四、 学生必背记忆口诀（快速区分，不易混淆 🧠）</h2>
+        <div class="formula">
+            1.  重载：同 classe，同名，不同参（返回值不算）；<br>
+            2.  重写：父子类，同名，同参数，父类加 virtual；<br>
+            3.  重载简化命名，重写实现多态。
+        </div>
+
+        <h2 id="exercise">五、 课后交互式练习题（巩固知识点 📝）</h2>
+        <div class="exercise-wrap">
+            <!-- 练习题1 -->
+            <div class="single-exercise">
+                <div class="question-desc">1.  下列哪项是函数重载（Overload）的核心要求？</div>
+                <div class="option-list">
+                    <div class="option-item">
+                        <input type="radio" name="ex1" id="ex1_1" value="1">
+                        <label for="ex1_1">A.  父子类继承关系</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex1" id="ex1_2" value="2">
+                        <label for="ex1_2">B.  函数名相同，参数列表不同</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex1" id="ex1_3" value="3">
+                        <label for="ex1_3">C.  父类加virtual关键字</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex1" id="ex1_4" value="4">
+                        <label for="ex1_4">D.  实现多态特性</label>
+                    </div>
+                </div>
+                <button class="exercise-btn" onclick="checkExercise(1)">✅ 检查答案</button>
+                <div class="exercise-feedback" id="ex1Feedback"></div>
+            </div>
+
+            <!-- 练习题2 -->
+            <div class="single-exercise">
+                <div class="question-desc">2.  关于虚函数重写（Override），下列说法错误的是？</div>
+                <div class="option-list">
+                    <div class="option-item">
+                        <input type="radio" name="ex2" id="ex2_1" value="1">
+                        <label for="ex2_1">A.  需要父子类继承关系</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex2" id="ex2_2" value="2">
+                        <label for="ex2_2">B.  参数列表必须完全相同</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex2" id="ex2_3" value="3">
+                        <label for="ex2_3">C.  无需任何关键字即可实现</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex2" id="ex2_4" value="4">
+                        <label for="ex2_4">D.  能实现多态特性</label>
+                    </div>
+                </div>
+                <button class="exercise-btn" onclick="checkExercise(2)">✅ 检查答案</button>
+                <div class="exercise-feedback" id="ex2Feedback"></div>
+            </div>
+
+            <!-- 练习题3 -->
+            <div class="single-exercise">
+                <div class="question-desc">3.  计算器类中定义了<code>int add(int a, int b)</code>和<code>double add(double a, double b)</code>，这属于？</div>
+                <div class="option-list">
+                    <div class="option-item">
+                        <input type="radio" name="ex3" id="ex3_1" value="1">
+                        <label for="ex3_1">A.  函数重载（Overload）</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex3" id="ex3_2" value="2">
+                        <label for="ex3_2">B.  虚函数重写（Override）</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex3" id="ex3_3" value="3">
+                        <label for="ex3_3">C.  既不是重载也不是重写</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="ex3" id="ex3_4" value="4">
+                        <label for="ex3_4">D.  两者都是</label>
+                    </div>
+                </div>
+                <button class="exercise-btn" onclick="checkExercise(3)">✅ 检查答案</button>
+                <div class="exercise-feedback" id="ex3Feedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 开场白答案检查
+        function checkIntroQ() {
+            let selectedVal = "";
+            let radios = document.getElementsByName("introQ");
+            let feedback = document.getElementById("introFeedback");
+            let enterBtn = document.getElementById("enterBtn");
+
+            // 获取选中值
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedVal = radios[i].value;
+                    break;
+                }
+            }
+
+            // 验证答案（正确答案是3）
+            if (selectedVal === "") {
+                feedback.innerHTML = "❌ 请先选择一个选项再提交哦！";
+                feedback.className = "intro-feedback feedback-error";
+                feedback.style.display = "block";
+                enterBtn.style.display = "none";
+            } else if (selectedVal === "3") {
+                feedback.innerHTML = "✅ 太棒了！你已经有了初步的正确认知，接下来一起深入学习吧！";
+                feedback.className = "intro-feedback feedback-correct";
+                feedback.style.display = "block";
+                enterBtn.style.display = "block";
+            } else {
+                feedback.innerHTML = "❌ 有点遗憾哦！正确答案是C，没关系，接下来的讲解会帮你彻底理解这个知识点！";
+                feedback.className = "intro-feedback feedback-error";
+                feedback.style.display = "block";
+                enterBtn.style.display = "block";
+            }
+        }
+
+        // 进入正文内容
+        function enterMainContent() {
+            document.getElementById("introWrap").style.display = "none";
+            document.getElementById("stickyNav").style.display = "block";
+            document.getElementById("mainContainer").style.display = "block";
+            // 平滑滚动到顶部
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+
+        // 练习题答案检查
+        function checkExercise(exNum) {
+            let selectedVal = "";
+            let radios = document.getElementsByName("ex" + exNum);
+            let feedback = document.getElementById("ex" + exNum + "Feedback");
+            let correctAns = "";
+
+            // 确定正确答案
+            if (exNum === 1) {
+                correctAns = "2";
+            } else if (exNum === 2) {
+                correctAns = "3";
+            } else if (exNum === 3) {
+                correctAns = "1";
+            }
+
+            // 获取选中值
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    selectedVal = radios[i].value;
+                    break;
+                }
+            }
+
+            // 给出反馈
+            if (selectedVal === "") {
+                feedback.innerHTML = "❌ 请先选择一个选项再提交！";
+                feedback.className = "exercise-feedback feedback-error";
+                feedback.style.display = "block";
+            } else if (selectedVal === correctAns) {
+                feedback.innerHTML = "✅ 回答正确！你已经熟练掌握这个知识点啦！";
+                feedback.className = "exercise-feedback feedback-correct";
+                feedback.style.display = "block";
+            } else {
+                feedback.innerHTML = "❌ 回答错误！再仔细回顾一下知识点哦！";
+                feedback.className = "exercise-feedback feedback-error";
+                feedback.style.display = "block";
+            }
+        }
+
+        // 锚点平滑跳转
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
