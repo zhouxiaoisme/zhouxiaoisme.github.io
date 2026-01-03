@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python链式比较详解 | 教学课件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Arial", sans-serif;
+        }
+
+        /* 适配16:9宽屏 */
+        body {
+            min-height: 100vh;
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 开场白弹窗/区块样式 */
+        .opening-section {
+            width: 100%;
+            max-width: 1600px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 4rem 5rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            margin: 1.5rem 0 2rem;
+            text-align: center;
+            display: block;
+            z-index: 1000;
+        }
+
+        .opening-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 3rem;
+        }
+
+        .opening-question {
+            font-size: 2rem;
+            color: #34495e;
+            margin-bottom: 2.5rem;
+            font-weight: bold;
+        }
+
+        .opening-options {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .opening-option {
+            font-size: 1.8rem;
+            padding: 1.2rem 3rem;
+            border-radius: 12px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 3px solid #dee2e6;
+            transition: all 0.3s ease;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .opening-option:hover {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+        }
+
+        /* 开场白反馈样式 */
+        .opening-feedback {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 1.2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            display: none; /* 初始隐藏 */
+        }
+
+        .opening-correct {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .opening-incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        /* 继续按钮样式 */
+        .continue-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.4rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: none; /* 初始隐藏，反馈后显示 */
+        }
+
+        .continue-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            width: 100%;
+            background-color: #2c3e50;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            display: none; /* 初始隐藏，用户选择后显示 */
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: #34495e;
+        }
+
+        /* 主容器样式 */
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 3rem 4rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            margin-bottom: 2rem;
+            display: none; /* 初始隐藏，用户选择后显示 */
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            color: #3498db;
+            margin: 2rem 0 1.2rem;
+            border-left: 5px solid #3498db;
+            padding-left: 1rem;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: #2980b9;
+            margin: 1.5rem 0 1rem;
+        }
+
+        /* 段落与文本样式 */
+        p {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: #34495e;
+            margin-bottom: 1.2rem;
+        }
+
+        /* 代码块样式 */
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.8rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        /* 重点高亮 */
+        .highlight {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* 练习题样式 */
+        .exercise-section {
+            margin-top: 3rem;
+        }
+
+        .exercise-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            border-left: 6px solid #28a745;
+        }
+
+        .exercise-title {
+            font-size: 1.6rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .options {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-left: 2rem;
+        }
+
+        .option-item {
+            font-size: 1.3rem;
+            color: #34495e;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+            border: 2px solid #dee2e6;
+        }
+
+        .option-item:hover {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+        }
+
+        .feedback {
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* 底部TIPS栏样式 - 优化后更醒目 */
+        .tips-section {
+            width: 100%;
+            max-width: 1600px;
+            background-color: #fff8e1; /* 更醒目的暖黄色背景 */
+            border: 3px solid #ffc107; /* 高亮边框 */
+            border-radius: 15px;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 6px 16px rgba(255, 193, 7, 0.2); /* 对应边框阴影，增强突出效果 */
+            margin-bottom: 2rem;
+            display: none; /* 初始隐藏，用户选择后显示 */
+            text-align: center;
+        }
+
+        /* TIPS标题样式 - 标题级突出效果 */
+        .tips-main-title {
+            font-size: 2rem; /* 标题级字体大小 */
+            color: #e65100; /* 醒目深橙色 */
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .tips-content {
+            font-size: 1.6rem; /* 放大字体，提升醒目度 */
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* 链接样式 - 永久下划线 */
+        .tips-link {
+            color: #2196f3;
+            text-decoration: underline; /* 新增永久下划线 */
+            margin-left: 1rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .tips-link:hover {
+            color: #1976d2;
+            text-decoration: underline; /* 保持下划线，加深颜色 */
+            transform: scale(1.02); /* 轻微放大，增强交互反馈 */
+        }
+
+        /* 响应式适配 */
+        @media screen and (max-width: 1200px) {
+            .opening-section {
+                padding: 3rem 4rem;
+            }
+            .opening-title {
+                font-size: 2.2rem;
+            }
+            .opening-question {
+                font-size: 1.8rem;
+            }
+            .opening-option {
+                font-size: 1.6rem;
+                padding: 1rem 2.5rem;
+            }
+            .container {
+                padding: 2rem 3rem;
+            }
+            h1 {
+                font-size: 2.4rem;
+            }
+            h2 {
+                font-size: 1.9rem;
+            }
+            h3 {
+                font-size: 1.6rem;
+            }
+            p {
+                font-size: 1.2rem;
+            }
+            /* TIPS响应式适配 */
+            .tips-main-title {
+                font-size: 1.8rem;
+            }
+            .tips-content {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .opening-section {
+                padding: 2rem 3rem;
+            }
+            .opening-title {
+                font-size: 1.8rem;
+            }
+            .opening-question {
+                font-size: 1.5rem;
+            }
+            .opening-options {
+                flex-direction: column;
+                gap: 1.5rem;
+                align-items: center;
+            }
+            .opening-option {
+                font-size: 1.4rem;
+                padding: 0.8rem 2rem;
+                width: 80%;
+            }
+            .continue-btn {
+                font-size: 1.2rem;
+                padding: 0.8rem 2rem;
+            }
+            .navbar a {
+                font-size: 1rem;
+                padding: 0.3rem 0.6rem;
+            }
+            .container {
+                padding: 1.5rem 2rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.7rem;
+            }
+            h3 {
+                font-size: 1.4rem;
+            }
+            p {
+                font-size: 1.1rem;
+            }
+            .code-block {
+                font-size: 1rem;
+                padding: 1.2rem;
+            }
+            .exercise-card {
+                padding: 1.5rem;
+            }
+            .exercise-title {
+                font-size: 1.4rem;
+            }
+            .option-item {
+                font-size: 1.1rem;
+            }
+            /* TIPS响应式适配 */
+            .tips-section {
+                padding: 2rem 2.5rem;
+            }
+            .tips-main-title {
+                font-size: 1.6rem;
+            }
+            .tips-content {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 开场白区块 -->
+    <div class="opening-section" id="opening">
+        <h2 class="opening-title">🤔 先来挑战一个Python小问题！</h2>
+        <div class="opening-question">表达式 7 &lt; 5 == 13 &lt; 70 的结果是？</div>
+        <div class="opening-options">
+            <div class="opening-option" id="option-true">True</div>
+            <div class="opening-option" id="option-false">False</div>
+        </div>
+        <!-- 开场白反馈提示 -->
+        <div class="opening-feedback" id="opening-feedback"></div>
+        <!-- 继续按钮 -->
+        <button class="continue-btn" id="continue-btn" onclick="showMainContent()">继续学习 🚀</button>
+    </div>
+
+    <!-- 导航栏 - 新增TIPS锚点 -->
+    <nav class="navbar" id="navbar">
+        <ul>
+            <li><a href="#overview">核心规则 📚</a></li>
+            <li><a href="#analysis">表达式拆解 🔍</a></li>
+            <li><a href="#calculation">分步计算 🧮</a></li>
+            <li><a href="#verification">代码验证 🖥️</a></li>
+            <li><a href="#summary">知识点总结 📝</a></li>
+            <li><a href="#exercises">交互式练习 ✍️</a></li>
+            <li><a href="#tips">重点TIPS 💡</a></li> <!-- 新增TIPS锚点 -->
+        </ul>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container" id="main-container">
+        <h1>Python链式比较详解 —— 以 7 &lt; 5 == 13 &lt; 70 为例</h1>
+
+        <section id="overview">
+            <h2>📚 核心规则：Python链式比较（Chained Comparisons）</h2>
+            <p>Python 中的连续比较表达式（如 <span class="highlight">a &lt; b == c &gt; d</span>）并非按普通“从左到右两两计算”，而是遵循<strong>链式比较规则</strong>，这是新手极易混淆的知识点！</p>
+            <p>✅ 规则1：连续比较运算符会被自动拆解为 <span class="highlight">多个两两比较 + 逻辑与（and）连接</span>，且中间操作数仅计算一次（常量无影响，变量表达式可避免重复求值）。</p>
+            <p>✅ 规则2：所有比较运算符（&lt;、==、&gt;、&gt;=、&lt;=、!=）属于<strong>同一优先级</strong>，无优先级高低差异，完全遵循链式拆解逻辑。</p>
+        </section>
+
+        <section id="analysis">
+            <h2>🔍 表达式拆解过程</h2>
+            <p>原表达式：<span class="highlight">7 &lt; 5 == 13 &lt; 70</span></p>
+            <p>⚠️ 错误认知：先计算 (7&lt;5)，再用结果和 13 比较，最后和 70 比较</p>
+            <p>✅ 正确拆解：Python自动转换为以下等价表达式</p>
+            <div class="code-block">(7 < 5) and (5 == 13) and (13 < 70)</div>
+            <p>通用拆解公式：<span class="highlight">a op1 b op2 c op3 d → (a op1 b) and (b op2 c) and (c op3 d)</span></p>
+        </section>
+
+        <section id="calculation">
+            <h2>🧮 分步计算结果</h2>
+            <p>我们对拆解后的表达式逐一步骤求值：</p>
+            <p>1.  计算 <span class="highlight">7 &lt; 5</span>：不成立，结果为 False</p>
+            <p>2.  计算 <span class="highlight">5 == 13</span>：不成立，结果为 False</p>
+            <p>3.  计算 <span class="highlight">13 &lt; 70</span>：成立，结果为 True</p>
+            <p>4.  计算逻辑与连接：<span class="highlight">False and False and True</span></p>
+            <p>根据逻辑与（and）特性：<strong>只要有一个 False，整体结果即为 False</strong>，因此最终结果为 False</p>
+        </section>
+
+        <section id="verification">
+            <h2>🖥️ 代码验证</h2>
+            <p>直接在Python环境中运行以下代码，可验证拆解的等价性：</p>
+            <div class="code-block"># 原表达式
+expr1 = 7 < 5 == 13 < 70
+# 拆解后的等价表达式
+expr2 = (7 < 5) and (5 == 13) and (13 < 70)
+
+print("原表达式结果：", expr1)
+print("等价表达式结果：", expr2)
+print("两者是否等价：", expr1 == expr2)</div>
+            <p>运行结果：</p>
+            <div class="code-block">原表达式结果： False
+等价表达式结果： False
+两者是否等价： True</div>
+        </section>
+
+        <section id="summary">
+            <h2>📝 知识点总结</h2>
+            <p>1.  核心特性：Python连续比较是<strong>链式比较</strong>，非普通从左到右两两计算</p>
+            <p>2.  拆解规则：连续比较 → 多组两两比较用 <span class="highlight">and</span> 连接（中间操作数复用）</p>
+            <p>3.  优先级：所有比较运算符优先级相同，无优先级干扰</p>
+            <p>4.  逻辑与特性：有一个 False 则整体为 False，全部 True 才为 True</p>
+            <p>5.  示例结果：<span class="highlight">7 &lt; 5 == 13 &lt; 70</span> 的最终结果是 False</p>
+        </section>
+
+        <section id="exercises" class="exercise-section">
+            <h2>✍️ 交互式练习题（即时反馈）</h2>
+            <p>完成以下练习题，巩固链式比较知识点，每题提交后立即查看反馈～</p>
+
+            <!-- 练习题1 -->
+            <div class="exercise-card">
+                <div class="exercise-title">题目1：Python表达式 3 &lt; 5 &lt; 10 的结果是？</div>
+                <div class="options">
+                    <div class="option-item" data-answer="false" data-id="q1">A. False</div>
+                    <div class="option-item" data-answer="true" data-id="q1">B. True</div>
+                    <div class="option-item" data-answer="false" data-id="q1">C. 报错</div>
+                    <div class="option-item" data-answer="false" data-id="q1">D. None</div>
+                </div>
+                <button class="submit-btn" onclick="checkAnswer('q1')">提交答案</button>
+                <div id="feedback-q1" class="feedback"></div>
+            </div>
+
+            <!-- 练习题2 -->
+            <div class="exercise-card">
+                <div class="exercise-title">题目2：表达式 10 &gt; 8 == 8 &gt; 5 拆解后等价于？</div>
+                <div class="options">
+                    <div class="option-item" data-answer="false" data-id="q2">A. (10&gt;8) == (8&gt;5)</div>
+                    <div class="option-item" data-answer="true" data-id="q2">B. (10&gt;8) and (8==8) and (8&gt;5)</div>
+                    <div class="option-item" data-answer="false" data-id="q2">C. 10&gt;(8==8)&gt;5</div>
+                    <div class="option-item" data-answer="false" data-id="q2">D. (10&gt;8==8) and (8&gt;5)</div>
+                </div>
+                <button class="submit-btn" onclick="checkAnswer('q2')">提交答案</button>
+                <div id="feedback-q2" class="feedback"></div>
+            </div>
+
+            <!-- 练习题3 -->
+            <div class="exercise-card">
+                <div class="exercise-title">题目3：表达式 5 == 5 &gt; 3 &lt; 2 的最终结果是？</div>
+                <div class="options">
+                    <div class="option-item" data-answer="true" data-id="q3">A. False</div>
+                    <div class="option-item" data-answer="false" data-id="q3">B. True</div>
+                    <div class="option-item" data-answer="false" data-id="q3">C. 0</div>
+                    <div class="option-item" data-answer="false" data-id="q3">D. 1</div>
+                </div>
+                <button class="submit-btn" onclick="checkAnswer('q3')">提交答案</button>
+                <div id="feedback-q3" class="feedback"></div>
+            </div>
+
+            <!-- 练习题4 -->
+            <div class="exercise-card">
+                <div class="exercise-title">题目4：关于Python链式比较，以下说法错误的是？</div>
+                <div class="options">
+                    <div class="option-item" data-answer="false" data-id="q4">A. 比较运算符优先级相同</div>
+                    <div class="option-item" data-answer="false" data-id="q4">B. 中间操作数仅计算一次</div>
+                    <div class="option-item" data-answer="true" data-id="q4">C. 按从左到右两两直接计算</div>
+                    <div class="option-item" data-answer="false" data-id="q4">D. 等价于多组比较用and连接</div>
+                </div>
+                <button class="submit-btn" onclick="checkAnswer('q4')">提交答案</button>
+                <div id="feedback-q4" class="feedback"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 底部TIPS栏 - 优化后更醒目 -->
+    <div class="tips-section" id="tips">
+        <h3 class="tips-main-title">💡 重点提示 TIPS</h3> <!-- TIPS标题，突出显示 -->
+        <div class="tips-content">
+            链式比较是Python的一个语法糖。
+            <a href="202601_python语法糖.html" class="tips-link">想了解什么是语法糖吗？点这里！</a>
+        </div>
+    </div>
+
+    <script>
+        // 开场白选项点击事件：先给出反馈，再显示继续按钮
+        document.getElementById('option-true').addEventListener('click', function() {
+            showOpeningFeedback(false);
+        });
+
+        document.getElementById('option-false').addEventListener('click', function() {
+            showOpeningFeedback(true);
+        });
+
+        // 显示开场白反馈函数
+        function showOpeningFeedback(isCorrect) {
+            const feedbackEl = document.getElementById('opening-feedback');
+            const continueBtn = document.getElementById('continue-btn');
+            // 禁用选项再次点击
+            document.querySelectorAll('.opening-option').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            // 设置反馈内容
+            if (isCorrect) {
+                feedbackEl.className = 'opening-feedback opening-correct';
+                feedbackEl.textContent = '✅ 恭喜你！回答正确！这个表达式的结果确实是False，接下来我们一起深入学习链式比较的知识点～';
+            } else {
+                feedbackEl.className = 'opening-feedback opening-incorrect';
+                feedbackEl.textContent = '❌ 很遗憾，回答错误！这个表达式的结果是False，接下来我们一起解锁链式比较的核心逻辑，弄明白为什么是这个结果～';
+            }
+            // 显示继续按钮
+            continueBtn.style.display = 'block';
+        }
+
+        // 显示主内容函数
+        function showMainContent() {
+            document.getElementById('opening').style.display = 'none';
+            document.getElementById('navbar').style.display = 'block';
+            document.getElementById('main-container').style.display = 'block';
+            document.getElementById('tips').style.display = 'block';
+        }
+
+        // 记录用户选择的答案（原有功能）
+        let userAnswers = {};
+
+        // 选项点击事件（记录用户选择，原有功能）
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 清除当前题目的其他选项选中状态
+                const qid = this.getAttribute('data-id');
+                document.querySelectorAll(`.option-item[data-id="${qid}"]`).forEach(opt => {
+                    opt.style.borderColor = '#dee2e6';
+                    opt.style.backgroundColor = 'white';
+                });
+                // 标记当前选项为选中状态
+                this.style.borderColor = '#3498db';
+                this.style.backgroundColor = '#e3f2fd';
+                // 记录用户答案
+                userAnswers[qid] = this.getAttribute('data-answer') === 'true';
+            });
+        });
+
+        // 检查答案函数（原有功能）
+        function checkAnswer(qid) {
+            const feedbackEl = document.getElementById(`feedback-${qid}`);
+            // 判断用户是否已选择
+            if (!userAnswers.hasOwnProperty(qid)) {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.textContent = '⚠️ 请先选择一个选项再提交！';
+                return;
+            }
+            // 正确答案判断（根据题目预设）
+            let isCorrect = false;
+            let correctHint = '';
+            switch(qid) {
+                case 'q1':
+                    isCorrect = userAnswers[qid]; // 正确答案是True（B）
+                    correctHint = '✅ 正确！拆解：(3<5) and (5<10) → True and True → True';
+                    break;
+                case 'q2':
+                    isCorrect = userAnswers[qid]; // 正确答案是B
+                    correctHint = '✅ 正确！链式比较拆解规则：a op1 b op2 c op3 d → (a op1 b) and (b op2 c) and (c op3 d)';
+                    break;
+                case 'q3':
+                    isCorrect = !userAnswers[qid]; // 正确答案是False（A）
+                    correctHint = '✅ 正确！拆解：(5==5) and (5>3) and (3<2) → True and True and False → False';
+                    break;
+                case 'q4':
+                    isCorrect = userAnswers[qid]; // 正确答案是C（错误说法）
+                    correctHint = '✅ 正确！Python链式比较不是直接两两计算，而是拆解为and连接的多组比较';
+                    break;
+            }
+            // 显示反馈
+            if (isCorrect) {
+                feedbackEl.className = 'feedback correct';
+                feedbackEl.textContent = correctHint;
+            } else {
+                feedbackEl.className = 'feedback incorrect';
+                feedbackEl.textContent = '❌ 错误！请重新回顾链式比较知识点，再尝试一次～';
+            }
+        }
+    </script>
+</body>
+</html>

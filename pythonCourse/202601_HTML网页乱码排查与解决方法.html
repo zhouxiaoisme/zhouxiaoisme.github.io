@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 HTML 乱码排查与解决完全指南（教学版）</title>
+    <style>
+        /* 全局样式重置与基础配置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "微软雅黑", "Segoe UI Emoji", "Apple Color Emoji", Arial, sans-serif;
+        }
+
+        /* 1. 适配16:9宽屏核心样式 */
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container-16-9 {
+            width: 95vw;
+            max-width: 1920px;
+            aspect-ratio: 16 / 9;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 60px rgba(0, 0, 0, 0.12);
+            overflow-y: auto;
+            padding: 3rem 4rem;
+            scrollbar-width: thin;
+            scrollbar-color: #3498db #eef2f7;
+            margin: 0 auto;
+        }
+
+        .container-16-9::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .container-16-9::-webkit-scrollbar-thumb {
+            background-color: #3498db;
+            border-radius: 8px;
+            border: 2px solid #eef2f7;
+        }
+
+        .container-16-9::-webkit-scrollbar-track {
+            background-color: #eef2f7;
+            border-radius: 8px;
+        }
+
+        /* 2. 导航栏样式 - 初始隐藏，进入正文后显示 */
+        .navbar {
+            width: 100%;
+            background-color: #2c3e50; /* 深色背景，一眼识别导航栏 */
+            padding: 0.01rem 2rem; /* 小内边距，不占用过多空间 */
+            box-shadow: 0 2px 18px rgba(0,0,0,0.2); /* 轻微阴影，增强层次感 */
+            position: fixed; /* 固定定位，始终贴边 */
+            top: 0; /* 顶部贴边 */
+            left: 0; /* 左侧贴边 */
+            z-index: 9999; /* 最高层级，不被其他内容遮挡 */
+            line-height: 1;
+            display: none; /* 初始隐藏导航栏，开场白不展示 */
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* 核心属性，实现ul内部导航项（a标签）垂直居中 */
+            flex-wrap: wrap;
+            gap: 1.5rem; /* 小间距，更紧凑 */
+            margin: 0; /* 消除ul默认的上下外边距，确保完全垂直对齐 */
+            min-height: 100%; /* 让ul高度充满navbar，确保垂直居中生效 */
+        }
+
+        .navbar a {
+            color: white; /* 白色文字，与深色背景对比鲜明 */
+            text-decoration: none;
+            font-size: 1rem; /* 小字体，节省空间 */
+            padding: 0.8rem 0.8rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            line-height: 1.2; /* 统一行高增强居中效果 */
+        }
+
+        .navbar a:hover, .navbar a.active {
+            background-color: #34495e; /*  hover深色变化，交互反馈明显 */
+            color: white;
+        }
+
+        /* 3. 字体与间距优化（演讲场景高可读性） */
+        h1 {
+            font-size: 3.2rem;
+            color: transparent;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 4px solid #3498db;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 2.4rem;
+            color: #34495e;
+            margin: 2.2rem 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            scroll-margin-top: 80px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin: 1.8rem 0 1.2rem;
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: #596e79;
+            line-height: 2;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+            letter-spacing: 0.5px;
+        }
+
+        ul, ol {
+            font-size: 1.4rem;
+            color: #596e79;
+            line-height: 2;
+            margin-left: 3rem;
+            margin-bottom: 1.8rem;
+        }
+
+        li {
+            margin-bottom: 1rem;
+        }
+
+        /* 4. 高亮样式优化（核心信息突出） */
+        .highlight {
+            color: #e74c3c;
+            font-weight: 700;
+            background: #fef5f5;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 1.3rem;
+        }
+
+        .core-point {
+            background: #e8f4fd;
+            border-left: 6px solid #3498db;
+            padding: 1.5rem 2rem;
+            border-radius: 0 12px 12px 0;
+            margin: 2rem 0;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.1);
+        }
+
+        .core-point p {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2980b9;
+        }
+
+        /* 5. 代码块响应式优化（正常换行+适配设备） */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 2rem;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            margin: 1.8rem 0;
+            font-family: "Consolas", "Monaco", monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 6. 图片对比样式优化（并排适配宽屏） */
+        .image-comparison {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .image-comparison img {
+            flex: 1;
+            max-width: 49%;
+            height: auto;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 7. 案例盒子样式优化 */
+        .case-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 2.5rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2980b9;
+            margin: 1.8rem 0 1.2rem;
+        }
+
+        .tip {
+            font-size: 1.3rem;
+            color: #f39c12;
+            font-weight: 600;
+            background: #fff8f0;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.8rem 0;
+            border: 1px solid #fbe9d7;
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.1);
+        }
+
+        /* 8. 开场白样式（隐藏导航栏 + 宽屏排版） */
+        .opening-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            z-index: 99;
+            display: block;
+        }
+
+        /* 开场白宽屏排版：适配16:9比例，与页面容器一致 */
+        .opening-section {
+            background: linear-gradient(135deg, #e8f4fd 0%, #d1e9f6 100%);
+            border-radius: 24px;
+            padding: 3rem 3.5rem;
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+            text-align: center;
+            border: 1px solid #c5e1f7;
+            transition: all 0.5s ease;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95vw; /* 宽屏宽度：与页面容器一致 */
+            max-width: 1920px; /* 最大宽度：适配宽屏显示器 */
+            aspect-ratio: 16 / 9; /* 宽屏核心：16:9比例排版 */
+            overflow-y: auto; /* 内容过多时滚动，保持宽屏比例 */
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 垂直居中内容，优化宽屏显示 */
+            align-items: center;
+        }
+
+        .opening-section:hover {
+            transform: translate(-50%, -50%) translateY(-5px);
+        }
+
+        .opening-subtitle {
+            font-size: 2.0rem;
+            color: #e74c3c;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            animation: flash 2s infinite alternate;
+        }
+
+        @keyframes flash {
+            from {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        .opening-title {
+            font-size: 2.5rem;
+            color: #2980b9;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .opening-question {
+            font-size: 1.7rem;
+            color: #2c3e50;
+            margin-bottom: 1.8rem;
+            font-weight: 600;
+            padding-bottom: 1.2rem;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+        }
+
+        .opening-countdown {
+            font-size: 1.2rem;
+            color: #f39c12;
+            margin-bottom: 1.8rem;
+            font-weight: 500;
+        }
+
+        .opening-options {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            width: 100%; /* 占满开场白宽度，优化宽屏排版 */
+            max-width: 800px; /* 限制选项最大宽度，避免过于分散 */
+        }
+
+        .opening-btn {
+            padding: 1.3rem 2.2rem;
+            background: #ffffff;
+            border: 3px solid #3498db;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 220px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.1);
+        }
+
+        .opening-btn:hover {
+            background: #e8f4fd;
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.2);
+            border-color: #2980b9;
+        }
+
+        /* 进入正文按钮样式 */
+        .enter-content-btn {
+            margin-top: 1.5rem;
+            padding: 1.2rem 3rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none; /* 初始隐藏 */
+        }
+
+        .enter-content-btn:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .opening-feedback {
+            font-size: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 700;
+            transition: all 0.5s ease;
+            transform: translateY(10px);
+            opacity: 0;
+            width: 100%;
+            max-width: 600px; /* 限制反馈宽度，优化显示 */
+        }
+
+        .opening-feedback.correct {
+            display: block;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #16a34a;
+            border: 2px solid #a7f3d0;
+            transform: translateY(0);
+            opacity: 1;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%2316a34a'%3E%3Cpath d='M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 1rem center;
+            padding-left: 3.5rem;
+        }
+
+        .opening-feedback.incorrect {
+            display: block;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            border: 2px solid #fca5a5;
+            transform: translateY(0);
+            opacity: 1;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23dc2626'%3E%3Cpath d='M20 20l-4-4m0-6l4-4m-4 4L4 4m4 12L4 20'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 1rem center;
+            padding-left: 3.5rem;
+        }
+
+        /* 9. 练习题样式优化（独立区块+清晰区分） */
+        .exercise-section {
+            background: #f9fbff;
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .exercise-title {
+            font-size: 2.2rem;
+            color: #3498db;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .exercise-item {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3498db;
+        }
+
+        .exercise-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-left: 1.5rem;
+        }
+
+        .option-btn {
+            padding: 1.2rem 1.5rem;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            color: #596e79;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn:hover {
+            border-color: #3498db;
+            background: #e8f4fd;
+            transform: translateX(5px);
+        }
+
+        .exercise-feedback {
+            font-size: 1.3rem;
+            padding: 1.2rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        .exercise-feedback.correct {
+            display: block;
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #a7f3d0;
+        }
+
+        .exercise-feedback.incorrect {
+            display: block;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        /* 10. 响应式适配（多设备兼容，开场白同步宽屏响应） */
+        @media (max-width: 1200px) {
+            .container-16-9 {
+                padding: 2.5rem 3rem;
+                aspect-ratio: unset;
+                min-height: 100vh;
+            }
+
+            .opening-section {
+                padding: 2.5rem 3rem;
+                aspect-ratio: unset;
+                min-height: 90vh; /* 移动端适配，放弃严格16:9，保证显示完整 */
+            }
+
+            .navbar ul {
+                gap: 1.5rem;
+            }
+
+            .navbar a {
+                font-size: 1.1rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            h3 {
+                font-size: 1.6rem;
+            }
+
+            p, ul, ol {
+                font-size: 1.3rem;
+            }
+
+            .opening-btn {
+                min-width: 180px;
+                padding: 1rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container-16-9 {
+                padding: 1.8rem 1.5rem;
+                width: 98vw;
+            }
+
+            .opening-section {
+                padding: 1.8rem 1.5rem;
+                width: 98vw;
+                min-height: 95vh;
+                aspect-ratio: unset;
+            }
+
+            .navbar {
+                padding: 0.8rem 1rem;
+            }
+
+            .navbar ul {
+                gap: 1rem;
+                justify-content: flex-start;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            h3 {
+                font-size: 1.4rem;
+            }
+
+            p, ul, ol {
+                font-size: 1.2rem;
+                line-height: 1.8;
+            }
+
+            .image-comparison {
+                flex-direction: column;
+            }
+
+            .image-comparison img {
+                max-width: 100%;
+                margin-bottom: 1rem;
+            }
+
+            .opening-options {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+            .opening-btn {
+                min-width: 100%;
+            }
+
+            .exercise-section {
+                padding: 1.8rem 1.5rem;
+            }
+
+            .exercise-item {
+                padding: 1.5rem;
+            }
+
+            .question {
+                font-size: 1.3rem;
+            }
+
+            .option-btn {
+                padding: 1rem 1.2rem;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-16-9">
+        <!-- 导航栏：初始隐藏，进入正文后显示 -->
+        <nav class="navbar" id="navbar">
+            <ul>
+                <li><a href="#opening" class="active">开场白</a></li>
+                <li><a href="#what-is">什么是HTML乱码</a></li>
+                <li><a href="#reason-solution">原因与解决方案</a></li>
+                <li><a href="#practice-case">实战案例</a></li>
+                <li><a href="#exercise">课后练习</a></li>
+                <li><a href="#summary">总结</a></li>
+            </ul>
+        </nav>
+
+        <!-- 背景遮罩层 -->
+        <div class="opening-overlay" id="openingOverlay"></div>
+        
+        <!-- 开场白（宽屏排版） -->
+        <section class="opening-section" id="opening">
+            <div class="opening-subtitle">😎 90%的前端初学者都遇过的坑，你能识别吗？</div>
+            <h2 class="opening-title">🤔 课前小调查：你遇到过HTML乱码问题吗？</h2>
+            <div class="opening-question">下列哪种现象，是HTML中文乱码的典型表现？</div>
+            <div class="opening-countdown">⏰ 快速思考，选择你的答案吧！</div>
+            <div class="opening-options">
+                <button class="opening-btn" onclick="checkOpeningAnswer(this, false)">A. 页面标签无法解析，显示源码</button>
+                <button class="opening-btn" onclick="checkOpeningAnswer(this, true)"> B. 中文显示为"???"或"���"</button>
+                <button class="opening-btn" onclick="checkOpeningAnswer(this, false)">C. 页面图片无法加载，显示叉号</button>
+                <button class="opening-btn" onclick="checkOpeningAnswer(this, false)">D. 页面样式错乱， 布局混乱</button>
+            </div>
+            <div class="opening-feedback" id="openingFeedback"></div>
+            <!-- 进入正文按钮 -->
+            <button class="enter-content-btn" id="enterContentBtn" onclick="enterMainContent()">
+                进入课程正文 →
+            </button>
+            <p style="margin-top: 1.5rem; font-size: 1.3rem; color: #2980b9; max-width: 900px;">
+                👉 选对了？恭喜你对乱码有基础认知！选错了？没关系，学完这节课你就能轻松识别～
+            </p>
+        </section>
+
+        <h1>📚 HTML 乱码排查与解决完全指南（教学版）</h1>
+
+        <!-- 锚点1：什么是HTML乱码 -->
+        <h2 id="what-is">🤔 一、什么是 HTML 乱码？</h2>
+        <p>HTML 乱码是指浏览器在解析和渲染 HTML 页面时，因字符编码识别错误、字符集不匹配等原因，无法正确显示页面中的文字（包括普通文本、特殊符号、Emoji 表情等），最终呈现为 <span class="highlight">问号（???）、方块（□□□）、乱码字符（������）或非预期文字</span> 的现象。</p>
+        <div class="core-point">
+            <p>核心特征 📌：</p>
+            <ul>
+                <li>1.  原本的正常文字（如中文、Emoji）无法识别，显示为无意义符号</li>
+                <li>2.  乱码仅影响文字显示，不影响 HTML 标签的解析（页面结构通常正常）</li>
+                <li>3.  常见场景：中文显示乱码、Emoji 表情显示为问号/方块、特殊符号异常</li>
+            </ul>
+        </div>
+        <p>示例：同一个网页乱码显示和无乱码显示时的对比</p>
+        <div class="image-comparison">
+            <img src="202601_乱码示例1_乱码显示.png" alt="乱码显示">
+            <img src="202601_乱码示例1_正确显示.png" alt="期望显示">
+        </div>
+
+        <!-- 锚点2：原因与解决方案 -->
+        <h2 id="reason-solution">🔍 二、HTML 出现乱码的可能原因 & 对应解决方案</h2>
+
+        <h3>原因1：HTML 文件未声明正确的字符编码</h3>
+        <p>浏览器默认使用的编码（如 ISO-8859-1）不支持中文、Emoji 等字符，若 HTML 头部未明确声明 UTF-8 编码（支持所有字符），会导致解析失败。</p>
+        <div class="step-title">解决方案：添加 UTF-8 编码声明</div>
+        <p>在 HTML 的 &lt;head&gt; 标签内，必须添加以下元标签，明确指定字符编码为 UTF-8：</p>
+        <div class="code-block">
+<!-- 必须添加的编码声明，放在head标签最前面 -->
+<meta charset="UTF-8">
+        </div>
+        <div class="tip">
+            💡 小贴士：该标签建议放在 &lt;head&gt; 标签的最前面，避免浏览器先解析其他内容导致编码识别异常。
+        </div>
+
+        <h3>原因2：HTML 文件保存时编码与声明编码不一致</h3>
+        <p>这是最常见的原因！即使 HTML 中声明了 UTF-8 编码，但如果文件本身在编辑器中以 GBK、GB2312、ASCII 等编码保存，字符会被错误存储，浏览器用 UTF-8 解析时就会出现乱码。</p>
+        <div class="step-title">解决方案：以 UTF-8 编码保存文件</div>
+        <ol>
+            <li>  打开编辑器（以 VS Code 为例），打开目标 HTML 文件</li>
+            <li>  查看编辑器右下角，显示当前文件编码（如 GBK、UTF-8）</li>
+            <li>  若不是 UTF-8，点击右下角编码名称，选择「通过编码保存」</li>
+            <li>  在弹出的列表中选择「UTF-8」（推荐「UTF-8 无 BOM」格式），保存文件即可</li>
+        </ol>
+        <div class="tip">
+            💡 小贴士：主流编辑器（VS Code、Sublime、WebStorm）均支持 UTF-8 保存，默认建议设置编辑器默认保存编码为 UTF-8。
+        </div>
+
+        <h3>原因3：服务器传输时未设置正确的响应头</h3>
+        <p>当浏览器从服务器获取 HTML 文件时，服务器会返回响应头信息，若响应头中未指定 `Content-Type: text/html; charset=utf-8`，浏览器可能会用默认编码解析，导致乱码。</p>
+        <div class="step-title">解决方案：配置服务器响应头</div>
+        <ul>
+            <li>  本地测试（无服务器）：可忽略该问题，直接打开 HTML 文件通常不受影响</li>
+            <li>  Nginx 服务器：在配置文件中添加 `charset utf-8;`</li>
+            <li>  Apache 服务器：在 .htaccess 文件中添加 `AddDefaultCharset UTF-8`</li>
+            <li>  后端开发（PHP/Java）：通过代码设置响应头（如 PHP：`header("Content-Type: text/html; charset=utf-8");`）</li>
+        </ul>
+
+        <h3>原因4：字体缺失对应字符集</h3>
+        <p>HTML 中指定的字体（如 Arial、微软雅黑）若不包含中文、Emoji 等字符集，浏览器无法找到对应字形，会显示为方块或乱码（尤其影响 Emoji 表情）。</p>
+        <div class="step-title">解决方案：指定支持多字符集的字体</div>
+        <p>在 CSS 中，为元素指定包含 Emoji/中文的字体列表，优先使用系统自带的 emoji 友好字体：</p>
+        <div class="code-block">
+/* 优化字体设置，支持中文和Emoji */
+body {
+    font-family: "Microsoft YaHei", "微软雅黑", "Segoe UI Emoji", "Apple Color Emoji", Arial, sans-serif;
+}
+        </div>
+
+        <h3>原因5：特殊字符/Emoji 编码错误或不兼容</h3>
+        <p>1.  手动输入了无效的 Emoji/特殊字符，或使用了浏览器/系统不支持的新版 Emoji（如 Unicode 13.0 以上）；2.  HTML 实体编码书写错误（如 Emoji 实体编码位数不足），导致解析失败。</p>
+        <div class="step-title">解决方案：使用标准字符/实体编码</div>
+        <ul>
+            <li>  替换无效字符：删除乱码的 Emoji/特殊字符，重新输入标准 Emoji（如直接复制粘贴 🐍、🍬）</li>
+            <li>  使用 HTML 实体编码：对于 Emoji，可使用 Unicode 实体编码（如 🐍 对应 `&#x1F40D;`，🍬 对应 `&#x1F36C;`），兼容性更强</li>
+            <li>  避免老旧环境：对于旧浏览器/系统（如 IE、Windows 7），尽量使用基础版 Emoji，避免新版特殊 Emoji</li>
+        </ul>
+
+        <h3>原因6：中间工具破坏文件编码</h3>
+        <p>HTML 文件经过文本转换器、版本控制工具、在线编辑工具等处理时，工具若不支持 UTF-8 编码，会强制转换编码或删除无法识别的字符（如 Emoji），导致乱码。</p>
+        <div class="step-title">解决方案：使用支持 UTF-8 的工具</div>
+        <ul>
+            <li>  避免使用老旧工具：选择 VS Code、Git 等支持 UTF-8 的工具处理文件</li>
+            <li>  传输文件时保持编码：通过压缩包（ZIP）传输 HTML 文件，避免在线预览工具自动转换编码</li>
+            <li>  版本控制忽略编码变更：在 Git 中配置 `git config --global core.quotepath false`，避免中文文件名/内容编码异常</li>
+        </ul>
+
+        <!-- 锚点3：实战案例 -->
+        <h2 id="practice-case">🛠️ 三、实战案例：Emoji 乱码问题排查与解决</h2>
+        <div class="case-box">
+            <h3>案例背景 📖</h3>
+            <p>某 HTML 教学页面（Python 语法糖讲解）中，Emoji 表情（🐍、🍬、🚀 等）全部显示为 ������ 或 ???，页面结构正常，中文显示正常，仅 Emoji 乱码，需排查并解决。</p>
+
+            <div class="step-title">步骤1：检查 HTML 编码声明</div>
+            <p>首先确认 HTML 是否声明了 UTF-8 编码，这是基础前提。</p>
+            <ol>
+                <li>  打开问题 HTML 文件，查看 &lt;head&gt; 标签内是否有 `<meta charset="UTF-8">`</li>
+                <li>  若缺失：添加该标签并放在 &lt;head&gt; 最前面，保存文件后刷新页面</li>
+                <li>  本案例中：已存在该标签，排除此问题</li>
+            </ol>
+
+            <div class="step-title">步骤2：检查文件保存编码</div>
+            <p>这是本案例的核心问题！Emoji 乱码大概率是文件保存编码非 UTF-8 导致。</p>
+            <ol>
+                <li>  用 VS Code 打开问题 HTML 文件，查看右下角编码（显示为「GBK」，异常）</li>
+                <li>  点击右下角「GBK」，在弹出菜单中选择「通过编码保存」</li>
+                <li>  在编码列表中选择「UTF-8」（无 BOM 格式），确认保存</li>
+                <li>  此时打开文件，乱码的 Emoji 仍显示异常，需要重新替换 Emoji</li>
+            </ol>
+
+            <div class="step-title">步骤3：重新替换标准 Emoji 字符</div>
+            <p>文件编码修正后，原有乱码的 Emoji 已被损坏，需手动替换。</p>
+            <ol>
+                <li>  逐个删除页面中的 ������ 乱码字符</li>
+                <li>  重新插入标准 Emoji：可直接复制粘贴（🐍、🍬、🚀、🧩 等），或使用 HTML 实体编码（如 `&#x1F40D;` 对应 🐍）</li>
+                <li>  示例：将标题从 "������ Python 语法糖 核心知识点 ������" 改为 "🐍 Python 语法糖 核心知识点 🍬"</li>
+                <li>  替换完成后，保存文件（确保仍为 UTF-8 编码）</li>
+            </ol>
+
+            <div class="step-title">步骤4：优化字体配置，提升兼容性</div>
+            <p>为避免因字体缺失导致 Emoji 再次乱码，优化 CSS 字体设置。</p>
+            <ol>
+                <li>  找到页面的 CSS 全局样式（body 选择器）</li>
+                <li>  在 font-family 中添加 Emoji 友好字体：Segoe UI Emoji、Apple Color Emoji</li>
+                <li>  优化后的样式如下：</li>
+            </ol>
+            <div class="code-block">
+body {
+    font-family: "Microsoft YaHei", "微软雅黑", "Segoe UI Emoji", "Apple Color Emoji", Arial, sans-serif;
+    background: linear-gradient(135deg, #e6f0fa 0%, #d1e0f7 100%);
+    /* 其他样式保持不变 */
+}
+            </div>
+
+            <div class="step-title">步骤5：验证效果</div>
+            <ol>
+                <li>  用主流浏览器（Chrome、Edge、Firefox）打开修正后的 HTML 文件</li>
+                <li>  检查 Emoji 表情是否正常显示，中文及其他文字是否无异常</li>
+                <li>  若在服务器上部署，额外检查服务器响应头是否包含 `Content-Type: text/html; charset=utf-8`</li>
+                <li>  本案例验证结果：Emoji 正常显示，乱码问题完全解决 ✅</li>
+            </ol>
+        </div>
+
+        <!-- 锚点4：课后练习题 -->
+        <h2 id="exercise">📝 四、课后交互式练习题</h2>
+        <div class="exercise-section">
+            <h3 class="exercise-title">🚀 快来检验你的学习成果吧！</h3>
+
+            <div class="exercise-item">
+                <div class="question">1.  下列哪项是 HTML 中文乱码的最核心原因？</div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 1, false)">A. 页面图片路径错误</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 1, true)">B. 文件保存编码与声明 UTF-8 不一致</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 1, false)">C. 页面 CSS 样式缺失</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 1, false)">D. 浏览器版本过低</button>
+                </div>
+                <div class="exercise-feedback" id="exerciseFeedback1"></div>
+            </div>
+
+            <div class="exercise-item">
+                <div class="question">2.  为了避免 HTML 乱码，meta 标签声明 UTF-8 应放在哪里？</div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 2, true)">A. &lt;head&gt; 标签最前面</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 2, false)">B. &lt;body&gt; 标签最前面</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 2, false)">C. &lt;html&gt; 标签之前</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 2, false)">D. 页面任意位置</button>
+                </div>
+                <div class="exercise-feedback" id="exerciseFeedback2"></div>
+            </div>
+
+            <div class="exercise-item">
+                <div class="question">3.  下列哪种方法可以解决 Emoji 表情显示为方块的问题？</div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 3, false)">A. 更换页面背景颜色</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 3, false)">B. 增加页面字体大小</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 3, true)">C. 在 CSS 中添加 Emoji 友好字体</button>
+                    <button class="option-btn" onclick="checkExerciseAnswer(this, 3, false)">D. 删除页面所有 meta 标签</button>
+                </div>
+                <div class="exercise-feedback" id="exerciseFeedback3"></div>
+            </div>
+        </div>
+
+        <!-- 锚点5：总结 -->
+        <h2 id="summary">📝 五、核心知识点总结</h2>
+        <div class="core-point">
+            <p>HTML 乱码排查与解决核心流程 🚀：</p>
+            <ol>
+                <li>1.  先确认 HTML 是否声明 `<meta charset="UTF-8">`（基础步骤）</li>
+                <li>2.  再检查文件保存编码是否为 UTF-8（最核心步骤，优先排查）</li>
+                <li>3.  若为 Emoji 乱码，补充优化字体配置 + 替换标准 Emoji</li>
+                <li>4.  服务器部署场景，检查并配置服务器响应头</li>
+                <li>5.  避免使用不支持 UTF-8 的工具处理 HTML 文件</li>
+            </ol>
+        </div>
+        <p>通过以上步骤，可解决 99% 的 HTML 乱码问题（包括中文乱码、Emoji 乱码等常见场景），确保页面文字正常显示。希望这节课能帮助你轻松应对 HTML 乱码问题 🎉！</p>
+    </div>
+
+    <script>
+        // 目录导航高亮切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('h2');
+            const navLinks = document.querySelectorAll('.navbar a');
+
+            function highlightNavLink() {
+                let scrollPosition = window.scrollY + 100;
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionId = section.getAttribute('id');
+                    const sectionHeight = section.offsetHeight;
+
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', highlightNavLink);
+            highlightNavLink(); // 初始加载执行
+        });
+
+        // 开场白答案验证
+        let openingAnswered = false;
+        function checkOpeningAnswer(btn, isCorrect) {
+            if (openingAnswered) return;
+            openingAnswered = true;
+
+            const feedbackEl = document.getElementById('openingFeedback');
+            const allBtns = document.querySelectorAll('.opening-btn');
+            const enterBtn = document.getElementById('enterContentBtn');
+
+            // 禁用所有选项按钮
+            allBtns.forEach(b => {
+                b.disabled = true;
+                b.style.cursor = "not-allowed";
+                b.style.opacity = "0.7";
+            });
+
+            if (isCorrect) {
+                btn.style.background = "#f0fdf4";
+                btn.style.borderColor = "#16a34a";
+                btn.style.color = "#16a34a";
+                btn.style.boxShadow = "0 0 20px rgba(22, 163, 74, 0.3)";
+                feedbackEl.className = "opening-feedback correct";
+                feedbackEl.innerHTML = "✅ 太牛啦！你对HTML乱码的典型表现了如指掌，接下来的内容对你来说小菜一碟～";
+            } else {
+                btn.style.background = "#fef2f2";
+                btn.style.borderColor = "#dc2626";
+                btn.style.color = "#dc2626";
+                feedbackEl.className = "opening-feedback incorrect";
+                feedbackEl.innerHTML = "❌ 没关系！很多人一开始都会混淆，看完这节课，你就能精准识别乱码现象啦～";
+            }
+
+            // 显示进入正文按钮
+            setTimeout(() => {
+                enterBtn.style.display = "inline-block";
+                // 淡入动画
+                enterBtn.style.opacity = "0";
+                let opacity = 0;
+                const timer = setInterval(() => {
+                    if (opacity >= 1) {
+                        clearInterval(timer);
+                    }
+                    enterBtn.style.opacity = opacity;
+                    opacity += 0.1;
+                }, 30);
+            }, 500);
+        }
+
+        // 进入正文函数（显示导航栏 + 隐藏开场白）
+        function enterMainContent() {
+            const openingSection = document.getElementById('opening');
+            const overlay = document.getElementById('openingOverlay');
+            const navbar = document.getElementById('navbar');
+
+            // 开场白淡出动画
+            openingSection.style.transition = "all 0.5s ease";
+            openingSection.style.opacity = "0";
+            openingSection.style.transform = "translate(-50%, -50%) scale(0.8)";
+            
+            overlay.style.transition = "all 0.5s ease";
+            overlay.style.opacity = "0";
+            
+            // 动画结束后：隐藏开场白 + 显示导航栏
+            setTimeout(() => {
+                openingSection.style.display = "none";
+                overlay.style.display = "none";
+                navbar.style.display = "block"; // 显示导航栏
+
+                // 切换导航高亮到第一个章节
+                const navLinks = document.querySelectorAll('.navbar a');
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#what-is') {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // 平滑滚动到页面顶部
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 500);
+        }
+
+        // 练习题答案验证
+        let exerciseAnswered = {};
+        function checkExerciseAnswer(btn, questionNum, isCorrect) {
+            if (exerciseAnswered[questionNum]) return;
+            exerciseAnswered[questionNum] = true;
+
+            const feedbackEl = document.getElementById(`exerciseFeedback${questionNum}`);
+            const allOptions = btn.parentElement.children;
+
+            // 禁用当前题目所有选项
+            for (let option of allOptions) {
+                option.disabled = true;
+                option.style.cursor = "not-allowed";
+            }
+
+            if (isCorrect) {
+                btn.style.background = "#f0fdf4";
+                btn.style.borderColor = "#16a34a";
+                btn.style.color = "#16a34a";
+                feedbackEl.className = "exercise-feedback correct";
+                feedbackEl.innerHTML = "✅ 回答正确！你已经掌握了这个知识点～";
+            } else {
+                btn.style.background = "#fef2f2";
+                btn.style.borderColor = "#dc2626";
+                btn.style.color = "#dc2626";
+                feedbackEl.className = "exercise-feedback incorrect";
+                feedbackEl.innerHTML = "❌ 回答错误！建议回顾对应知识点后再尝试～";
+            }
+        }
+    </script>
+</body>
+</html>

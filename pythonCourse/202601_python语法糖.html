@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐍 Python 语法糖 全面讲解 | 教学课件</title>
+    <style>
+        /* 全局样式重置与基础配置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+            display: flex; /* 添加加flex布局 */
+            gap: 1.5rem;
+        }
+
+        /* 目录导航栏样式 */
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.15);
+            padding: 1.5rem;
+            height: calc(100vh - 3rem);
+            position: sticky;
+            top: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            color: #165dff;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid #4a90e2;
+        }
+
+        .toc {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 0.6rem;
+        }
+
+        .toc a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            padding: 0.6rem 0.8rem;
+            display: block;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            background-color: #e8f4fd;
+            color: #165dff;
+            transform: translateX(4px);
+        }
+
+        .toc .toc-h2 {
+            font-weight: 600;
+            margin-left: 0;
+        }
+
+        .toc .toc-h3 {
+            font-weight: 500;
+            margin-left: 1.2rem;
+            font-size: 1rem;
+        }
+
+        .toc a.active {
+            background-color: #e8f4fd;
+            color: #165dff;
+            border-left: 4px solid #165dff;
+        }
+
+        /* 1. 优化16:9宽屏适配容器 - 核心优化 */
+        .container-16-9 {
+            flex: 1; /* 占容器容器自适应剩余宽度 */
+            max-width: 1600px;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+            padding: 2.5rem 3.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: #4a90e2 #eef2f7;
+        }
+
+        .container-16-9::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .container-16-9::-webkit-scrollbar-thumb {
+            background-color: #4a90e2;
+            border-radius: 8px;
+            border: 2px solid #eef2f7;
+        }
+
+        .container-16-9::-webkit-scrollbar-track {
+            background-color: #eef2f7;
+            border-radius: 8px;
+        }
+
+        /* 2. 优化字体大小与间距 - 适配演讲场景，提升可读性 */
+        h1 {
+            font-size: 3rem;
+            color: #165dff;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-weight: 700;
+            border-bottom: 5px solid #4a90e2;
+            padding-bottom: 1.2rem;
+            letter-spacing: 1.2px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin: 2rem 0 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            scroll-margin-top: 2rem; /* 滚动定位偏移 */
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin: 1.6rem 0 1rem;
+            font-weight: 600;
+            scroll-margin-top: 2rem; /* 滚动定位偏移 */
+        }
+
+        /* 文本样式优化 */
+        p {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.6px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            line-height: 1.9;
+            margin-left: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.6px;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+        }
+
+        /* 强调样式 - 突出出核心重点，优化视觉效果 */
+        .highlight {
+            color: #e74c3c;
+            font-weight: 700;
+            background-color: #fef5f5;
+            padding: 0.4rem 0.7rem;
+            border-radius: 8px;
+            font-size: 1.3rem;
+        }
+
+        /* 核心观点高亮 - 优化样式，更醒目 */
+        .core-highlight {
+            color: #165dff;
+            font-weight: 700;
+            background-color: #e8f4fd;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid #bfdbfe;
+            font-size: 1.35rem;
+        }
+
+        .key-point {
+            background-color: #e8f4fd;
+            border-left: 6px solid #165dff;
+            padding: 1.2rem 1.6rem;
+            border-radius: 0 10px 10px 0;
+            margin: 1.8rem 0;
+            box-shadow: 0 2px 8px rgba(22, 93, 255, 0.1);
+        }
+
+        /* 3. 优化代码块响应式显示 - 更美观，适配多设备 */
+        .code-block {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 2rem;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            line-height: 1.9;
+            overflow-x: auto;
+            margin: 1.8rem 0;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 4. 优化表格响应式显示 - 更美观，适配多设备 */
+        .lang-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 1.3rem;
+            overflow-x: auto;
+            display: block;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        .lang-table th, .lang-table td {
+            padding: 1.2rem 1.6rem;
+            text-align: left;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        .lang-table th {
+            background-color: #165dff;
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.35rem;
+        }
+
+        .lang-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .lang-table tr:hover {
+            background-color: #e8f4fd;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 图标辅助样式 - 增大图标，更醒目 */
+        .icon {
+            font-size: 2rem;
+        }
+
+        /* 5. 交互式练习题样式 - 新增交互式练习流程，带即时时反馈 */
+        .exercise-section {
+            margin: 2.5rem 0;
+            padding: 2rem;
+            background-color: #f9fbff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(22, 93, 255, 0.08);
+        }
+
+        .exercise-title {
+            font-size: 1.9rem;
+            color: #165dff;
+            margin-bottom: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 2rem;
+            padding-bottom: 1.8rem;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .exercise-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 1.2rem;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .option-btn {
+            padding: 1rem 1.5rem;
+            background-color: #ffffff;
+            border: 2px solid #eef2f7;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn:hover {
+            border-color: #bfdbfe;
+            background-color: #f8fafc;
+        }
+
+        .feedback {
+            font-size: 1.3rem;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #a7f3d0;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        /* 6. 响应式适配 - 针对不同设备优化显示 */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 240px;
+            }
+            .container-16-9 {
+                padding: 2rem 3rem;
+            }
+            h1 {
+                font-size: 2.6rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+            h3 {
+                font-size: 1.6rem;
+            }
+            p, ul, ol {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1.5rem;
+            }
+            .toc {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .toc li {
+                margin-bottom: 0;
+                flex: 1 0 auto;
+            }
+            .toc .toc-h3 {
+                display: none; /* 小屏幕隐藏三级目录 */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container-16-9 {
+                padding: 1.8rem 1.5rem;
+                aspect-ratio: unset;
+                min-height: 100vh;
+            }
+            h1 {
+                font-size: 2.2rem;
+                margin-bottom: 2rem;
+                padding-bottom: 1rem;
+            }
+            h2 {
+                font-size: 1.8rem;
+                margin: 1.8rem 0 1rem;
+            }
+            h3 {
+                font-size: 1.5rem;
+                margin: 1.5rem 0 0.8rem;
+            }
+            p, ul, ol {
+                font-size: 1.2rem;
+                margin-bottom: 1.2rem;
+            }
+            .code-block {
+                padding: 1.5rem;
+                font-size: 1.1rem;
+                margin: 1.5rem 0;
+            }
+            .lang-table {
+                font-size: 1.1rem;
+                margin: 1.8rem 0;
+            }
+            .lang-table th, .lang-table td {
+                padding: 1rem 1.2rem;
+            }
+            .highlight, .core-highlight {
+                padding: 0.3rem 0.6rem;
+                font-size: 1.1rem;
+            }
+            .exercise-title {
+                font-size: 1.7rem;
+            }
+            .question {
+                font-size: 1.3rem;
+            }
+            .option-btn {
+                font-size: 1.2rem;
+                padding: 0.8rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 新增加目录导航栏 -->
+    <div class="sidebar">
+        <h2>📚 目录导航</h2>
+        <ul class="toc">
+            <li><a href="#section-1" class="toc-h2">一、什么是语法糖？</a></li>
+            <li><a href="#section-1-1" class="toc-h3">举个 Python 直观例子</a></li>
+            <li><a href="#section-2" class="toc-h2">二、为什么叫“语法糖”？</a></li>
+            <li><a href="#section-3" class="toc-h2">三、语法糖的本质</a></li>
+            <li><a href="#section-4" class="toc-h2">四、语法糖的核心目的</a></li>
+            <li><a href="#section-4-1" class="toc-h3">1. 简化代码，减少冗余</a></li>
+            <li><a href="#section-4-2" class="toc-h3">2. 提升可读性，符合人类直觉</a></li>
+            <li><a href="#section-4-3" class="toc-h3">3. 降低出错概率</a></li>
+            <li><a href="#section-4-4" class="toc-h3">4. 提升代码可维护性</a></li>
+            <li><a href="#section-5" class="toc-h2">五、哪些编程语言支持语法糖？</a></li>
+            <li><a href="#section-6" class="toc-h2">六、核心知识点总结</a></li>
+            <li><a href="#section-exercise" class="toc-h2">课后交互式练习题</a></li>
+        </ul>
+    </div>
+
+    <div class="container-16-9">
+        <h1>🐍 Python 语法糖 核心知识点识点全面讲解</h1>
+
+        <h2 id="section-1"><span class="icon">❓</span> 一、什么是语法糖？</h2>
+        <p>语法糖（Syntactic Sugar）是由计算机科学家 <span class="highlight">彼得·诺尔（Peter Naur）</span> 首次提出的编程概念，它是编程语言中一种“贴心”的语法设计 😊。</p>
+        <p class="key-point">核心定义：<br>语法糖是<span class="core-highlight">不改变语言核心功能</span>，仅对原有基础语法进行<span class="core-highlight">包装优化</span>的便捷语法形式，去掉语法糖后，用原始语法依然能实现完全相同的功能，但代码会更繁琐、易出错。</p>
+        <p>简单理解：语法糖就像<span class="core-highlight">“编程界的懒人神器”</span>，是语言设计者为了让开发者发者写代码更轻松而设计的“甜语法”，让代码更<span class="core-highlight">简洁、更易读</span> 🚀。</p>
+
+        <h3 id="section-1-1">举个 Python 直观例子 🧩</h3>
+        <p>🌰 例子1：赋值语法糖 <code>a += 1</code></p>
+        <div class="code-block">
+# 语法糖写法（简洁）
+a = 10
+a += 1  # 等价于 a = a + 1
+print(a)  # 输出 11
+
+# 原始语法写法（繁琐，功能完全一致）
+a = 10
+a = a + 1
+print(a)  # 输出 11
+        </div>
+        <p>🌰 例子2：列表推导式（语法糖）</p>
+        <div class="code-block">
+# 语法糖写法（一行搞定）
+nums = [x * 2 for x in range(5)]
+print(nums)  # 输出 [0, 2, 4, 6, 8]
+
+# 原始语法写法（for循环+append，代码冗余）
+nums = []
+for x in range(5):
+    nums.append(x * 2)
+print(nums)  # 输出 [0, 2, 4, 6, 8]
+        </div>
+
+        <h2 id="section-2"><span class="icon">📛</span> 二、为什么叫“语法糖”？</h2>
+        <p>这个名字的由来，核心是贴合“糖（Sugar）”的隐喻含义，主要有两层原因 🍬：</p>
+        <ul>
+            <li>1.  <span class="core-highlight">“甜”的体验</span>：语法糖让代码编写过程更“甜蜜”、更顺滑，就像吃了糖一样，大幅降低编码的繁琐度，<span class="highlight">提升开发者的使用体验</span>，告别枯燥冗余的原始语法。</li>
+            <li>2.  <span class="core-highlight">“非必需但提升愉悦感”</span>：糖不是人类生存的必需品（不吃糖也能活下去），语法糖也不是编程的必需品（不用语法糖也能实现功能），但它能<span class="highlight">提升“幸福感”，让编程更高效、更愉悦</span>。</li>
+        </ul>
+        <p class="key-point">补充：语法糖还有一个隐含的隐喻——它是<span class="core-highlight">“表层的甜味”</span>，底层依然是语言的核心逻辑，就像糖果的包装再精美，核心成分还是糖本身，语法糖的底层还是原始语法的实现 🎁。</p>
+
+        <h2 id="section-3"><span class="icon">🔍</span> 三、语法糖的本质</h2>
+        <p>语法糖的本质可以总结为 <span class="core-highlight">“三层不变，一层优化”</span>，它不是语言的功能扩展，而是语法的“表层包装” 📦：</p>
+        <ul>
+            <li>1.  <span class="core-highlight">核心功能不变</span>：语法糖无法实现原有语言基础语法做不到的事情，功能上完全重叠。</li>
+            <li>2.  <span class="core-highlight">底层逻辑不变</span>：编译器/解释器会在代码执行前，自动将语法糖转换为等价的原始语法（如 Python 解释器会把链式比较转为 and 连接的比较）。</li>
+            <li>3.  <span class="core-highlight">执行效率不变</span>：转换后的底层代码与手动编写的原始代码完全一致，不会因为使用语法糖而变慢（极少数解析开销可忽略不计）。</li>
+            <li>4.  <span class="core-highlight">使用体验优化</span>：唯一的变化是表层的写法和开发者的使用体验，让代码更简洁、易读、易维护。</li>
+        </ul>
+        <p>形象比喻：语法糖就像<span class="core-highlight">“速食方便面”</span>，原始语法就像“自己买菜、洗菜、煮面”，最终的结果（吃到面）是一样的，但速食方便面（语法糖）<span class="highlight">大幅节省了时间和精力，体验更优</span> 🍜。</p>
+
+        <h2 id="section-4"><span class="icon">🎯</span> 四、语法糖的核心目的</h2>
+        <p>语法糖的设计初衷，是为了<span class="core-highlight">提升开发者的开发效率和代码质量</span>，具体拆解为 4 个核心目的 🎯：</p>
+        <h3 id="section-4-1">1.  <span class="core-highlight">简化代码，减少冗余</span></h3>
+        <p>用更少的代码实现相同逻辑，避免重复书写模板化代码，<span class="highlight">降低代码量，提升编码速度</span> ⚡。</p>
+        <p>🌰 示例：Python 的 <code>with</code> 语句（文件操作语法糖）</p>
+        <div class="code-block">
+# 语法糖写法（3行搞定，自动关闭文件）
+with open("test.txt", "r") as f:
+    content = f.read()
+    print(content)
+
+# 原始语法写法（8行代码，手动控制文件关闭）
+f = None
+try:
+    f = open("test.txt", "r")
+    content = f.read()
+    print(content)
+finally:
+    if f:
+        f.close()
+        </div>
+
+        <h3 id="section-4-2">2.  <span class="core-highlight">提升可读性，符合人类直觉</span></h3>
+        <p>语法糖的设计更贴近自然语言或数学思维，让代码<span class="highlight">“一眼就能看懂”，降低理解成本</span> 👀。</p>
+        <p>🌰 示例：Python 链式比较（符合数学书写习惯）</p>
+        <div class="code-block">
+# 语法糖写法（符合数学直觉，易读）
+x = 5
+result = 1 < x < 10
+print(result)  # 输出 True
+
+# 原始语法写法（需要拆解为and，可读性差）
+x = 5
+result = (x > 1) and (x < 10)
+print(result)  # 输出 True
+        </div>
+
+        <h3 id="section-4-3">3.  <span class="core-highlight">降低出错概率</span></h3>
+        <p>冗余代码更容易出现拼写错误、逻辑遗漏，语法糖通过封装通用逻辑，<span class="highlight">减少手动操作的失误</span> ✅。</p>
+        <p>🌰 示例：手动写 <code>try/finally</code> 可能漏写文件关闭，而 <code>with</code> 语句自动处理，避免文件句柄泄漏；链式比较自动保证操作数只计算一次，避免手动拆解导致的函数重复执行。</p>
+
+        <h3 id="section-4-4">4.  <span class="core-highlight">提升代码可维护性</span></h3>
+        <p>简洁、易读的代码，在后续的修改、迭代、团队协作中，<span class="highlight">更容易被其他开发者理解和维护，降低项目的维护成本</span> 👥。</p>
+
+        <h2 id="section-5"><span class="icon">🌐</span> 五、哪些编程语言支持语法糖？</h2>
+        <p>几乎所有 <span class="core-highlight">现代高级编程语言</span> 都支持语法糖（语法糖已成为主流语言的标配），以下是主流语言及其典型语法糖案例 🚀：</p>
+        <table class="lang-table">
+            <thead>
+                <tr>
+                    <th>编程语言</th>
+                    <th>典型语法糖案例</th>
+                    <th>核心特点</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Python</td>
+                    <td>1. 列表推导式/字典推导式，如：[x * 2 for x in range(5)]<br>2. 链式比较（a &lt; b &lt; c）<br>3. with 语句（自动资源释放）<br>4. 装饰器（@decorator）<br>5. 解包赋值（a, b = b, a）</td>
+                    <td><span class="highlight">语法糖丰富，简洁优雅，贴近自然语言</span></td>
+                </tr>
+                <tr>
+                    <td>Java</td>
+                    <td>1. 自动装箱/拆箱（Integer a = 10）<br>2. 增强for循环（for (int num : arr)）<br>3. Lambda 表达式（(a,b) -> a+b）<br>4. 字符串拼接（"hello" + name）</td>
+                    <td><span class="highlight">语法糖偏向实用，简化面向对象开发</span></td>
+                </tr>
+                <tr>
+                    <td>JavaScript</td>
+                    <td>1. 箭头函数（() => console.log('hi')）<br>2. 解构赋值（const {name} = obj）<br>3. 模板字符串（`hello ${name}`）<br>4. 可选链（obj?.name）</td>
+                    <td><span class="highlight">语法糖灵活，大幅提升前端开发效率</span></td>
+                </tr>
+                <tr>
+                    <td>C#</td>
+                    <td>1. 自动属性（public string Name { get; set; }）<br>2. 空合并运算符（var val = a ?? b）<br>3. LINQ 表达式<br>4. 异步语法（async/await）</td>
+                    <td><span class="highlight">语法糖设计严谨，兼顾性能与便捷性</span></td>
+                </tr>
+                <tr>
+                    <td>Golang</td>
+                    <td>1. 短变量声明（a := 10）<br>2. for range 循环<br>3. 切片字面量（[]int{1,2,3}）<br>4. 结构体初始化简写</td>
+                    <td><span class="highlight">语法糖简洁克制，不冗余，保持语言轻量化</span></td>
+                </tr>
+                <tr>
+                    <td>C++</td>
+                    <td>1. 范围for循环（for (auto num : vec)）<br>2. 智能指针（std::unique_ptr）<br>3. 运算符重载（a + b）<br>4. 自动类型推导（auto var = 10）</td>
+                    <td><span class="highlight">语法糖偏向底层优化，兼顾效率与便捷</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="key-point">补充说明：<br>1.  <span class="core-highlight">低级语言（如汇编语言）几乎没有语法糖</span>，因为它需要直接操作硬件，语法简洁度让位于执行效率 ⚙️；<br>2.  <span class="core-highlight">高级语言的语法糖数量，通常与语言的“易用性”定位正相关</span>（如 Python 语法糖多于 Golang） 📊。</p>
+
+        <h2 id="section-6"><span class="icon">📝</span> 六、核心知识点总结</h2>
+        <ul>
+            <li>1.  语法糖是<span class="core-highlight">“便捷语法包装”</span>，<span class="highlight">不新增核心功能，底层等价于原始语法</span>；</li>
+            <li>2.  命名由来：贴合<span class="core-highlight">“甜体验”和“非必需但提升愉悦感”</span>的隐喻 🍬；</li>
+            <li>3.  本质：<span class="core-highlight">三层不变（功能、逻辑、效率），一层优化（使用体验）</span> 📦；</li>
+            <li>4.  目的：<span class="core-highlight">简化代码、提升可读性、降低出错率、提高可维护性</span> 🎯；</li>
+            <li>5.  支持语言：<span class="core-highlight">所有现代高级编程语言（Python/Java/JS/C# 等）均支持</span> 🌐。</li>
+        </ul>
+
+        <!-- 新增交互式练习题 - 带即时反馈 -->
+        <div class="exercise-section" id="section-exercise">
+            <h3 class="exercise-title">📝 课后交互式练习题</h3>
+
+            <div class="exercise-item">
+                <div class="question">1.  以下关于Python语法糖的描述，哪一项是正确的？</div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkAnswer(this, 1, false)">A. 语法糖会新增Python的核心功能</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 1, false)">B. 语法糖的执行效率比原始语法更高</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 1, true)">C. 语法糖是对原始语法的包装优化，功能与原始语法一致</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 1, false)">D. 不用语法糖无法实现对应的功能</button>
+                </div>
+                <div class="feedback" id="feedback-1"></div>
+            </div>
+
+            <div class="exercise-item">
+                <div class="question">2.  下列哪一项不属于Python的语法糖？</div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkAnswer(this, 2, false)">A. 列表推导式 [x for x in range(10)]</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 2, false)">B. with语句自动关闭文件</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 2, false)">C. 装饰器 @staticmethod</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 2, true)">D. 基础for循环 for x in range(10):</button>
+                </div>
+                <div class="feedback" id="feedback-2"></div>
+            </div>
+
+            <div class="exercise-item">
+                <div class="question">3.  语法糖被称为“糖”的核心原因不包括以下哪一项？</div>
+                <div class="options">
+                    <button class="option-btn" onclick="checkAnswer(this, 3, true)">A. 语法糖是编程的必需品，缺少则无法开发</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 3, false)">B. 语法糖能带来“甜蜜”的开发体验</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 3, false)">C. 语法糖能提升开发者的编程愉悦感</button>
+                    <button class="option-btn" onclick="checkAnswer(this, 3, false)">D. 语法糖非必需，但能优化使用体验</button>
+                </div>
+                <div class="feedback" id="feedback-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 练习题交互逻辑 - 即时反馈 -->
+    <script>
+        // 禁用重复点击同一题目的选项
+        let answeredQuestions = {};
+
+        function checkAnswer(btn, questionNum, isCorrect) {
+            if (answeredQuestions[questionNum]) {
+                return;
+            }
+            answeredQuestions[questionNum] = true;
+
+            const feedbackEl = document.getElementById(`feedback-${questionNum}`);
+            const allOptions = btn.parentElement.children;
+
+            for (let option of allOptions) {
+                option.disabled = true;
+                option.style.cursor = "not-allowed";
+            }
+
+            if (isCorrect) {
+                btn.style.backgroundColor = "#f0fdf4";
+                btn.style.borderColor = "#16a34a";
+                btn.style.color = "#16a34a";
+                feedbackEl.className = "feedback correct";
+                feedbackEl.innerHTML = "✅ 回答正确！你准确掌握了该知识点～";
+            } else {
+                btn.style.backgroundColor = "#fef2f2";
+                btn.style.borderColor = "#dc2626";
+                btn.style.color = "#dc2626";
+                feedbackEl.className = "feedback incorrect";
+                feedbackEl.innerHTML = "❌ 回答错误！请重新回顾相关知识点后再尝试～";
+            }
+        }
+
+        // 目录导航交互 - 滚动高亮当前章节
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('h2, h3');
+            const navLinks = document.querySelectorAll('.toc a');
+            
+            function highlightNavigation() {
+                let scrollPosition = window.scrollY + 100;
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionId = section.getAttribute('id');
+                    
+                    if (scrollPosition >= sectionTop) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', highlightNavigation);
+            highlightNavigation(); // 初始加载时执行一次
+        });
+    </script>
+</body>
+</html>
