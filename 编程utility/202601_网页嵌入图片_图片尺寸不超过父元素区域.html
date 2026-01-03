@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 网页嵌入图片 & 尺寸限制 & 水平垂直居中 完整教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(180deg, #f5f7fa 0%, #eef2f7 100%); /* 渐变背景更美观 */
+            padding: 30px;
+            line-height: 2;
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+        /* ------------------- 导航栏样式（优化配色） ------------------- */
+        .nav-bar {
+            position: fixed; /* 固定在页面顶部，滚动页面不消失 */
+            top: 0;
+            left: 0;
+            width: 100%; /* 占满整个页面宽度 */
+            background-color: #2c3e50; /* 深色背景，美观醒目 */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* 阴影效果，提升层次感 */
+            z-index: 999; /* 确保导航栏在最上层，不被其他内容遮挡 */
+            padding: 0 20px;
+        }
+        .nav-container {
+            max-width: 1300px; /* 与教学容器宽度一致，居中对齐 */
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-start; /* 导航项左对齐 */
+            align-items: center;
+            height: 70px; /* 导航栏高度 */
+        }
+        .nav-logo {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 40px; /* 与导航项保持间距 */
+        }
+        .nav-items {
+            display: flex;
+            list-style: none; /* 去除列表默认圆点 */
+        }
+        .nav-item {
+            margin-right: 30px; /* 导航项之间的间距 */
+        }
+        .nav-item a {
+            color: #ecf0f1; /* 白色文字 */
+            text-decoration: none; /* 去除下划线 */
+            font-size: 15px;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent; /* 默认无底部边框 */
+            transition: all 0.3s ease; /*  hover效果过渡，更平滑 */
+        }
+        .nav-item a:hover {
+            color: #3498db; /*  hover时文字变蓝色 */
+            border-bottom: 2px solid #3498db; /*  hover时显示底部蓝色边框 */
+        }
+        /* ------------------- 教学容器（优化排版&配色） ------------------- */
+        .teaching-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 50px 45px; /* 优化内边距 */
+            border-radius: 16px; /* 更大圆角，更柔和 */
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* 柔和阴影 */
+            margin-top: 20px;
+            border: 1px solid #f0f4f8; /* 轻微边框，增强质感 */
+        }
+        h1 {
+            color: #1a2980;
+            text-align: center;
+            margin-bottom: 45px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #26d0ce;
+            font-size: 28px; /* 放大标题 */
+            letter-spacing: 2px;
+        }
+        h2 {
+            color: #1a2980;
+            margin: 40px 0 20px; /* 优化间距 */
+            font-size: 24px;
+            scroll-margin-top: 80px;
+            display: flex;
+            align-items: center; /* 让emoji和文字垂直对齐 */
+        }
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, #1a2980, #26d0ce);
+            border-radius: 2px;
+            margin-right: 12px; /* 与文字间距 */
+        }
+        h3 {
+            color: #26d0ce;
+            margin: 30px 0 18px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+        }
+        h4 {
+            color: #1f7fb6;
+            margin: 20px 0 12px;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+        }
+        p {
+            color: #34495e;
+            margin-bottom: 18px;
+            font-size: 16px;
+            text-align: justify; /* 两端对齐，排版更整洁 */
+            line-height: 2.2; /* 优化行高，更易阅读 */
+        }
+        .code-block {
+            background-color: #f8fafc;
+            padding: 24px; /* 优化内边距 */
+            border-radius: 12px; /* 更大圆角 */
+            border: 1px solid #e2e8f0;
+            margin: 25px 0;
+            overflow-x: auto;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 14px;
+            color: #1a2980;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 轻微阴影，增强质感 */
+        }
+        .demo-area {
+            margin: 35px 0;
+            padding: 20px;
+            background-color: #fefefe;
+            border-radius: 12px;
+            border: 1px solid #f0f4f8;
+        }
+        /* 核心：图片样式 */
+        .no-overflow-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px; /* 图片圆角，更美观 */
+        }
+        /* 提示框（优化配色） */
+        .tip-box {
+            background: linear-gradient(90deg, #e8f8ff 0%, #f0faff 100%);
+            padding: 20px;
+            border-left: 4px solid #26d0ce;
+            margin: 30px 0;
+            border-radius: 10px;
+            color: #1a2980;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(38, 208, 206, 0.1);
+        }
+        /* 表格（优化配色） */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            border-radius: 10px;
+            overflow: hidden; /* 配合圆角 */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 14px; /* 优化内边距 */
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        th {
+            background: linear-gradient(90deg, #1a2980 0%, #26d0ce 100%);
+            color: #fff;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tr:hover {
+            background-color: #f0f8ff; /* 鼠标悬浮高亮，增强交互 */
+            transition: background-color 0.3s ease;
+        }
+        /* 居中相关父元素样式（优化配色标识） */
+        /* 1. Flex 布局居中 */
+        .img-parent-flex {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #ff6b6b; /* 柔和红色 */
+            padding: 15px;
+            background-color: #fff5f5;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 2. 定位 + transform 居中 */
+        .img-parent-position {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            border: 2px solid #9c27b0; /* 柔和紫色 */
+            padding: 15px;
+            background-color: #faf5ff;
+            border-radius: 12px;
+            position: relative;
+        }
+        /* 定位方案图片样式 */
+        .center-img-position {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+        }
+        /* 3. 自适应宽度 Flex 居中 */
+        .responsive-parent-flex {
+            width: 80%;
+            height: 300px;
+            margin: 20px auto;
+            border: 2px solid #28a745; /* 柔和绿色 */
+            padding: 15px;
+            background-color: #f5fff7;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <div class="nav-logo">🖼️ 图片嵌入教学</div>
+            <ul class="nav-items">
+                <li class="nav-item"><a href="#embed-img">📤 嵌入图片</a></li>
+                <li class="nav-item"><a href="#limit-size">📏 尺寸限制</a></li>
+                <li class="nav-item"><a href="#center-flex">🤸 Flex 居中</a></li>
+                <li class="nav-item"><a href="#center-position">🎯 定位居中</a></li>
+                <li class="nav-item"><a href="#fixed-parent">📦 固定宽高</a></li>
+                <li class="nav-item"><a href="#responsive-parent">📱 自适应示例</a></li>
+                <li class="nav-item"><a href="#clickable-img">🔗 可点击图片</a></li>
+                <li class="nav-item"><a href="#common-problem">❓ 常见问题</a></li>
+                <li class="nav-item"><a href="#full-code">💻 完整代码</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="teaching-container">
+        <h1>✨ 网页嵌入图片 & 尺寸限制 & 水平垂直居中 完整教学</h1>
+
+        <h2 id="embed-img">一、 📤 核心知识点：如何嵌入图片？</h2>
+        <p>在HTML中，使用 `<img>` 标签即可轻松嵌入图片，它是单标签元素，无需闭合，核心属性必不可少，下面为你详细梳理：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>属性</th>
+                    <th>作用</th>
+                    <th>示例</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>src</td>
+                    <td>必填，指定图片路径（网络URL / 本地相对路径）</td>
+                    <td>src="https://picsum.photos/800/600" 或 src="./local-img.png"</td>
+                </tr>
+                <tr>
+                    <td>alt</td>
+                    <td>可选，图片加载失败时的替代文本，提升可访问性</td>
+                    <td>alt="治愈系风景图片"</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="code-block">
+<!-- 基础图片嵌入代码 -->
+<!-- 网络图片示例（直接使用公共图片接口） -->
+<img src="https://picsum.photos/800/600" alt="治愈系风景示例图片">
+
+<!-- 本地图片示例（需将图片放在HTML同一文件夹下） -->
+<img src="202601_网页嵌入图片_本地图片实例1.jpg" alt="本地示例图片">
+        </div>
+
+        <h2 id="limit-size">二、 📏 核心需求：如何确保图片不超出父元素？</h2>
+        <p>使用 CSS 的 <code>max-width</code> 和 <code>max-height</code> 属性是解决图片溢出的核心方案，配合 <code>object-fit</code> 可优化图片显示效果，避免变形或裁剪。</p>
+
+        <h3>1. 📚 核心CSS属性解析（必学）</h3>
+        <div class="tip-box">
+            <strong>💡 关键提示：</strong> 这两个 <code>max-*</code> 属性是实现图片不溢出的核心，缺一不可，可根据实际场景灵活取值~
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>CSS属性</th>
+                    <th>作用说明</th>
+                    <th>常用取值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>max-width</td>
+                    <td>限制图片最大宽度，不超过父元素宽度；图片自身宽度小于父元素时，保持原图宽度（不拉伸）</td>
+                    <td>100%（首选）、具体像素（如500px）</td>
+                </tr>
+                <tr>
+                    <td>max-height</td>
+                    <td>限制图片最大高度，不超过父元素高度；图片自身高度小于父元素时，保持原图高度（不拉伸）</td>
+                    <td>100%（首选）、具体像素（如400px）</td>
+                </tr>
+                <tr>
+                    <td>object-fit</td>
+                    <td>可选，控制图片在容器中的显示方式，保持宽高比，避免变形/裁剪</td>
+                    <td>contain（完整显示，推荐）、cover（填满容器）、fill（拉伸变形，不推荐）</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="center-flex">三、 🤸 核心技能：图片水平垂直居中（首选 Flex 布局）</h2>
+        <p>Flex 布局（弹性布局）是实现图片居中的最简单、兼容性最好的方案，代码简洁易懂，无需复杂计算，支持所有现代浏览器，是开发中的首选方案。</p>
+
+        <h3>1. 🧠 核心原理</h3>
+        <p>给<strong>图片的父元素</strong>添加 Flex 相关样式，通过两个核心属性分别控制水平和垂直居中，图片无需额外设置居中样式，直接复用尺寸限制样式即可。</p>
+
+        <h3>2. 📋 关键 CSS 属性（父元素）</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>CSS属性</th>
+                    <th>取值</th>
+                    <th>作用说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>display</td>
+                    <td>flex</td>
+                    <td>将父元素转换为弹性容器，子元素（图片）成为弹性项</td>
+                </tr>
+                <tr>
+                    <td>justify-content</td>
+                    <td>center</td>
+                    <td>控制弹性项在水平方向上居中对齐</td>
+                </tr>
+                <tr>
+                    <td>align-items</td>
+                    <td>center</td>
+                    <td>控制弹性项在垂直方向上居中对齐</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3. 💻 完整代码示例（Flex 布局居中）</h3>
+        <div class="code-block">
+<!-- Flex 布局父元素样式 -->
+.img-parent-flex {
+    width: 600px; /* 固定宽度 */
+    height: 400px; /* 固定高度（垂直居中的前提） */
+    border: 2px solid #ff6b6b;
+    padding: 15px;
+    border-radius: 12px;
+    /* 核心居中样式 */
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+}
+
+<!-- 图片样式（仅需尺寸限制，无需额外居中样式） -->
+.no-overflow-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* 保持宽高比，完整显示 */
+    border-radius: 8px;
+}
+
+<!-- HTML 结构 -->
+<div class="img-parent-flex">
+    <img src="https://picsum.photos/800/600" alt="Flex 居中示例图片" class="no-overflow-img">
+</div>
+        </div>
+
+        <h3>4. 👀 演示效果（Flex 布局居中）</h3>
+        <div class="demo-area">
+            <h4>🎬 演示效果：（柔和红色边框为父元素，图片水平+垂直居中，且不超出父元素范围）</h4>
+            <div class="img-parent-flex">
+                <img src="https://picsum.photos/800/600" alt="Flex 居中示例图片" class="no-overflow-img">
+            </div>
+        </div>
+
+        <h2 id="center-position">四、 🎯 备选方案：图片水平垂直居中（定位 + transform）</h2>
+        <p>如果需要兼容老旧浏览器（如 IE9+），可使用「绝对定位 + transform 偏移」方案，同样能实现完美居中，且与图片尺寸限制样式完全兼容。</p>
+
+        <h3>1. 🧠 核心原理</h3>
+        <ol>
+            <li>父元素设置 <code>position: relative;</code>，作为图片绝对定位的容器，限制图片定位范围；</li>
+            <li>图片设置 <code>position: absolute;</code>，脱离文档流，可自由定位在父元素内部；</li>
+            <li>图片设置 <code>top: 50%; left: 50%;</code>，将图片左上角移动到父元素中心位置；</li>
+            <li>图片设置 <code>transform: translate(-50%, -50%);</code>，让图片自身向左、向上偏移 50%，实现图片中心与父元素中心对齐。</li>
+        </ol>
+
+        <h3>2. 💻 完整代码示例（定位 + transform 居中）</h3>
+        <div class="code-block">
+<!-- 定位方案父元素样式 -->
+.img-parent-position {
+    width: 600px; /* 固定宽度 */
+    height: 400px; /* 固定高度（垂直居中的前提） */
+    border: 2px solid #9c27b0;
+    padding: 15px;
+    border-radius: 12px;
+    position: relative; /* 定位容器 */
+}
+
+<!-- 定位方案图片样式（尺寸限制 + 定位居中） -->
+.center-img-position {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 核心：自身偏移实现居中 */
+}
+
+<!-- HTML 结构 -->
+<div class="img-parent-position">
+    <img src="https://picsum.photos/800/600" alt="定位居中示例图片" class="center-img-position">
+</div>
+        </div>
+
+        <h3>3. 👀 演示效果（定位 + transform 居中）</h3>
+        <div class="demo-area">
+            <h4>🎬 演示效果：（柔和紫色边框为父元素，图片水平+垂直居中，且不超出父元素范围）</h4>
+            <div class="img-parent-position">
+                <img src="https://picsum.photos/800/600" alt="定位居中示例图片" class="center-img-position">
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <strong>💡 重要注意事项：</strong>
+            1.  垂直居中的前提：父元素必须有<strong>明确的高度</strong>（如固定高度 <code>height: 400px;</code>），若父元素 <code>height: auto;</code>（高度由内容撑开），垂直居中会失效；<br>
+            2.  兼容性：Flex 布局兼容 Chrome、Firefox、Edge 等现代浏览器；定位 + transform 兼容 IE9+ 及所有现代浏览器；<br>
+            3.  样式复用：两种居中方案均与 <code>max-width</code>、<code>max-height</code>、<code>object-fit</code> 完全兼容，可同时实现「居中」和「不超出父元素」。
+        </div>
+
+        <h2 id="fixed-parent">五、 📦 示例1：父元素为固定宽高（最常用场景）</h2>
+        <p>父元素设置固定宽高（如600px * 400px），是实际开发中最常用的场景，图片会自动适配父元素尺寸，不超出范围，还可叠加居中样式：</p>
+        <div class="code-block">
+<!-- 父元素样式（固定宽高） -->
+.img-parent-box {
+    width: 600px; /* 父元素固定宽度 */
+    height: 400px; /* 父元素固定高度 */
+    border: 2px solid #ff6b6b; /* 柔和红色边框：显示父元素范围 */
+    padding: 15px;
+    border-radius: 12px;
+    /* 可选：叠加 Flex 居中样式 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+<!-- 图片样式（核心控制） -->
+.no-overflow-img {
+    max-width: 100%; /* 宽度不超父元素 */
+    max-height: 100%; /* 高度不超父元素 */
+    object-fit: contain; /* 完整显示，保持宽高比 */
+    border-radius: 8px;
+}
+
+<!-- HTML结构 -->
+<div class="img-parent-box">
+    <img src="https://picsum.photos/800/600" alt="固定父元素示例图片" class="no-overflow-img">
+</div>
+        </div>
+
+        <div class="demo-area">
+            <h4>🎬 演示效果：（柔和红色边框为父元素，图片未超出边框，且保持水平垂直居中）</h4>
+            <div class="img-parent-flex">
+                <img src="https://picsum.photos/800/600" alt="固定父元素示例图片" class="no-overflow-img">
+            </div>
+        </div>
+
+        <h2 id="responsive-parent">六、 📱 示例2：父元素为自适应宽度（响应式场景）</h2>
+        <p>父元素宽度设为页面80%（自适应屏幕大小），高度手动设置，图片会跟随父元素缩放，同时保持水平垂直居中，适配移动端和桌面端：</p>
+        <div class="code-block">
+<!-- 父元素样式（自适应宽度 + Flex 居中） -->
+.responsive-parent-flex {
+    width: 80%; /* 父元素宽度为页面80% */
+    height: 300px; /* 手动设置高度，支持垂直居中 */
+    border: 2px solid #28a745; /* 柔和绿色边框：区分自适应父元素 */
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+<!-- 图片样式（复用核心样式） -->
+.no-overflow-img {
+    max-width: 100%; /* 宽度不超父元素 */
+    max-height: 100%; /* 高度不超父元素 */
+    object-fit: contain; /* 完整显示，保持宽高比 */
+    border-radius: 8px;
+}
+
+<!-- HTML结构 -->
+<div class="responsive-parent-flex">
+    <img src="https://picsum.photos/1000/500" alt="自适应父元素示例图片" class="no-overflow-img">
+</div>
+        </div>
+
+        <div class="demo-area">
+            <h4>🎬 演示效果：（柔和绿色边框为父元素，缩放浏览器窗口可查看自适应+居中效果）</h4>
+            <div class="responsive-parent-flex">
+                <img src="https://picsum.photos/1000/500" alt="自适应父元素示例图片" class="no-overflow-img">
+            </div>
+        </div>
+
+        <h2 id="clickable-img">七、 🔗 示例3：可点击图片（嵌入链接 + 居中）</h2>
+        <p>若需要图片点击后跳转至指定页面，只需将 `<img>` 标签嵌套在 `<a>` 标签内部即可，居中样式和尺寸限制不受任何影响：</p>
+        <div class="code-block">
+<!-- 可点击图片 + Flex 居中 -->
+<div class="img-parent-flex">
+    <a href="https://picsum.photos" target="_blank"> <!-- target="_blank" 新窗口打开 -->
+        <img src="https://picsum.photos/800/600" alt="可点击示例图片" class="no-overflow-img">
+    </a>
+</div>
+
+<!-- 可点击图片 + 定位居中 -->
+<div class="img-parent-position">
+    <a href="https://picsum.photos" target="_blank">
+        <img src="https://picsum.photos/800/600" alt="可点击示例图片" class="center-img-position">
+    </a>
+</div>
+        </div>
+
+        <div class="demo-area">
+            <h4>🎬 演示效果：（点击图片可跳转至图片接口页面，尺寸不超出父元素，且保持水平垂直居中）</h4>
+            <div class="img-parent-flex">
+                <a href="https://picsum.photos" target="_blank">
+                    <img src="https://picsum.photos/800/600" alt="可点击示例图片" class="no-overflow-img">
+                </a>
+            </div>
+        </div>
+
+        <h2 id="common-problem">八、 ❓ 常见问题总结</h2>
+        <div class="tip-box">
+            <strong>💡 注意事项：</strong>
+            1.  若父元素未设置固定高度，`max-height: 100%;` 和垂直居中会失效，此时仅用 `max-width: 100%;` + 水平居中即可满足需求；<br>
+            2.  `object-fit: contain;` 是推荐值，可避免图片变形；若需要图片填满父元素（如背景图场景），可使用 `object-fit: cover;`；<br>
+            3.  本地图片路径注意：若图片在子文件夹中，路径需写为 `src="子文件夹名称/图片名称.jpg"`，避免路径错误导致图片加载失败；<br>
+            4.  居中样式优先级：Flex 布局 > 定位 + transform，优先使用 Flex 布局，代码更简洁、布局更灵活。
+        </div>
+
+        <h2 id="full-code">九、 💻 完整代码汇总（可直接复制使用）</h2>
+        <div class="code-block">
+<xmp>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 图片嵌入 + 尺寸限制 + 居中 示例</title>
+    <style>
+        /* Flex 居中父元素 */
+        .img-parent {
+            width: 600px;
+            height: 400px;
+            border: 2px solid #ff6b6b;
+            padding: 15px;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 图片样式 */
+        .center-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="img-parent">
+        <img src="https://picsum.photos/800/600" alt="示例图片" class="center-img">
+    </div>
+</body>
+</html>
+</xmp>
+        </div>
+		
+
+		<p>网页显示效果</p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 图片嵌入 + 尺寸限制 + 居中 示例</title>
+    <style>
+        /* Flex 居中父元素 */
+        .img-parent {
+            width: 600px;
+            height: 400px;
+            border: 2px solid #ff6b6b;
+            padding: 15px;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 图片样式 */
+        .center-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="img-parent">
+        <img src="https://picsum.photos/800/600" alt="示例图片" class="center-img">
+    </div>
+</body>
+</html>		
+		
+	
+    </div>
+</body>
+</html>
