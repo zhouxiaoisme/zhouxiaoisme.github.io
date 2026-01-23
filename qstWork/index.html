@@ -165,7 +165,7 @@
             line-height: 1.8;
         }
 
-        /* 目录树板块（替换原笔记列表） */
+        /* 目录树板块（动态生成） */
         .directory-tree-section {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
@@ -186,6 +186,16 @@
             content: '📁';
             margin-right: 10px;
             font-size: 20px;
+        }
+
+        /* 目录统计信息 */
+        .tree-stats {
+            padding: 12px 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: #4a5568;
         }
 
         /* 目录树核心样式 */
@@ -262,8 +272,8 @@
             align-items: center;
         }
 
-        .file-list a::before {
-            content: '📄';
+        /* 文件类型图标 */
+        .file-icon {
             margin-right: 8px;
             font-size: 12px;
         }
@@ -281,6 +291,13 @@
 
         .root-dir .dir-title:hover {
             background: linear-gradient(90deg, #38b2ac 0%, #4299e1 100%);
+        }
+
+        /* 加载提示 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
         }
 
         /* 底部区域 */
@@ -398,84 +415,13 @@
                 <p>所有内容均基于真实工作场景，力求为同类型AI技术从业者提供可参考的实战思路。</p>
             </div>
 
-            <!-- 目录树板块（核心修改） -->
+            <!-- 目录树板块（动态生成） -->
             <div class="directory-tree-section">
                 <h2>QST AI 实战笔记目录</h2>
-                <ul class="directory-tree">
-                    <!-- 根目录 qstWork -->
-                    <li class="dir-node root-dir">
-                        <div class="dir-title" onclick="toggleDir(this)">
-                            <span class="dir-toggle">▶</span>
-                            qstWork (根目录)
-                        </div>
-                        <ul class="file-list">
-                            <!-- 根目录下的直接文件示例 -->
-                            <li><a href="index.html">index.html (本主页)</a></li>
-                        </ul>
-
-                        <!-- 子目录1：AI技术研究 -->
-                        <ul class="file-list">
-                            <li class="dir-node">
-                                <div class="dir-title" onclick="toggleDir(this)">
-                                    <span class="dir-toggle">▶</span>
-                                    AI技术研究
-                                </div>
-                                <ul class="file-list">
-                                    <li><a href="AI技术研究/从论文到落地的验证方法论.html">从论文到落地的验证方法论.html</a></li>
-                                    <li><a href="AI技术研究/前沿AI技术调研框架.html">前沿AI技术调研框架.html</a></li>
-                                </ul>
-                            </li>
-
-                            <!-- 子目录2：算法评估与选型 -->
-                            <li class="dir-node">
-                                <div class="dir-title" onclick="toggleDir(this)">
-                                    <span class="dir-toggle">▶</span>
-                                    算法评估与选型
-                                </div>
-                                <ul class="file-list">
-                                    <li><a href="算法评估与选型/企业级场景的决策框架.html">企业级场景的决策框架.html</a></li>
-                                    <li><a href="算法评估与选型/模型性能对比方法.html">模型性能对比方法.html</a></li>
-                                </ul>
-                            </li>
-
-                            <!-- 子目录3：AI技术评估 -->
-                            <li class="dir-node">
-                                <div class="dir-title" onclick="toggleDir(this)">
-                                    <span class="dir-toggle">▶</span>
-                                    AI技术评估
-                                </div>
-                                <ul class="file-list">
-                                    <li><a href="AI技术评估/成本-性能-风险三维评估体系.html">成本-性能-风险三维评估体系.html</a></li>
-                                    <li><a href="AI技术评估/落地效果量化指标.html">落地效果量化指标.html</a></li>
-                                </ul>
-                            </li>
-
-                            <!-- 子目录4：场景化落地 -->
-                            <li class="dir-node">
-                                <div class="dir-title" onclick="toggleDir(this)">
-                                    <span class="dir-toggle">▶</span>
-                                    场景化落地
-                                </div>
-                                <ul class="file-list">
-                                    <li><a href="场景化落地/从需求到交付的全流程.html">从需求到交付的全流程.html</a></li>
-                                    <li><a href="场景化落地/常见问题与解决方案.html">常见问题与解决方案.html</a></li>
-                                </ul>
-                            </li>
-
-                            <!-- 子目录5：研发管理 -->
-                            <li class="dir-node">
-                                <div class="dir-title" onclick="toggleDir(this)">
-                                    <span class="dir-toggle">▶</span>
-                                    研发管理
-                                </div>
-                                <ul class="file-list">
-                                    <li><a href="研发管理/AI团队高效协作方法.html">AI团队高效协作方法.html</a></li>
-                                    <li><a href="研发管理/项目进度管控策略.html">项目进度管控策略.html</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                <!-- 目录统计信息（动态生成） -->
+                <div class="tree-stats" id="tree-stats">加载中...</div>
+                <!-- 动态目录树容器 -->
+                <ul class="directory-tree" id="directory-tree-container"></ul>
             </div>
         </div>
 
@@ -491,28 +437,97 @@
         </div>
     </div>
 
-    <!-- 折叠/展开目录的JS逻辑 -->
+    <!-- 动态生成目录树的JS逻辑 -->
     <script>
         // 目录折叠/展开切换函数
         function toggleDir(dirTitle) {
-            // 获取切换图标和文件列表
             const toggleIcon = dirTitle.querySelector('.dir-toggle');
             const fileList = dirTitle.nextElementSibling;
             
-            // 切换图标状态
             toggleIcon.classList.toggle('open');
-            // 切换文件列表显示/隐藏
             fileList.classList.toggle('show');
-            
-            // 更新图标内容
             toggleIcon.textContent = toggleIcon.classList.contains('open') ? '▶' : '▶';
         }
 
-        // 页面加载时默认展开根目录
-        window.onload = function() {
-            const rootDirTitle = document.querySelector('.root-dir .dir-title');
-            toggleDir(rootDirTitle);
+        // 统计文件总数
+        function countFiles(node) {
+            let count = 0;
+            if (node.type === 'file') {
+                count = 1;
+            } else if (node.children) {
+                node.children.forEach(child => {
+                    count += countFiles(child);
+                });
+            }
+            return count;
         }
+
+        // 递归生成目录树HTML
+        function generateTreeHTML(node, isRoot = false) {
+            if (node.type === 'dir') {
+                // 生成目录节点
+                const dirClass = isRoot ? 'dir-node root-dir' : 'dir-node';
+                let html = `<li class="${dirClass}">
+                    <div class="dir-title" onclick="toggleDir(this)">
+                        <span class="dir-toggle">▶</span>
+                        ${node.name} (目录)
+                    </div>
+                    <ul class="file-list">`;
+                
+                // 递归生成子节点
+                node.children.forEach(child => {
+                    html += generateTreeHTML(child);
+                });
+                
+                html += `</ul></li>`;
+                return html;
+            } else if (node.type === 'file') {
+                // 生成文件节点（区分HTML和图片）
+                let fileIcon = '📄';
+                if (['.jpg', '.png', '.gif', '.svg', '.jpeg'].includes(node.ext)) {
+                    fileIcon = '🖼️';
+                }
+                // 处理路径（相对路径）
+                const filePath = node.path.startsWith('/') ? node.path.slice(1) : node.path;
+                return `<li>
+                    <a href="${filePath}" target="${node.ext === '.html' ? '_self' : '_blank'}">
+                        <span class="file-icon">${fileIcon}</span>
+                        ${node.name}
+                    </a>
+                </li>`;
+            }
+            return '';
+        }
+
+        // 加载目录树数据并渲染
+        async function loadAndRenderTree() {
+            try {
+                // 读取JSON数据
+                const response = await fetch('tree-data.json');
+                if (!response.ok) throw new Error('数据文件加载失败');
+                const treeData = await response.json();
+                
+                // 统计文件总数
+                const totalFiles = countFiles(treeData);
+                document.getElementById('tree-stats').textContent = 
+                    `📊 目录总文件数：${totalFiles}（包含HTML、图片文件）`;
+                
+                // 生成目录树HTML
+                const treeHTML = generateTreeHTML(treeData, true);
+                document.getElementById('directory-tree-container').innerHTML = treeHTML;
+                
+                // 默认展开根目录
+                const rootDirTitle = document.querySelector('.root-dir .dir-title');
+                if (rootDirTitle) toggleDir(rootDirTitle);
+            } catch (error) {
+                document.getElementById('tree-stats').textContent = `❌ 目录加载失败：${error.message}`;
+                document.getElementById('directory-tree-container').innerHTML = 
+                    `<li style="color: #e53e3e;">无法加载目录数据，请检查文件是否存在</li>`;
+            }
+        }
+
+        // 页面加载时执行
+        window.onload = loadAndRenderTree;
     </script>
 </body>
 </html>
