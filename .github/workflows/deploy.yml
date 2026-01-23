@@ -1,0 +1,61 @@
+name: 部署qstWork子目录到GitHub Pages
+on:
+  # 触发条件：main分支有推送时自动执行，也支持手动触发
+  push:
+    branches: [ main ]
+    paths:
+      - 'qstWork/**'  # 仅当qstWork目录内容变更时触发，减少不必要的执行
+      - '.github/workflows/deploy.yml' # 工作流文件变更也触发
+  workflow_dispatch: # 手动触发兜底
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 步骤1：拉取main分支的代码
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 拉取完整提交历史，避免后续git操作报错
+
+      # 步骤2：创建/切换到qstWorkExportToPublic分支
+      - name: 准备目标分支
+        run: |
+          # 配置Git身份（必须，否则无法提交）
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # 检查目标分支是否存在，不存在则创建空分支
+          if git show-ref --verify --quiet refs/heads/qstWorkExportToPublic; then
+            git checkout qstWorkExportToPublic
+          else
+            git checkout --orphan qstWorkExportToPublic # 创建无历史的空分支
+            git rm -rf . # 清空空分支的默认内容
+          fi
+
+      # 步骤3：将qstWork子目录的内容复制到分支根目录
+      - name: 复制qstWork内容到根目录
+        run: |
+          # 清空分支根目录现有内容（避免残留旧文件）
+          rm -rf *
+          # 复制qstWork目录下的所有文件/子目录到当前根目录
+          cp -r qstWork/* .
+          # 打印复制结果，便于日志排查
+          echo "已复制qstWork目录内容到分支根目录，当前文件列表："
+          ls -la
+
+      # 步骤4：提交并推送到qstWorkExportToPublic分支
+      - name: 提交并推送变更
+        run: |
+          # 暂存所有文件
+          git add -A
+          # 提交（无变更时跳过，避免报错）
+          git commit -m "自动部署qstWork子目录内容: $(date +%Y-%m-%d\ %H:%M:%S)" || echo "无内容变更，无需提交"
+          # 强制推送（空分支需强制推送，确保内容纯净）
+          git push -f origin qstWorkExportToPublic
+
+      # 步骤5：输出部署成功提示
+      - name: 部署完成提示
+        run: |
+          echo "✅ qstWork子目录内容已成功推送到qstWorkExportToPublic分支！"
+          echo "请前往仓库Settings → Pages，将Source设置为qstWorkExportToPublic分支的根目录。"
