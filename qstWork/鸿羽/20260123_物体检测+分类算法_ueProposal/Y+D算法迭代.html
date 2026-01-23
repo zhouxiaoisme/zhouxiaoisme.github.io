@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法管理与优化</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background-color: #F5F7FA;
+            color: #1A365D;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 算法列表页样式 */
+        .algorithm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A365D;
+        }
+        
+        .btn {
+            height: 36px;
+            padding: 0 20px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s linear;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #2B6CB0;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2C5282;
+        }
+        
+        .btn-secondary {
+            background-color: #EBF8FF;
+            color: #2B6CB0;
+            border: 1px solid #2B6CB0;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2B6CB0;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #38A169;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #2F855A;
+        }
+        
+        .algorithm-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .algorithm-card {
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .algorithm-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: #2B6CB0;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .algorithm-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1A365D;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .algorithm-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: #C6F6D5;
+            color: #38A169;
+        }
+        
+        .card-body {
+            font-size: 12px;
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #A0AEC0;
+            margin-bottom: 16px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        .card-btn {
+            font-size: 12px;
+            padding: 0 12px;
+            height: 32px;
+        }
+        
+        /* 详情/优化页通用样式 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1A365D;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mode-tag {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: #FFE485;
+            color: #DD6B20;
+        }
+        
+        /* 配置面板样式 */
+        .main-content {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .config-panel {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .preview-panel {
+            width: 70%;
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .module-card {
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .module-header {
+            background-color: #2B6CB0;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px 6px 0 0;
+            margin: -20px -20px 16px -20px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .classification-module .module-header {
+            background-color: #C05621;
+        }
+        
+        .step {
+            margin-bottom: 24px;
+        }
+        
+        .step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2B6CB0;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        
+        .step-content {
+            margin-bottom: 8px;
+        }
+        
+        /* 只读参数样式 */
+        .read-only-param {
+            background-color: #F7FAFC;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #4A5568;
+            margin-bottom: 8px;
+        }
+        
+        .param-label {
+            font-weight: bold;
+            color: #1A365D;
+            margin-right: 8px;
+        }
+        
+        /* 标签项样式 */
+        .tag-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            justify-content: space-between;
+        }
+        
+        .sample-count {
+            font-size: 12px;
+            color: #718096;
+            background-color: #F7FAFC;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .tag-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* 上传区域样式 */
+        .upload-guide {
+            border: 2px dashed #E2E8F0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .upload-guide:hover {
+            border-color: #2B6CB0;
+            background-color: #EBF8FF;
+        }
+        
+        .upload-icon {
+            font-size: 40px;
+            color: #718096;
+            margin-bottom: 12px;
+        }
+        
+        .upload-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1A365D;
+            margin-bottom: 8px;
+        }
+        
+        .upload-desc {
+            font-size: 12px;
+            color: #718096;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .upload-example {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .example-item {
+            text-align: center;
+            max-width: 100px;
+        }
+        
+        .example-item-full {
+            max-width: 200px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        .example-item-snap {
+            max-width: 100px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+		
+        .example-img {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+        
+        .example-label {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .example-label.error {
+            color: #E53E3E;
+        }
+        
+        .example-label.success {
+            color: #38A169;
+        }
+		
+        /* 底部操作区 */
+        .action-panel {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 0;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        .train-btn {
+            width: 180px;
+            height: 44px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s linear;
+        }
+        
+        .train-btn.enabled {
+            background-color: #805AD5;
+            color: white;
+        }
+        
+        .train-btn.enabled:hover {
+            background-color: #6B46C1;
+            transform: scale(0.98);
+        }
+        
+        /* 上传弹窗样式 */
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-out;
+        }
+        
+        .modal-mask.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            width: 90%;
+            max-width: 900px;
+            height: 80%;
+            max-height: 600px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: all 0.3s ease-out;
+        }
+        
+        .modal-mask.visible .modal-content {
+            transform: scale(1);
+        }
+        
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+        }
+        
+        .upload-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #E2E8F0;
+            margin-bottom: 16px;
+        }
+        
+        .tab-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-item.active {
+            border-bottom-color: #2B6CB0;
+            color: #2B6CB0;
+            font-weight: bold;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        /* 预览区样式 */
+        .tabs-container {
+            display: flex;
+            border-bottom: 1px solid #E2E8F0;
+            margin-bottom: 20px;
+        }
+        
+        .tab-preview {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #718096;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-preview.active {
+            color: #1A365D;
+            font-weight: bold;
+            border-bottom-color: #2B6CB0;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 16px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .image-card {
+            width: 120px;
+            height: 120px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 10px;
+            padding: 4px;
+            text-align: center;
+        }
+        
+        .empty-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: #718096;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+		
+        /* 上传样本弹窗专属样式 */
+		/* 在现有样式基础上添加或修改以下样式 */
+
+		/* 调整上传样本弹窗的尺寸限制 */
+		#uploadModal .modal-content {
+			max-height: 80vh; /* 增加最大高度到视口的80% */
+			height: auto;
+			max-width: 800px; /* 增加最大宽度 */
+			width: 90%; /* 让宽度更灵活 */
+		}
+
+		/* 为上传区域添加适当的内边距和滚动机制 */
+		.upload-content {
+			flex: 1;
+			overflow-y: auto; /* 内容溢出时显示滚动条 */
+			padding: 10px;
+		}
+
+		/* 确保上传选项区域有足够空间 */
+		.upload-options {
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+			margin-bottom: 20px;
+		}
+
+		.upload-option {
+			padding: 16px;
+			border-radius: 6px;
+			border: 1px solid #E2E8F0;
+		}
+		
+        /* 滚动条样式优化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }		
+		
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 1. 算法列表页 -->
+        <div class="algorithm-list-page">
+            <div class="algorithm-header">
+                <div class="page-title">算法管理</div>
+                <button class="btn btn-primary" id="createNewAlgorithm">+ 新建算法</button>
+            </div>
+            
+            <div class="algorithm-list" id="algorithmList">
+                <div class="algorithm-card" data-algorithm-id="1">
+                    <div class="card-header">
+                        <div class="algorithm-name">垃圾桶满溢检测</div>
+                        <div class="algorithm-status">已训练</div>
+                    </div>
+                    <div class="card-body">
+                        <div>检测模型：街道公共设施检测模型-V1</div>
+                        <div>分类标签：满溢、适中、空（共3个）</div>
+                        <div>样本总数：18张</div>
+                    </div>
+                    <div class="card-meta">
+                        <div>创建时间：2026-01-23</div>
+                        <div>最后训练：2026-01-23</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn card-btn btn-secondary view-algorithm">查看配置</button>
+                        <button class="btn card-btn btn-primary optimize-algorithm">优化算法</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 算法详情页（纯查看） -->
+        <div class="algorithm-detail-page" style="display: none;">
+            <div class="page-header">
+                <div class="page-subtitle">算法配置：垃圾桶满溢检测</div>
+                <button class="btn btn-secondary" id="backToListFromDetail">返回列表</button>
+            </div>
+            
+            <div class="main-content">
+                <div class="config-panel">
+                    <!-- 检测模型配置（纯查看） -->
+                    <div class="module-card">
+                        <div class="module-header">
+                            <span>⚙️</span> 检测模型配置（系统提供）
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>1</span> 选择检测模型
+                            </div>
+                            <div class="step-desc">选择系统已训练完成的基础检测模型</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">检测类型：</span> 物品模型
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">模型版本：</span> 街道公共设施检测模型-V1
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>2</span> 物框尺寸过滤
+                            </div>
+                            <div class="step-desc">过滤过小的检测目标，避免干扰分类精度</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">最小宽度：</span> 50px
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">最小高度：</span> 50px
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>3</span> 选择检测类别
+                            </div>
+                            <div class="step-desc">选择需要精细化分类的类别</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">已选类别：</span> 垃圾桶
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>4</span> 设置抠图参数
+                            </div>
+                            <div class="step-desc">为检测物框增加边缘padding，确保抠图完整性</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">上padding：</span> 10%
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">下padding：</span> 10%
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">左padding：</span> 10%
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">右padding：</span> 10%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分类模型配置（纯查看） -->
+                    <div class="module-card classification-module">
+                        <div class="module-header">
+                            <span>🧠</span> 分类模型配置（已配置）
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>5</span> 定义分类标签
+                            </div>
+                            <div class="step-desc">为垃圾桶类别定义精细化分类标签</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">标签列表：</span> 满溢、适中、空（共3个）
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>6</span> 上传训练样本
+                            </div>
+                            <div class="step-desc">每个标签对应的训练样本数量</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">满溢：</span> 6个样本
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">适中：</span> 6个样本
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">空：</span> 6个样本
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">样本总数：</span> 18个（≤1000个）
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧预览区 -->
+                <div class="preview-panel">
+                    <div class="tabs-container">
+                        <div class="tab-preview active">满溢（6张）</div>
+                        <div class="tab-preview">适中（6张）</div>
+                        <div class="tab-preview">空（6张）</div>
+                    </div>
+                    
+                    <div class="image-grid">
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_1.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_2.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_3.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_4.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_5.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_6.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 算法优化页（编辑+微调合并） -->
+        <div class="algorithm-optimize-page" style="display: none;">
+            <div class="page-header">
+                <div class="page-subtitle">
+                    优化算法：垃圾桶满溢检测
+                    <span class="mode-tag">可编辑模式</span>
+                </div>
+                <button class="btn btn-secondary" id="backToListFromOptimize">返回列表</button>
+            </div>
+            
+            <div class="main-content">
+                <div class="config-panel">
+                    <!-- 检测模型配置（仅查看） -->
+                    <div class="module-card">
+                        <div class="module-header">
+                            <span>⚙️</span> 检测模型配置（仅查看）
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>1</span> 选择检测模型
+                            </div>
+                            <div class="step-desc">基础配置不可修改，如需调整请新建算法</div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">检测类型：</span> 物品模型
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">模型版本：</span> 街道公共设施检测模型-V1
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>2</span> 物框尺寸过滤
+                            </div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">最小宽度：</span> 50px
+                                </div>
+                                <div class="read-only-param">
+                                    <span class="param-label">最小高度：</span> 50px
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>3</span> 选择检测类别
+                            </div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">已选类别：</span> 垃圾桶
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>4</span> 设置抠图参数
+                            </div>
+                            <div class="step-content">
+                                <div class="read-only-param">
+                                    <span class="param-label">padding配置：</span> 上下左右各10%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分类模型配置（可编辑） -->
+                    <div class="module-card classification-module">
+                        <div class="module-header">
+                            <span>🧠</span> 分类模型配置（可编辑）
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>5</span> 定义分类标签（可编辑）
+                            </div>
+                            <div class="step-desc">可增删改标签，标签名称不可重复</div>
+                            <div class="step-content">
+                                <div id="tagList">
+                                    <div class="tag-item">
+                                        <span>满溢</span>
+                                        <div class="tag-actions">
+                                            <button class="btn card-btn btn-secondary edit-tag">编辑</button>
+                                            <button class="btn card-btn btn-secondary delete-tag">删除</button>
+                                        </div>
+                                    </div>
+                                    <div class="tag-item">
+                                        <span>适中</span>
+                                        <div class="tag-actions">
+                                            <button class="btn card-btn btn-secondary edit-tag">编辑</button>
+                                            <button class="btn card-btn btn-secondary delete-tag">删除</button>
+                                        </div>
+                                    </div>
+                                    <div class="tag-item">
+                                        <span>空</span>
+                                        <div class="tag-actions">
+                                            <button class="btn card-btn btn-secondary edit-tag">编辑</button>
+                                            <button class="btn card-btn btn-secondary delete-tag">删除</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-secondary" id="addTagBtn">+ 增加新的标签</button>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-title">
+                                <span>6</span> 上传训练样本（可编辑）
+                            </div>
+                            <div class="step-desc">为每个标签上传样本，每次最多100张，总数≤1000张</div>
+                            <div class="step-content">
+                                <div id="sampleUploadList">
+                                    <div class="tag-item">
+                                        <div>
+                                            <span>满溢</span>
+                                            <span class="sample-count">6个样本</span>
+                                        </div>
+                                        <div class="tag-actions">
+                                            <button class="btn card-btn btn-secondary upload-samples" data-tag-name="满溢">📤 上传样本</button>
+                                            <button class="btn card-btn btn-secondary delete-samples" data-tag-name="满溢">🗑️ 删除样本</button>
+                                        </div>
+                                    </div>
+                                    <div class="tag-item">
+                                        <div>
+                                            <span>适中</span>
+                                            <span class="sample-count">6个样本</span>
+                                        </div>
+                                        <div class="tag-actions">
+                                            <button class="btn card-btn btn-secondary upload-samples" data-tag-name="适中">📤 上传样本</button>
+                                            <button class="btn card-btn btn-secondary delete-samples" data-tag-name="适中">🗑️ 删除样本</button>
+                                        </div>
+                                    </div>
+                                    <div class="tag-item">
+                                        <div>
+                                            <span>空</span>
+                                            <span class="sample-count">6个样本</span>
+                                        </div>
+                                        <div class="tag-actions">
+                                            <button class="btn card-btn btn-secondary upload-samples" data-tag-name="空">📤 上传样本</button>
+                                            <button class="btn card-btn btn-secondary delete-samples" data-tag-name="空">🗑️ 删除样本</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 批量上传提示 -->
+                                <div style="margin-top: 16px; padding: 12px; background-color: #F7FAFC; border-radius: 6px; border-left: 3px solid #2B6CB0;">
+                                    <div style="font-size: 12px; color: #4A5568; line-height: 1.5;">
+                                        <strong>批量上传：</strong>支持上传包含标签文件夹的ZIP包（根目录下直接放置标签名称文件夹），自动分配样本
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧预览区（实时同步编辑结果） -->
+                <div class="preview-panel">
+                    <div class="tabs-container" id="previewTabs">
+                        <div class="tab-preview active">满溢（6张）</div>
+                        <div class="tab-preview">适中（6张）</div>
+                        <div class="tab-preview">空（6张）</div>
+                    </div>
+                    
+                    <div class="image-grid" id="previewImageGrid">
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_1.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_2.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_3.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_4.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_5.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                        <div class="image-card">
+							<img src="./垃圾桶满溢_6.png" alt="样本图片">
+                            <div class="image-label">🖼️ 抠图样本</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部微调训练入口 -->
+            <div class="action-panel">
+                <button class="btn train-btn enabled" id="startFineTune">发起微调训练</button>
+            </div>
+        </div>
+        
+        <!-- 上传样本弹窗 -->
+	<!-- 上传样本弹窗（修改后） -->
+	<div class="modal-mask" id="uploadModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-title">上传训练样本</div>
+				<div class="modal-close" id="uploadModalClose">×</div>
+			</div>
+			
+			<!-- 提示信息 -->
+			<div style="margin-bottom: 16px; padding: 12px; background-color: #F7FAFC; border-radius: 6px; border-left: 3px solid #2B6CB0;">
+				<div style="font-weight: bold; margin-bottom: 8px; color: #1A365D;">训练图片集支持两种上传方式：</div>
+				<div style="margin-bottom: 4px; color: #4A5568;">1. zip包。包含有你设定的物品分类模型标签以及样本图片的zip包。请按照示例文件规范构建zip包</div>
+				<div style="margin-bottom: 4px; color: #4A5568;">2. 图片。可以一次添加一到多张图片，每次最多添加100张图片，可以多次添加</div>
+				<div style="margin-top: 8px; color: #E53E3E; font-weight: bold;">注意：一个算法的训练图片总数不超过1000张！</div>
+			</div>
+			
+			<!-- 上传模式选项卡 -->
+			<div class="tabs" style="margin-bottom: 16px; border-bottom: 1px solid #E2E8F0;">
+				<div class="tab-item active" id="zipUploadTab" style="padding: 8px 16px;">Zip包上传（批量）</div>
+				<div class="tab-item" id="imageUploadTab" style="padding: 8px 16px;">图片上传（单标签）</div>
+			</div>
+			
+			
+			<!-- Zip包上传模式 -->
+			<div class="upload-content" id="zipUploadContent" style="display: block;">
+				<div class="upload-guide">
+					<div class="upload-icon">📦</div>
+					<div class="upload-title">点击或拖拽Zip包至此处上传</div>
+					<div class="upload-desc">
+						支持格式：ZIP<br>
+						包内结构：根目录下直接放置标签名称文件夹，文件夹内为对应样本图片<br>
+						示例：zip包 → 满溢/ → img1.jpg、img2.jpg...
+					</div>
+					<button class="btn btn-primary" id="selectZipBtn">选择Zip包</button>
+				</div>
+				<div class="upload-options">
+					<!-- Zip包结构示例 -->
+					<div class="upload-title">📂 Zip包结构示例：</div>
+					<div style="text-align: left; padding: 12px; background-color: white; border-radius: 6px; border: 1px solid #E2E8F0;">
+						<div style="font-size: 11px; line-height: 1.8;">
+							📂 垃圾桶满溢检测.zip<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;📂 满溢<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼️ img_001.jpg<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼️ img_002.jpg<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;📂 适中<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼️ img_003.jpg<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;📂 空<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🖼️ img_004.jpg
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- 图片上传模式 -->
+			<div class="upload-content" id="imageUploadContent" style="display: none;">
+				<div class="upload-guide">
+					<div class="upload-icon">📤</div>
+					<div class="upload-title">点击或拖拽图片至此处上传（当前标签：<span id="currentTagName" style="color: #2B6CB0; font-weight: bold;">满溢</span>）</div>
+					<div class="upload-desc">
+						支持格式：JPG、PNG、JPEG<br>
+						单张图片大小：≤5MB | 建议尺寸：200×200px左右<br>
+						每次最多上传：100张
+					</div>
+					<button class="btn btn-primary" id="selectImagesBtn">选择图片</button>
+				</div>
+				<div class="upload-options">
+					<!-- 上传示例对比 -->
+						<div class="example-item-full">
+							<img src="./全景_1.png" alt="错误示例">
+							<div class="example-label error">❌错误:原始大图</div>
+						</div>
+						<div class="example-item-snap">
+							<img src="./全景_1_小图_1.png" alt="正确示例">
+							<div class="example-label success">✅正确:物框抠图</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal-footer">
+				<button class="btn btn-secondary" id="cancelUpload">取消</button>
+				<button class="btn btn-primary" id="confirmUpload">确认上传</button>
+			</div>
+		</div>
+	</div>
+	
+    <script>
+        // 模拟算法数据
+        const algorithmData = {
+            id: 1,
+            name: "垃圾桶满溢检测",
+            config: {
+                detectType: "object",
+                detectModel: "street-v1",
+                widthFilter: 50,
+                heightFilter: 50,
+                padding: { top: 10, bottom: 10, left: 10, right: 10 },
+                detectClass: "trash",
+                tags: [
+                    { id: 1, name: "满溢", sampleCount: 6 },
+                    { id: 2, name: "适中", sampleCount: 6 },
+                    { id: 3, name: "空", sampleCount: 6 }
+                ],
+                totalSamples: 18
+            }
+        };
+        
+        // DOM元素
+        const algorithmListPage = document.querySelector('.algorithm-list-page');
+        const algorithmDetailPage = document.querySelector('.algorithm-detail-page');
+        const algorithmOptimizePage = document.querySelector('.algorithm-optimize-page');
+        
+        // 列表页按钮
+        const viewAlgorithmBtns = document.querySelectorAll('.view-algorithm');
+        const optimizeAlgorithmBtns = document.querySelectorAll('.optimize-algorithm');
+        
+        // 详情页按钮
+        const backToListFromDetail = document.getElementById('backToListFromDetail');
+        
+        // 优化页按钮
+        const backToListFromOptimize = document.getElementById('backToListFromOptimize');
+        const addTagBtn = document.getElementById('addTagBtn');
+        const startFineTuneBtn = document.getElementById('startFineTune');
+        
+        // 上传弹窗元素
+        const uploadModal = document.getElementById('uploadModal');
+        const currentTagName = document.getElementById('currentTagName');
+        const uploadModalClose = document.getElementById('uploadModalClose');
+        const cancelUploadBtn = document.getElementById('cancelUpload');
+        const confirmUploadBtn = document.getElementById('confirmUpload');
+        const zipUploadTab = document.getElementById('zipUploadTab');
+        const imageUploadTab = document.getElementById('imageUploadTab');
+        const zipUploadContent = document.getElementById('zipUploadContent');
+        const imageUploadContent = document.getElementById('imageUploadContent');
+        const uploadSamplesBtns = document.querySelectorAll('.upload-samples');
+        const deleteSamplesBtns = document.querySelectorAll('.delete-samples');
+        const editTagBtns = document.querySelectorAll('.edit-tag');
+        const deleteTagBtns = document.querySelectorAll('.delete-tag');
+        
+        // 1. 查看算法配置
+        function viewAlgorithm() {
+            algorithmListPage.style.display = 'none';
+            algorithmDetailPage.style.display = 'block';
+            algorithmOptimizePage.style.display = 'none';
+        }
+        
+        // 2. 进入优化页面（编辑+微调合并）
+        function enterOptimizePage() {
+            algorithmListPage.style.display = 'none';
+            algorithmDetailPage.style.display = 'none';
+            algorithmOptimizePage.style.display = 'block';
+        }
+        
+        // 3. 返回列表页
+        function backToList() {
+            algorithmDetailPage.style.display = 'none';
+            algorithmOptimizePage.style.display = 'none';
+            algorithmListPage.style.display = 'block';
+        }
+        
+        // 4. 标签操作（增删改）
+        let tagIdCounter = 4; // 用于新增标签的ID自增
+        
+        // 新增标签
+        function addTag() {
+            const tagName = prompt('请输入新标签名称：');
+            if (!tagName || tagName.trim() === '') {
+                alert('标签名称不能为空！');
+                return;
+            }
+            
+            // 检查标签名称是否重复
+            const existingTags = document.querySelectorAll('#tagList .tag-item span');
+            for (let tag of existingTags) {
+                if (tag.textContent === tagName) {
+                    alert('该标签名称已存在！');
+                    return;
+                }
+            }
+            
+            // 添加到标签列表
+            const tagList = document.getElementById('tagList');
+            const newTagItem = document.createElement('div');
+            newTagItem.className = 'tag-item';
+            newTagItem.innerHTML = `
+                <span>${tagName}</span>
+                <div class="tag-actions">
+                    <button class="btn card-btn btn-secondary edit-tag">编辑</button>
+                    <button class="btn card-btn btn-secondary delete-tag">删除</button>
+                </div>
+            `;
+            tagList.appendChild(newTagItem);
+            
+            // 添加到样本上传列表
+            const sampleUploadList = document.getElementById('sampleUploadList');
+            const newSampleItem = document.createElement('div');
+            newSampleItem.className = 'tag-item';
+            newSampleItem.innerHTML = `
+                <div>
+                    <span>${tagName}</span>
+                    <span class="sample-count">0个样本</span>
+                </div>
+                <div class="tag-actions">
+                    <button class="btn card-btn btn-secondary upload-samples" data-tag-name="${tagName}">📤 上传样本</button>
+                    <button class="btn card-btn btn-secondary delete-samples" data-tag-name="${tagName}">🗑️ 删除样本</button>
+                </div>
+            `;
+            sampleUploadList.appendChild(newSampleItem);
+            
+            // 添加到预览标签页
+            const previewTabs = document.getElementById('previewTabs');
+            const newPreviewTab = document.createElement('div');
+            newPreviewTab.className = 'tab-preview';
+            newPreviewTab.textContent = `${tagName}（0张）`;
+            previewTabs.appendChild(newPreviewTab);
+            
+            // 绑定新标签的事件
+            bindTagEvents(newTagItem.querySelector('.edit-tag'), newTagItem.querySelector('.delete-tag'), newTagItem.querySelector('span').textContent);
+            bindSampleEvents(newSampleItem.querySelector('.upload-samples'), newSampleItem.querySelector('.delete-samples'), tagName);
+            bindPreviewTabEvent(newPreviewTab);
+            
+            // 更新算法数据
+            algorithmData.config.tags.push({
+                id: tagIdCounter++,
+                name: tagName,
+                sampleCount: 0
+            });
+        }
+        
+        // 编辑标签
+        function editTag(element, originalName) {
+            const newName = prompt('请输入新的标签名称：', originalName);
+            if (!newName || newName.trim() === '') {
+                alert('标签名称不能为空！');
+                return;
+            }
+            
+            // 检查标签名称是否重复
+            const existingTags = document.querySelectorAll('#tagList .tag-item span');
+            for (let tag of existingTags) {
+                if (tag.textContent === newName && tag.textContent !== originalName) {
+                    alert('该标签名称已存在！');
+                    return;
+                }
+            }
+            
+            // 更新标签列表
+            element.parentElement.previousElementSibling.textContent = newName;
+            
+            // 更新样本上传列表
+            const sampleItems = document.querySelectorAll('#sampleUploadList .tag-item');
+            sampleItems.forEach(item => {
+                if (item.querySelector('span').textContent === originalName) {
+                    item.querySelector('span').textContent = newName;
+                    item.querySelector('.upload-samples').dataset.tagName = newName;
+                    item.querySelector('.delete-samples').dataset.tagName = newName;
+                }
+            });
+            
+            // 更新预览标签页
+            const previewTabs = document.querySelectorAll('.tab-preview');
+            previewTabs.forEach(tab => {
+                if (tab.textContent.startsWith(originalName)) {
+                    const countText = tab.textContent.match(/（\d+张）/)[0];
+                    tab.textContent = `${newName}${countText}`;
+                }
+            });
+            
+            // 更新算法数据
+            algorithmData.config.tags.forEach(tag => {
+                if (tag.name === originalName) {
+                    tag.name = newName;
+                }
+            });
+        }
+        
+        // 删除标签
+        function deleteTag(element, tagName) {
+            if (!confirm(`确定要删除标签"${tagName}"吗？删除后该标签的所有样本也会被删除！`)) {
+                return;
+            }
+            
+            // 从标签列表删除
+            element.closest('.tag-item').remove();
+            
+            // 从样本上传列表删除
+            const sampleItems = document.querySelectorAll('#sampleUploadList .tag-item');
+            sampleItems.forEach(item => {
+                if (item.querySelector('span').textContent === tagName) {
+                    item.remove();
+                }
+            });
+            
+            // 从预览标签页删除
+            const previewTabs = document.querySelectorAll('.tab-preview');
+            previewTabs.forEach(tab => {
+                if (tab.textContent.startsWith(tagName)) {
+                    tab.remove();
+                }
+            });
+            
+            // 更新算法数据
+            algorithmData.config.tags = algorithmData.config.tags.filter(tag => tag.name !== tagName);
+            algorithmData.config.totalSamples -= algorithmData.config.tags.find(t => t.name === tagName)?.sampleCount || 0;
+        }
+        
+        // 5. 样本操作（上传/删除）
+        function openUploadModal(tagName) {
+            currentTagName.textContent = tagName;
+            uploadModal.classList.add('visible');
+        }
+        
+        function closeUploadModal() {
+            uploadModal.classList.remove('visible');
+        }
+        
+        function confirmUploadSamples() {
+            const tagName = currentTagName.textContent;
+            const addCount = 5; // 模拟上传5张样本
+            
+            // 检查总样本数是否超过限制
+            const currentTotal = algorithmData.config.totalSamples;
+            if (currentTotal + addCount > 1000) {
+                alert('上传失败！算法训练图片总数不能超过1000张');
+                return;
+            }
+            
+            // 更新样本数量显示
+            const sampleItems = document.querySelectorAll('#sampleUploadList .tag-item');
+            sampleItems.forEach(item => {
+                if (item.querySelector('span').textContent === tagName) {
+                    const sampleCountEl = item.querySelector('.sample-count');
+                    const currentCount = parseInt(sampleCountEl.textContent);
+                    sampleCountEl.textContent = `${currentCount + addCount}个样本`;
+                    
+                    // 更新预览标签页
+                    const previewTabs = document.querySelectorAll('.tab-preview');
+                    previewTabs.forEach(tab => {
+                        if (tab.textContent.startsWith(tagName)) {
+                            tab.textContent = `${tagName}（${currentCount + addCount}张）`;
+                        }
+                    });
+                    
+                    // 更新算法数据
+                    algorithmData.config.tags.forEach(tag => {
+                        if (tag.name === tagName) {
+                            tag.sampleCount += addCount;
+                        }
+                    });
+                    algorithmData.config.totalSamples += addCount;
+                }
+            });
+            
+            alert(`成功为"${tagName}"标签上传${addCount}张样本！`);
+            closeUploadModal();
+        }
+        
+        function deleteSamples(tagName) {
+            if (!confirm(`确定要删除"${tagName}"标签的所有样本吗？`)) {
+                return;
+            }
+            
+            // 更新样本数量显示
+            const sampleItems = document.querySelectorAll('#sampleUploadList .tag-item');
+            sampleItems.forEach(item => {
+                if (item.querySelector('span').textContent === tagName) {
+                    const sampleCountEl = item.querySelector('.sample-count');
+                    const deleteCount = parseInt(sampleCountEl.textContent);
+                    sampleCountEl.textContent = '0个样本';
+                    
+                    // 更新预览标签页
+                    const previewTabs = document.querySelectorAll('.tab-preview');
+                    previewTabs.forEach(tab => {
+                        if (tab.textContent.startsWith(tagName)) {
+                            tab.textContent = `${tagName}（0张）`;
+                        }
+                    });
+                    
+                    // 更新算法数据
+                    algorithmData.config.tags.forEach(tag => {
+                        if (tag.name === tagName) {
+                            algorithmData.config.totalSamples -= tag.sampleCount;
+                            tag.sampleCount = 0;
+                        }
+                    });
+                }
+            });
+            
+            alert(`已删除"${tagName}"标签的所有样本！`);
+        }
+        
+        // 6. 切换上传模式
+        function switchUploadMode(mode) {
+            if (mode === 'zip') {
+                zipUploadTab.classList.add('active');
+                imageUploadTab.classList.remove('active');
+                zipUploadContent.style.display = 'block';
+                imageUploadContent.style.display = 'none';
+            } else {
+                zipUploadTab.classList.remove('active');
+                imageUploadTab.classList.add('active');
+                zipUploadContent.style.display = 'none';
+                imageUploadContent.style.display = 'block';
+            }
+        }
+        
+        // 7. 绑定事件辅助函数
+        function bindTagEvents(editBtn, deleteBtn, tagName) {
+            editBtn.addEventListener('click', () => editTag(editBtn, tagName));
+            deleteBtn.addEventListener('click', () => deleteTag(deleteBtn, tagName));
+        }
+        
+        function bindSampleEvents(uploadBtn, deleteBtn, tagName) {
+            uploadBtn.addEventListener('click', () => openUploadModal(tagName));
+            deleteBtn.addEventListener('click', () => deleteSamples(tagName));
+        }
+        
+        function bindPreviewTabEvent(tab) {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-preview').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // 此处可添加切换样本预览的逻辑
+            });
+        }
+        
+        // 8. 发起微调训练
+        function startFineTune() {
+            if (algorithmData.config.tags.length === 0) {
+                alert('请至少保留一个分类标签！');
+                return;
+            }
+            
+            if (algorithmData.config.totalSamples === 0) {
+                alert('请至少上传一个训练样本！');
+                return;
+            }
+            
+            alert('开始微调训练...\n\n训练配置：\n- 基础检测模型：保持不变\n- 分类标签：' + algorithmData.config.tags.map(t => t.name).join('、') + '\n- 训练样本：' + algorithmData.config.totalSamples + '张\n\n训练中...（预计3分钟）\n\n训练完成！算法已更新至最新版本');
+            
+            // 更新最后训练时间（模拟）
+            const now = new Date().toLocaleDateString().replace(/\//g, '-');
+            document.querySelector('.card-meta div:last-child').textContent = `最后训练：${now}`;
+        }
+        
+        // 初始化事件绑定
+        viewAlgorithmBtns.forEach(btn => btn.addEventListener('click', viewAlgorithm));
+        optimizeAlgorithmBtns.forEach(btn => btn.addEventListener('click', enterOptimizePage));
+        backToListFromDetail.addEventListener('click', backToList);
+        backToListFromOptimize.addEventListener('click', backToList);
+        addTagBtn.addEventListener('click', addTag);
+        startFineTuneBtn.addEventListener('click', startFineTune);
+        
+        // 上传弹窗事件
+        uploadModalClose.addEventListener('click', closeUploadModal);
+        cancelUploadBtn.addEventListener('click', closeUploadModal);
+        confirmUploadBtn.addEventListener('click', confirmUploadSamples);
+        zipUploadTab.addEventListener('click', () => switchUploadMode('zip'));
+        imageUploadTab.addEventListener('click', () => switchUploadMode('image'));
+        
+        // 初始标签事件绑定
+        editTagBtns.forEach((btn, index) => {
+            const tagName = algorithmData.config.tags[index].name;
+            btn.addEventListener('click', () => editTag(btn, tagName));
+        });
+        
+        deleteTagBtns.forEach((btn, index) => {
+            const tagName = algorithmData.config.tags[index].name;
+            btn.addEventListener('click', () => deleteTag(btn, tagName));
+        });
+        
+        uploadSamplesBtns.forEach(btn => {
+            const tagName = btn.dataset.tagName;
+            btn.addEventListener('click', () => openUploadModal(tagName));
+        });
+        
+        deleteSamplesBtns.forEach(btn => {
+            const tagName = btn.dataset.tagName;
+            btn.addEventListener('click', () => deleteSamples(tagName));
+        });
+        
+        // 初始预览标签事件绑定
+        document.querySelectorAll('.tab-preview').forEach(tab => bindPreviewTabEvent(tab));
+    </script>
+</body>
+</html>
