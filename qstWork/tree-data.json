@@ -21,6 +21,19 @@
       "type": "dir",
       "children": [
         {
+          "name": "20260123_AI事件分析盒子_人脸比对功能",
+          "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能",
+          "type": "dir",
+          "children": [
+            {
+              "name": "index.html",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/index.html",
+              "type": "file",
+              "ext": ".html"
+            }
+          ]
+        },
+        {
           "name": "20260123_物体检测+分类算法_ueProposal",
           "path": "鸿羽/20260123_物体检测+分类算法_ueProposal",
           "type": "dir",
