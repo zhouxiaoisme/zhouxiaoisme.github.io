@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>QST AI 技术实践 | 研究·选型·落地·管理</title>
+    <meta name="description" content="QST公司AI技术工作沉淀：聚焦AI技术研究、算法评估与选型、AI技术评估、场景化落地、研发管理的实战洞见与思考。">
+    <style>
+        /* 全局样式重置与基础配置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4f8 0%, #e8f4f8 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 页面容器 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 头部区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4299e1;
+        }
+
+        .header .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4299e1 0%, #9f7aea 100%);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(66, 153, 225, 0.2);
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d3748, #4a5568);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 18px;
+            color: #4a5568;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* 核心内容区域 */
+        .content {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* 工作方向板块 */
+        .focus-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(149, 157, 165, 0.1);
+            border-left: 4px solid #4299e1;
+        }
+
+        .focus-section h2 {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .focus-section h2::before {
+            content: '🎯';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .focus-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .focus-tag {
+            background: linear-gradient(90deg, #e8f4f8 0%, #f0f8fb 100%);
+            border: 1px solid #4299e1;
+            color: #2d3748;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .focus-tag::before {
+            content: '✓';
+            color: #4299e1;
+            margin-right: 8px;
+            font-weight: 700;
+        }
+
+        .focus-section p {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        /* 关于板块 */
+        .about-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(149, 157, 165, 0.1);
+            border-left: 4px solid #9f7aea;
+        }
+
+        .about-section h2 {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .about-section h2::before {
+            content: '🤖';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .about-section p {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        /* 目录树板块（替换原笔记列表） */
+        .directory-tree-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(149, 157, 165, 0.1);
+            border-left: 4px solid #48bb78;
+        }
+
+        .directory-tree-section h2 {
+            font-size: 24px;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .directory-tree-section h2::before {
+            content: '📁';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* 目录树核心样式 */
+        .directory-tree {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        /* 目录节点样式 */
+        .dir-node {
+            margin: 8px 0;
+        }
+
+        /* 目录标题（可点击折叠/展开） */
+        .dir-title {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: linear-gradient(90deg, #f0f8fb 0%, #e8f4f8 100%);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dir-title:hover {
+            background: linear-gradient(90deg, #e8f4f8 0%, #f0f8fb 100%);
+            color: #4299e1;
+        }
+
+        /* 折叠/展开图标 */
+        .dir-toggle {
+            margin-right: 10px;
+            font-size: 14px;
+            color: #4299e1;
+            transition: transform 0.3s ease;
+        }
+
+        .dir-toggle.open {
+            transform: rotate(90deg);
+        }
+
+        /* 目录下的文件列表 */
+        .file-list {
+            list-style: none;
+            padding-left: 30px;
+            margin: 8px 0;
+            display: none; /* 默认折叠 */
+        }
+
+        .file-list.show {
+            display: block; /* 展开显示 */
+        }
+
+        .file-list li {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            background: #f7fafc;
+            transition: background 0.2s ease;
+        }
+
+        .file-list li:hover {
+            background: #e8f4f8;
+        }
+
+        .file-list a {
+            color: #2d3748;
+            text-decoration: none;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .file-list a::before {
+            content: '📄';
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        .file-list a:hover {
+            color: #4299e1;
+        }
+
+        /* 根目录特殊样式 */
+        .root-dir .dir-title {
+            background: linear-gradient(90deg, #4299e1 0%, #38b2ac 100%);
+            color: white;
+            border: none;
+        }
+
+        .root-dir .dir-title:hover {
+            background: linear-gradient(90deg, #38b2ac 0%, #4299e1 100%);
+        }
+
+        /* 底部区域 */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-btn a {
+            display: inline-block;
+            padding: 10px 24px;
+            background: linear-gradient(90deg, #4299e1 0%, #38b2ac 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+        }
+
+        .back-btn a:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header .subtitle {
+                font-size: 16px;
+            }
+
+            .focus-section, .about-section, .directory-tree-section {
+                padding: 20px;
+            }
+
+            .focus-section h2, .about-section h2, .directory-tree-section h2 {
+                font-size: 20px;
+            }
+
+            .focus-tag {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .dir-title {
+                padding: 10px 14px;
+                font-size: 15px;
+            }
+
+            .file-list {
+                padding-left: 20px;
+            }
+
+            .file-list li {
+                padding: 6px 10px;
+            }
+
+            .file-list a {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部区域 -->
+        <div class="header">
+            <div class="avatar">🧠</div>
+            <h1>QST AI 技术实践与管理</h1>
+            <p class="subtitle">AI技术研究 · 算法评估选型 · 场景化落地 · 研发管理 | 沉淀职业AI技术人员的实战洞见</p>
+        </div>
+
+        <!-- 核心内容 -->
+        <div class="content">
+            <!-- 核心工作方向板块 -->
+            <div class="focus-section">
+                <h2>核心工作方向</h2>
+                <div class="focus-tags">
+                    <div class="focus-tag">AI技术研究</div>
+                    <div class="focus-tag">算法评估与选型</div>
+                    <div class="focus-tag">AI技术评估</div>
+                    <div class="focus-tag">场景化落地</div>
+                    <div class="focus-tag">研发管理</div>
+                </div>
+                <p>围绕企业级AI应用全生命周期，从技术研究、方案选型到落地实施、团队管理，形成可落地、可复制的实战方法论，所有思考均基于QST公司实际业务场景沉淀。</p>
+            </div>
+
+            <!-- 关于板块 -->
+            <div class="about-section">
+                <h2>关于本专栏</h2>
+                <p>本目录记录我作为QST公司职业AI技术人员的核心工作沉淀，聚焦AI技术从实验室到业务场景的全链路落地过程中的关键问题与解决方案。</p>
+                <p>内容核心价值：</p>
+                <p>• 技术研究：前沿AI技术的落地可行性分析与验证方法</p>
+                <p>• 算法选型：不同场景下算法/模型的评估维度与决策逻辑</p>
+                <p>• 技术评估：AI方案的成本、性能、风险量化评估体系</p>
+                <p>• 场景落地：从需求拆解到上线交付的全流程实践</p>
+                <p>• 研发管理：AI团队的协作模式、进度管控与成果落地</p>
+                <p>所有内容均基于真实工作场景，力求为同类型AI技术从业者提供可参考的实战思路。</p>
+            </div>
+
+            <!-- 目录树板块（核心修改） -->
+            <div class="directory-tree-section">
+                <h2>QST AI 实战笔记目录</h2>
+                <ul class="directory-tree">
+                    <!-- 根目录 qstWork -->
+                    <li class="dir-node root-dir">
+                        <div class="dir-title" onclick="toggleDir(this)">
+                            <span class="dir-toggle">▶</span>
+                            qstWork (根目录)
+                        </div>
+                        <ul class="file-list">
+                            <!-- 根目录下的直接文件示例 -->
+                            <li><a href="index.html">index.html (本主页)</a></li>
+                        </ul>
+
+                        <!-- 子目录1：AI技术研究 -->
+                        <ul class="file-list">
+                            <li class="dir-node">
+                                <div class="dir-title" onclick="toggleDir(this)">
+                                    <span class="dir-toggle">▶</span>
+                                    AI技术研究
+                                </div>
+                                <ul class="file-list">
+                                    <li><a href="AI技术研究/从论文到落地的验证方法论.html">从论文到落地的验证方法论.html</a></li>
+                                    <li><a href="AI技术研究/前沿AI技术调研框架.html">前沿AI技术调研框架.html</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- 子目录2：算法评估与选型 -->
+                            <li class="dir-node">
+                                <div class="dir-title" onclick="toggleDir(this)">
+                                    <span class="dir-toggle">▶</span>
+                                    算法评估与选型
+                                </div>
+                                <ul class="file-list">
+                                    <li><a href="算法评估与选型/企业级场景的决策框架.html">企业级场景的决策框架.html</a></li>
+                                    <li><a href="算法评估与选型/模型性能对比方法.html">模型性能对比方法.html</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- 子目录3：AI技术评估 -->
+                            <li class="dir-node">
+                                <div class="dir-title" onclick="toggleDir(this)">
+                                    <span class="dir-toggle">▶</span>
+                                    AI技术评估
+                                </div>
+                                <ul class="file-list">
+                                    <li><a href="AI技术评估/成本-性能-风险三维评估体系.html">成本-性能-风险三维评估体系.html</a></li>
+                                    <li><a href="AI技术评估/落地效果量化指标.html">落地效果量化指标.html</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- 子目录4：场景化落地 -->
+                            <li class="dir-node">
+                                <div class="dir-title" onclick="toggleDir(this)">
+                                    <span class="dir-toggle">▶</span>
+                                    场景化落地
+                                </div>
+                                <ul class="file-list">
+                                    <li><a href="场景化落地/从需求到交付的全流程.html">从需求到交付的全流程.html</a></li>
+                                    <li><a href="场景化落地/常见问题与解决方案.html">常见问题与解决方案.html</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- 子目录5：研发管理 -->
+                            <li class="dir-node">
+                                <div class="dir-title" onclick="toggleDir(this)">
+                                    <span class="dir-toggle">▶</span>
+                                    研发管理
+                                </div>
+                                <ul class="file-list">
+                                    <li><a href="研发管理/AI团队高效协作方法.html">AI团队高效协作方法.html</a></li>
+                                    <li><a href="研发管理/项目进度管控策略.html">项目进度管控策略.html</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 返回按钮 -->
+        <div class="back-btn">
+            <a href="../index.html">← 返回个人主页</a>
+        </div>
+
+        <!-- 底部区域 -->
+        <div class="footer">
+            <p>QST AI技术实践与管理 © 2025</p>
+            <p>以技术视角，解决AI落地的实际问题</p>
+        </div>
+    </div>
+
+    <!-- 折叠/展开目录的JS逻辑 -->
+    <script>
+        // 目录折叠/展开切换函数
+        function toggleDir(dirTitle) {
+            // 获取切换图标和文件列表
+            const toggleIcon = dirTitle.querySelector('.dir-toggle');
+            const fileList = dirTitle.nextElementSibling;
+            
+            // 切换图标状态
+            toggleIcon.classList.toggle('open');
+            // 切换文件列表显示/隐藏
+            fileList.classList.toggle('show');
+            
+            // 更新图标内容
+            toggleIcon.textContent = toggleIcon.classList.contains('open') ? '▶' : '▶';
+        }
+
+        // 页面加载时默认展开根目录
+        window.onload = function() {
+            const rootDirTitle = document.querySelector('.root-dir .dir-title');
+            toggleDir(rootDirTitle);
+        }
+    </script>
+</body>
+</html>
