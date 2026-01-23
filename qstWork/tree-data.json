@@ -17,12 +17,12 @@
     },
     {
       "name": "鸿羽",
-      "path": "qstWork/鸿羽",
+      "path": "鸿羽",
       "type": "dir",
       "children": [
         {
           "name": "20260123_物体检测+分类算法_ueProposal",
-          "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal",
+          "path": "鸿羽/20260123_物体检测+分类算法_ueProposal",
           "type": "dir",
           "children": [
             {
