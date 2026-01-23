@@ -5,13 +5,13 @@
   "children": [
     {
       "name": "index.html",
-      "path": "qstWork/index.html",
+      "path": "index.html",
       "type": "file",
       "ext": ".html"
     },
     {
       "name": "notes.html",
-      "path": "qstWork/notes.html",
+      "path": "notes.html",
       "type": "file",
       "ext": ".html"
     },
@@ -27,61 +27,61 @@
           "children": [
             {
               "name": "Y+D算法生产.html",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法生产.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法生产.html",
               "type": "file",
               "ext": ".html"
             },
             {
               "name": "Y+D算法迭代.html",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法迭代.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法迭代.html",
               "type": "file",
               "ext": ".html"
             },
             {
               "name": "全景_1.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "全景_1_小图_1.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1_小图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1_小图_1.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "垃圾桶满溢_1.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_1.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "垃圾桶满溢_2.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_2.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_2.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "垃圾桶满溢_3.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_3.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_3.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "垃圾桶满溢_4.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_4.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_4.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "垃圾桶满溢_5.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_5.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_5.png",
               "type": "file",
               "ext": ".png"
             },
             {
               "name": "垃圾桶满溢_6.png",
-              "path": "qstWork/鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_6.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_6.png",
               "type": "file",
               "ext": ".png"
             }
