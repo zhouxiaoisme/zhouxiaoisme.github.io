@@ -11,79 +11,59 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # 步骤1：拉取仓库代码（强制拉取最新，避免缓存问题）
+      # 步骤1：拉取main分支代码
       - name: 拉取仓库代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: main  # 明确指定拉取main分支
-          clean: false  # 保留工作区文件，避免目录被清理
+          ref: main
 
-      # 步骤2：调试 - 打印当前目录结构（核心排查）
-      - name: 调试 - 打印目录结构
+      # 步骤2：调试 - 确认qstWork存在并复制到临时目录
+      - name: 备份qstWork到临时目录
         run: |
-          echo "===== 当前工作目录 ====="
-          pwd
-          echo "===== 根目录文件/目录列表 ====="
+          echo "===== 确认main分支下qstWork存在 ====="
           ls -la
-          echo "===== qstWork目录是否存在 ====="
-          if [ -d "qstWork" ]; then
-            echo "✅ qstWork目录存在！"
-            echo "===== qstWork目录内的文件列表 ====="
-            ls -la qstWork/
-          else
-            echo "❌ qstWork目录不存在！"
-            exit 1
-          fi
+          # 创建临时目录，复制qstWork内容（核心：切换分支前先备份）
+          mkdir -p /tmp/qstWork_backup
+          cp -r qstWork/* /tmp/qstWork_backup/
+          echo "===== 临时目录备份的文件 ====="
+          ls -la /tmp/qstWork_backup/
 
-      # 步骤3：准备目标分支（切换前先切回main分支，避免上下文错乱）
-      - name: 准备目标分支
+      # 步骤3：创建/切换到空分支
+      - name: 准备qstWorkExportToPublic分支
         run: |
           # 配置Git身份
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # 先切回main分支（确保基于最新代码操作）
-          git checkout main
-          
           # 检查目标分支是否存在，不存在则创建空分支
           if git show-ref --verify --quiet refs/heads/qstWorkExportToPublic; then
             git checkout qstWorkExportToPublic
+            # 清空现有内容
+            rm -rf * .[!.]*
           else
             git checkout --orphan qstWorkExportToPublic
-            git rm -rf .  # 清空空分支内容
-            git commit --allow-empty -m "初始化空分支"  # 空分支需要至少1次提交
+            git rm -rf .
+            git commit --allow-empty -m "初始化qstWorkExportToPublic分支"
           fi
 
-      # 步骤4：复制qstWork内容到根目录（增加容错）
-      - name: 复制qstWork内容到根目录
+      # 步骤4：从临时目录恢复qstWork内容到当前分支根目录
+      - name: 恢复qstWork内容到分支根目录
         run: |
-          # 再次确认qstWork目录存在（切换分支后可能上下文变化）
-          if [ ! -d "../main/qstWork" ]; then
-            echo "❌ 切换分支后未找到qstWork目录！"
-            exit 1
-          fi
-          
-          # 清空当前分支根目录
-          rm -rf * .[!.]*  # 包括隐藏文件
-          
-          # 从main分支的工作区复制qstWork内容（绝对路径）
-          cp -r ../main/qstWork/. .
-          
-          # 打印复制结果
-          echo "===== 复制后qstWorkExportToPublic分支根目录文件 ====="
+          # 从临时目录复制内容到当前分支根目录
+          cp -r /tmp/qstWork_backup/* .
+          echo "===== 当前分支根目录最终文件 ====="
           ls -la
 
-      # 步骤5：提交并推送变更
+      # 步骤5：提交并推送
       - name: 提交并推送变更
         run: |
           git add -A
-          # 无变更时跳过提交，避免报错
-          git commit -m "自动部署qstWork子目录内容: $(date +%Y-%m-%d\ %H:%M:%S)" || echo "无内容变更，无需提交"
-          # 强制推送（确保覆盖旧内容）
+          # 无变更时跳过提交
+          git commit -m "自动部署qstWork: $(date +%Y-%m-%d\ %H:%M:%S)" || echo "无内容变更，无需提交"
           git push -f origin qstWorkExportToPublic
 
-      - name: 部署完成提示
+      - name: 部署完成
         run: |
-          echo "✅ qstWork子目录内容已成功推送到qstWorkExportToPublic分支！"
-          echo "请前往仓库Settings → Pages，将Source设置为qstWorkExportToPublic分支的根目录。"
+          echo "✅ 部署成功！qstWork内容已推送到qstWorkExportToPublic分支"
+          echo "访问地址：https://zhouxiaoisme.github.io"
