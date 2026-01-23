@@ -1,0 +1,83 @@
+name: 生成qstWork目录树数据
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'qstWork/**'  # qstWork目录内容变更时触发
+  workflow_dispatch: # 手动触发
+
+jobs:
+  generate-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+
+      - name: 安装node环境（用于生成JSON）
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 生成目录树JSON文件
+        run: |
+          # 创建node脚本扫描目录
+          cat > generate-tree.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          // 目标目录
+          const targetDir = './qstWork';
+          // 要包含的文件类型
+          const allowedExts = ['.html', '.jpg', '.png', '.gif', '.svg', '.jpeg'];
+
+          // 递归扫描目录
+          function scanDir(dir) {
+            const result = {
+              name: path.basename(dir),
+              path: dir.replace('./qstWork', ''),
+              type: 'dir',
+              children: []
+            };
+
+            const files = fs.readdirSync(dir, { withFileTypes: true });
+            for (const file of files) {
+              const fullPath = path.join(dir, file.name);
+              // 跳过隐藏文件/目录
+              if (file.name.startsWith('.')) continue;
+
+              if (file.isDirectory()) {
+                // 递归扫描子目录
+                result.children.push(scanDir(fullPath));
+              } else {
+                // 筛选HTML和图片文件
+                const ext = path.extname(file.name).toLowerCase();
+                if (allowedExts.includes(ext)) {
+                  result.children.push({
+                    name: file.name,
+                    path: fullPath.replace('./qstWork', ''),
+                    type: 'file',
+                    ext: ext
+                  });
+                }
+              }
+            }
+            return result;
+          }
+
+          // 生成目录树
+          const tree = scanDir(targetDir);
+          // 写入JSON文件
+          fs.writeFileSync(path.join(targetDir, 'tree-data.json'), JSON.stringify(tree, null, 2));
+          console.log('✅ 目录树数据已生成：', JSON.stringify(tree, null, 2));
+          EOF
+
+          # 执行脚本
+          node generate-tree.js
+
+      - name: 提交并推送JSON文件
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qstWork/tree-data.json
+          git commit -m "自动更新qstWork目录树数据: $(date +%Y-%m-%d\ %H:%M:%S)" || echo "无数据变更，无需提交"
+          git push origin main
