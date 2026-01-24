@@ -5,84 +5,233 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>鸿羽事件检测AI分析盒子 - 人员黑白名单功能设计文档</title>
     <style>
+        /* 全局重置 & 基础样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Microsoft YaHei", Arial, sans-serif;
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
         }
+
+        :root {
+            /* 主题色 */
+            --primary-color: #007acc;
+            --primary-dark: #005a9e;
+            --secondary-color: #f0f7ff;
+            /* 中性色 */
+            --text-main: #333;
+            --text-secondary: #666;
+            --text-light: #999;
+            --border-light: #eee;
+            --border-main: #ddd;
+            --bg-white: #fff;
+            --bg-gray: #f9f9f9;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+            /* 间距 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 20px;
+            --spacing-xl: 24px;
+        }
+
         body {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f9f9f9;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg) var(--spacing-md);
+            line-height: 1.7;
+            color: var(--text-main);
+            background-color: var(--bg-gray);
         }
+
+        /* 头部样式 */
         .header {
             text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #007acc;
-            margin-bottom: 20px;
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 3px solid var(--primary-color);
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--bg-white);
+            padding: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
         }
+
         .title {
-            font-size: 24px;
-            color: #007acc;
-            margin-bottom: 10px;
+            font-size: clamp(20px, 3vw, 28px);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
         }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* 章节样式 */
         .section {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--bg-white);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
         }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
         .section-title {
-            font-size: 18px;
-            color: #005a9e;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--secondary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .info-item {
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        .info-label {
-            font-weight: bold;
-            color: #005a9e;
+
+        .section-title::before {
+            content: "";
             display: inline-block;
-            width: 120px;
+            width: 4px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
         }
+
+        /* 信息项样式 */
+        .info-item {
+            margin-bottom: var(--spacing-md);
+            font-size: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: inline-block;
+            min-width: 110px;
+            flex-shrink: 0;
+            margin-right: var(--spacing-sm);
+        }
+
+        /* 列表样式优化 */
         .tech-requirements {
-            margin-top: 20px;
-            margin-left: 20px;
+            margin-top: var(--spacing-lg);
+            margin-left: 0;
         }
+
         .requirements-title {
             font-size: 16px;
-            color: #005a9e;
-            margin-bottom: 10px;
-            font-weight: bold;
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
         }
+
         .requirement-list {
-            margin-left: 20px;
+            margin-left: var(--spacing-md);
             list-style-type: decimal;
+            padding-left: var(--spacing-sm);
         }
+
+        .requirement-list > li {
+            margin-bottom: var(--spacing-md);
+            padding-left: var(--spacing-sm);
+        }
+
         .sub-list {
-            margin-left: 30px;
+            margin-left: var(--spacing-lg);
             list-style-type: disc;
-            margin-top: 5px;
-            margin-bottom: 10px;
+            margin-top: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+            padding-left: var(--spacing-sm);
         }
+
         .sub-item {
-            margin-bottom: 5px;
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.6;
         }
+
+        /* 链接 & 图片样式 */
+        .design-doc-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .design-doc-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: var(--spacing-sm);
+            border: 1px solid var(--border-main);
+            padding: var(--spacing-xs);
+        }
+
+        /* 页脚样式 */
         .footer {
             text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            color: #666;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-light);
+            color: var(--text-secondary);
             font-size: 14px;
+            margin-top: var(--spacing-xl);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .header {
+                padding: var(--spacing-lg);
+                margin-bottom: var(--spacing-lg);
+            }
+
+            .section {
+                padding: var(--spacing-lg);
+                margin-bottom: var(--spacing-lg);
+            }
+
+            .info-item {
+                flex-direction: column;
+            }
+
+            .info-label {
+                margin-bottom: var(--spacing-xs);
+                min-width: auto;
+            }
+
+            .requirement-list {
+                margin-left: 0;
+            }
+
+            .sub-list {
+                margin-left: var(--spacing-md);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 18px;
+            }
+
+            .info-item {
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -121,7 +270,7 @@
             <span class="info-label">具体技术要求：</span>
             <ol class="requirement-list">
                 <li class="sub-item">
-                    <strong>硬件能力：</strong>嵌入式 AI 视频分析盒子，最多接入 16 路相机实时视频流
+                    <strong>硬件能力：</strong>嵌入式 AI 视频分析盒子，最多接入 32 路1920*1080相机实时视频流
                 </li>
                 <li class="sub-item">
                     <strong>核心功能：</strong>人脸抓拍 + 人脸库比对 + 报警触发
@@ -148,7 +297,7 @@
                     <strong>软件要求：</strong>
                     <ul class="sub-list">
                         <li>在现有鸿羽盒子web管理系统中无缝插入人脸库管理页面。</li>
-                    <li>将此功能视为一个“人脸分析&人脸库比对”事件，为需要执行此事件的相机开启该事件的任务分析。一旦启动任务分析，当有目标人脸库中的人脸经过相机时，立即产生报警，用户可在鸿羽盒子web管理系统的实时告警/历史告警中查看到此告警事件，并触发声音报警/悬浮提示。</li>
+                        <li>将此功能视为一个“人脸分析&人脸库比对”事件，为需要执行此事件的相机开启该事件的任务分析。一旦启动任务分析，当有目标人脸库中的人脸经过相机时，立即产生报警，用户可在鸿羽盒子web管理系统的实时告警/历史告警中查看到此告警事件，并触发声音报警/悬浮提示。</li>
                     </ul>
                 </li>
             </ol>
@@ -162,6 +311,10 @@
 			<ol class="requirement-list">
 				 <li class="sub-item">
 					<a href="./人脸比对功能相关UE_v1.html" class="design-doc-link">人脸比对功能相关UE_v1.html</a>
+				</li>
+				 <li class="sub-item">
+					<img src="./技术方案_v1.png" alt="技术方案_v1.png">
+					<a href="./技术方案_v1.png" class="design-doc-link">技术方案_v1.png</a>
 				</li>
 			</ol>
 		</div>
