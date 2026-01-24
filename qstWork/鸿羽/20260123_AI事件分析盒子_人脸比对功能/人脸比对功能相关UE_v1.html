@@ -1320,41 +1320,38 @@
                                 <input type="text" class="form-control" value="AI-BOX-20260123001" readonly>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">抓拍间隔</label>
-                                <select class="form-control">
-                                    <option>1秒</option>
-                                    <option selected>2秒</option>
-                                    <option>3秒</option>
-                                    <option>5秒</option>
-                                    <option>10秒</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">默认比对门限</label>
-                                <input type="range" class="form-control" min="70" max="100" value="90" style="height: auto;">
-                                <div style="text-align: right; font-size: 12px; color: #6B7280;">当前值：90%</div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">报警方式</label>
-                                <div class="checkbox-group">
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" id="alert-sound" checked>
-                                        <label for="alert-sound">声音报警</label>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" id="alert-led" checked>
-                                        <label for="alert-led">LED灯报警</label>
-                                    </div>
-                                    <div class="checkbox-item">
-                                        <input type="checkbox" id="alert-network">
-                                        <label for="alert-network">网络推送</label>
-                                    </div>
-                                </div>
-                            </div>
+                        <div style="text-align: right; margin-top: 16px;">
+                            <button type="button" class="btn btn-secondary">取消</button>
+                            <button type="button" class="btn btn-primary">保存设置</button>
+                        </div>						
+                    </form>
+                </div>				
+
+                <div class="card">
+                    <div class="card-header">人脸功能设置</div>
+                    <form>				
+						<div class="form-row">
+							<div class="form-group">
+								<label class="form-label">人脸报警配置</label>
+
+								<div class="checkbox-group">
+									<div class="checkbox-item">
+										<!-- 添加 disabled 属性禁用复选框，保留 checked 确保选中 -->
+										<input type="checkbox" id="lib-alert-sound" checked disabled>
+										<label for="lib-alert-sound">匹配时记录为事件</label>
+										<!-- 可选：添加样式提示用户该选项不可修改 -->
+										<span style="font-size: 11px; color: #9CA3AF; margin-left: 8px;">（默认开启，不可关闭）</span>
+									</div>
+									<div class="checkbox-item">
+										<input type="checkbox" id="lib-alert-led" checked>
+										<label for="lib-alert-led">记录为事件时同时触发声音报警</label>
+									</div>
+									<div class="checkbox-item">
+										<input type="checkbox" id="lib-alert-push">
+										<label for="lib-alert-push">记录为事件时触发悬浮提示(自动消失)</label>
+									</div>
+								</div>
+							</div>
                         </div>
                         <div style="text-align: right; margin-top: 16px;">
                             <button type="button" class="btn btn-secondary">取消</button>
@@ -1481,9 +1478,11 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">人脸比对门限</label>
-                            <input type="range" class="form-control" id="matchThreshold" min="70" max="100" value="90" style="height: auto;">
-                            <div style="text-align: right; font-size: 12px; color: #6B7280;">当前值：<span id="thresholdValue">90</span>%</div>
+                            <label class="form-label">人脸抓拍最小尺寸门限设置</label>
+                            <div style="text-align: left; font-size: 12px; color: #6B7280;">宽度：<input type="range" class="form-control" id="captureFace_minWidth" min="16" max="256" value="32" style="height: auto;"></div>
+                            <div style="text-align: right; font-size: 12px; color: #6B7280;">当前值：<span id="captureFace_minWidth_value">32</span>pixel</div>
+                            <div style="text-align: left; font-size: 12px; color: #6B7280;">高度：<input type="range" class="form-control" id="captureFace_minHeight" min="16" max="256" value="32" style="height: auto;"></div>
+                            <div style="text-align: right; font-size: 12px; color: #6B7280;">当前值：<span id="captureFace_minHeight_value">32</span>pixel</div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">启用状态</label>
@@ -1613,11 +1612,16 @@
             cameraModal.classList.remove('visible');
         });
 
-        // 人脸比对门限滑块
-        const thresholdSlider = document.getElementById('matchThreshold');
-        const thresholdValue = document.getElementById('thresholdValue');
-        thresholdSlider.addEventListener('input', function() {
-            thresholdValue.textContent = this.value;
+        // 人脸抓拍最小尺寸门限滑块
+        const captureFace_minWidth_slider = document.getElementById('captureFace_minWidth');
+        const captureFace_minWidth_value = document.getElementById('captureFace_minWidth_value');
+        captureFace_minWidth_slider.addEventListener('input', function() {
+            captureFace_minWidth_value.textContent = this.value;
+        });
+        const captureFace_minHeight_slider = document.getElementById('captureFace_minHeight');
+        const captureFace_minHeight_value = document.getElementById('captureFace_minHeight_value');
+        captureFace_minHeight_slider.addEventListener('input', function() {
+            captureFace_minHeight_value.textContent = this.value;
         });
 
         // 人脸库模态框操作
@@ -1675,31 +1679,6 @@
                         <div class="form-group">
                             <label class="form-label">人脸库描述</label>
                             <textarea class="form-control" rows="3" placeholder="请输入人脸库描述信息（可选）" style="height: auto;">存放禁止进入园区的人员名单，匹配后立即触发报警</textarea>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">报警配置</label>
-
-							<div class="checkbox-group">
-								<div class="checkbox-item">
-									<!-- 添加 disabled 属性禁用复选框，保留 checked 确保选中 -->
-									<input type="checkbox" id="lib-alert-sound" checked disabled>
-									<label for="lib-alert-sound">匹配时记录为事件</label>
-									<!-- 可选：添加样式提示用户该选项不可修改 -->
-									<span style="font-size: 11px; color: #9CA3AF; margin-left: 8px;">（默认开启，不可关闭）</span>
-								</div>
-								<div class="checkbox-item">
-									<input type="checkbox" id="lib-alert-led" checked>
-									<label for="lib-alert-led">记录为事件时同时触发声音报警</label>
-								</div>
-								<div class="checkbox-item">
-									<input type="checkbox" id="lib-alert-push">
-									<label for="lib-alert-push">记录为事件时触发悬浮提示(自动消失)</label>
-								</div>
-							</div>
-							
-							
                         </div>
                     </div>
                     <div class="form-row">
