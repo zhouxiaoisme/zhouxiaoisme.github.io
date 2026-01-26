@@ -153,6 +153,8 @@
             margin-bottom: var(--spacing-sm);
             padding-left: var(--spacing-sm);
         }
+		
+		
 
         .sub-item {
             margin-bottom: var(--spacing-xs);
@@ -288,19 +290,25 @@
                     <strong>相机配置：</strong>
                     <ul class="sub-list">
                         <li>每个相机可绑定多个人脸库</li>
-                        <li>可单独设置人脸抓拍最小尺寸</li>
+                        <li>每个相机可单独设置人脸抓拍最小尺寸，和人脸检测门限</li>
                     </ul>
                 </li>
                 <li class="sub-item">
-                    <strong>报警规则：</strong>人脸一旦被抓拍应在100ms以内，如果发现命中指定人脸库中的人脸立即触发报警。
+                    <strong>报警规则：</strong>人脸一旦被抓拍,应在100ms以内对人脸库完成比对并对命中人脸立即触发报警。
                 </li>
                 <li class="sub-item">
-                    <strong>软件要求：</strong>
-                    <ul class="sub-list">
-                        <li>在现有鸿羽盒子web管理系统中无缝插入人脸库管理页面。</li>
-                        <li>将此功能视为一个“人脸分析&人脸库比对”事件，为需要执行此事件的相机开启该事件的任务分析。一旦启动任务分析，当有目标人脸库中的人脸经过相机时，立即产生报警，用户可在鸿羽盒子web管理系统的实时告警/历史告警中查看到此告警事件，并触发声音报警/悬浮提示。</li>
-                    </ul>
-                </li>
+					<strong>软件要求：</strong>
+					<ul class="sub-list">
+						<li>需在现有鸿羽盒子web管理系统中,无缝嵌入"人脸库管理"和"人脸抓拍记录"页面。</li>
+						<li>需将该功能作为一个 “人员分析 & 人脸比对” 事件，同步启动对应相机的任务分析流程。</li>
+						<ul class="sub-list">
+							<li>事件启动后，系统将开启人脸抓拍功能；抓拍的人脸可通过"人脸抓拍记录"页面查看。</li>
+							<li>当相机抓拍的人脸与已录入人脸库的人脸匹配时，系统将立即生成人脸报警事件，并触发声音报警 / 悬浮提示报警；报警信息会明确标注与哪个人脸库中的人员匹配，相关记录可在"报警记录"或"历史事件"中查询。</li>
+							<li>若抓拍人脸同时匹配到多个人脸库人员，将以相似度最高的匹配结果为准；若存在多个相同的最高相似度，则同步输出所有匹配的人员信息。</li>
+							<li>人脸抓拍记录与人脸报警事件记录均存储于设备本地，当存储空间不足时，系统将按 “先进先出” 原则自动清理最早的人脸抓拍记录和报警事件记录。</li>
+						</ul>
+					</ul>
+				</li>
             </ol>
         </div>
     </div>
@@ -311,7 +319,7 @@
             <span class="info-label">相关设计文档：</span>
 			<ol class="requirement-list">
 				 <li class="sub-item">
-					<a href="./人脸比对功能相关UE_v1.html" class="design-doc-link">人脸比对功能相关UE_v1.html 👈 请点击我查看盒子UE界面建议设计！</a>
+					<a href="./人脸比对功能相关UE_v2.html" class="design-doc-link">人脸比对功能相关UE_v2.html 👈 请点击我查看盒子UE界面建议设计！</a>
 				</li>
 				 <li class="sub-item">
 					<img src="./技术方案_v1_构件图.png" alt="技术方案_v1_构件图.png">
