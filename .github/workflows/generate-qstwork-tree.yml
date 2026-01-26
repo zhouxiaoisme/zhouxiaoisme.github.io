@@ -28,7 +28,7 @@ jobs:
           // 目标目录
           const targetDir = './qstWork';
           // 要包含的文件类型
-          const allowedExts = ['.html', '.jpg', '.png', '.gif', '.svg', '.jpeg'];
+          const allowedExts = ['.html', '.jpg', '.png', '.gif', '.svg', '.jpeg', '.bmp', '.mp4', '.txt', '.md'];
 
           // 递归扫描目录
           function scanDir(dir) {
@@ -82,4 +82,5 @@ jobs:
           git commit -m "自动更新qstWork目录树数据: $(date +%Y-%m-%d\ %H:%M:%S)" || echo "无数据变更，无需提交"
 
           git push origin main
+
 
