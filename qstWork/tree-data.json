@@ -26,6 +26,42 @@
           "type": "dir",
           "children": [
             {
+              "name": "example_face_1.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_face_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "example_scene_1.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_scene_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "example_z1.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z1.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "example_z2.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z2.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "example_z3.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z3.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "example_z4.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z4.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
               "name": "index.html",
               "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/index.html",
               "type": "file",
@@ -34,6 +70,12 @@
             {
               "name": "人脸比对功能相关UE_v1.html",
               "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/人脸比对功能相关UE_v1.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "人脸比对功能相关UE_v2.html",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/人脸比对功能相关UE_v2.html",
               "type": "file",
               "ext": ".html"
             },
