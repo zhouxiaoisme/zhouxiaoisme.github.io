@@ -117,6 +117,24 @@
               "ext": ".mp4"
             },
             {
+              "name": "20260130_dino服饰颜色分类_ex1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260130_dino服饰颜色分类_ex1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "20260130_dino服饰颜色分类_ex2.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260130_dino服饰颜色分类_ex2.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "20260130_使用yoloWorld检人形上半身bbox再使用DINOv3特征对上半身bbox做服饰颜色分类算法_复盘.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260130_使用yoloWorld检人形上半身bbox再使用DINOv3特征对上半身bbox做服饰颜色分类算法_复盘.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
               "name": "20260131_训练图片上传_自动化抠图.html",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260131_训练图片上传_自动化抠图.html",
               "type": "file",
