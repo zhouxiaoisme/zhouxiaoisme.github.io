@@ -141,6 +141,24 @@
               "ext": ".html"
             },
             {
+              "name": "20260203_人形类_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260203_人形类_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260203_物品类_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260203_物品类_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260203_车辆类_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260203_车辆类_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
               "name": "20260204_尺寸过滤盒抠图_图文指引_动态.html",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤盒抠图_图文指引_动态.html",
               "type": "file",
@@ -171,8 +189,20 @@
               "ext": ".html"
             },
             {
+              "name": "人形大图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形大图_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
               "name": "人形大图_1_叠加框效果.png",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形大图_1_叠加框效果.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "人形小图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形小图_1.png",
               "type": "file",
               "ext": ".png"
             },
@@ -231,8 +261,20 @@
               "ext": ".png"
             },
             {
+              "name": "车辆大图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆大图_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
               "name": "车辆大图_1_叠加框效果.png",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆大图_1_叠加框效果.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "车辆小图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆小图_1.png",
               "type": "file",
               "ext": ".png"
             }
