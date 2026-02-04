@@ -141,6 +141,24 @@
               "ext": ".html"
             },
             {
+              "name": "20260204_尺寸过滤盒抠图_图文指引_动态.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤盒抠图_图文指引_动态.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260204_尺寸过滤盒抠图_图文指引_静态.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤盒抠图_图文指引_静态.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260204_尺寸过滤盒抠图_图文指引_静态_实时绘制.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤盒抠图_图文指引_静态_实时绘制.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
               "name": "Y+D算法生产.html",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法生产.html",
               "type": "file",
@@ -153,8 +171,20 @@
               "ext": ".html"
             },
             {
+              "name": "人形大图_1_叠加框效果.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形大图_1_叠加框效果.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
               "name": "全景_1.png",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "全景_1_叠加框效果.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1_叠加框效果.png",
               "type": "file",
               "ext": ".png"
             },
@@ -197,6 +227,12 @@
             {
               "name": "垃圾桶满溢_6.png",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_6.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "车辆大图_1_叠加框效果.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆大图_1_叠加框效果.png",
               "type": "file",
               "ext": ".png"
             }
