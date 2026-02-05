@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建数据集 - 特征匹配式分类/开放集目标检测</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .left-panel {
+            width: 50%;
+            padding: 30px;
+            border-right: 1px dashed #e5e6eb;
+        }
+        .right-panel {
+            width: 50%;
+            padding: 30px;
+            position: relative;
+        }
+        .title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #1d2129;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4e5969;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dcdee3;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #4e8cff;
+            box-shadow: 0 0 0 2px rgba(78, 140, 255, 0.1);
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            color: #4e5969;
+            cursor: pointer;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #4e8cff;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #3377ff;
+        }
+        .btn-secondary {
+            background-color: #f5f7fa;
+            color: #4e5969;
+        }
+        .btn-secondary:hover {
+            background-color: #e5e6eb;
+        }
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        .guide-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 10px;
+            color: #ff7d00;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 4px 8px;
+            border: 1px solid #ff7d00;
+            border-radius: 4px;
+            background-color: #fff2e8;
+        }
+        .guide-icon:hover {
+            background-color: #ffe8cc;
+        }
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #86909c;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1d2129;
+        }
+        .mermaid-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+        }
+        .tip-box {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .tip-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1d2129;
+        }
+        .tip-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #4e5969;
+        }
+        .image-container {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            position: relative;
+            border: 1px solid #eef2f7;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8fafc;
+        }	
+
+		/* 优化图片样式，保证宽高比且完整显示 */
+        .image-container img {
+            width: 100%;
+            height: auto;
+            max-height: 600px; /* 限制最大高度，避免超出可视区域 */
+            object-fit: contain; /* 改为contain保证图片完整显示 */
+            display: block;
+        }
+        /* 正负样本示例卡片 */
+        .sample-card-group {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .sample-card {
+            flex: 1;
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8fafc;
+        }
+        .sample-card-title {
+            font-weight: 600;
+            color: #1d2129;
+            margin-bottom: 10px;
+        }
+        .sample-card-desc {
+            font-size: 14px;
+            color: #4e5969;
+        }		
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧：数据集信息 -->
+        <div class="left-panel">
+            <div class="title">创建数据集</div>
+            <div class="form-group">
+                <label class="form-label">数据集名称</label>
+                <input type="text" class="form-input" placeholder="输入数据集名称">
+            </div>
+            <div class="form-group">
+                <label class="form-label">类型</label>
+                <div class="radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="type" value="classification" id="classificationRadio">
+                        <span>特征匹配式分类</span>
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="type" value="detection" checked id="detectionRadio">
+                        <span>开放集目标检测</span>
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="type" value="positive-negative" id="positiveNegativeRadio">
+                        <span>正负样本分类</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：创建标签 -->
+        <div class="right-panel">
+            <div class="title">
+                创建标签
+                <span class="guide-icon" id="guideBtn">
+                    💡 标签命名指引
+                </span>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder="请输入标签名称">
+                <button class="btn btn-primary" style="margin-top: 10px;">保存</button>
+            </div>
+            <div class="footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗1：开放集目标检测标签指引 -->
+    <div class="modal" id="detectionModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeDetectionModal">&times;</span>
+            <div class="modal-title">开放集目标检测-训练/微调数据集标签命名规范指引</div>
+            <div class="image-container">
+                <img src="./yoloworld标签语义解释_1.png" alt="yoloworld标签语义解释">
+            </div>
+            <div class="tip-box">
+                <div class="tip-title">标签命名提示</div>
+                <div class="tip-content">
+                    <p>✅ 请使用有意义的中文名称（如：手术刀、止血钳、手术器械-骨钻）或英文名称（如：scalpel、hemostat、surgical instrument–bone drill）。</p>
+                    <p>❌ 不要使用数字 1/2/3/4 或无意义名字</p>
+                    <p>💡 标签语义越准确，模型利用预训练知识越强，检测精度越高</p>
+                    <p>⚠️ 无意义标签会导致模型泛化能力下降，精度大幅降低</p>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+
+	<!-- 弹窗2：特征匹配式分类 - 标签命名规范指引 -->
+	<div class="modal" id="classificationModal">
+		<div class="modal-content">
+			<span class="modal-close" id="closeClassificationModal">&times;</span>
+			<div class="modal-title">特征匹配式分类 - 标签命名规范指引</div>
+			
+			<!-- 新增：电闸开关分类示例 -->
+			<div class="sample-card-group" style="margin-bottom: 20px;">
+				<div class="sample-card">
+					<div class="sample-card-title">业务场景示例：电闸开关状态分类</div>
+					<div class="sample-card-desc">
+						需覆盖实际业务中所有可能的开关状态（不重不漏），标签可按“核心对象-状态”格式命名：<br>
+						✅ 开关-完全闭合状态<br>
+						✅ 开关-完全打开状态<br>
+						✅ 开关-半开半合状态<br>
+						<br>
+						也可使用简化标签（无需语义，仅作分组代号）：<br>
+						✅ 状态1、状态2、状态3<br>
+						✅ 闭合、打开、半开合
+					</div>
+				</div>
+			</div>
+
+			<div class="tip-box">
+				<div class="tip-title">标签命名提示</div>
+				<div class="tip-content">
+					<p>✅ 标签可以无意义（如：类别1、A组、1/2/3/4 等），也可按“核心对象-状态/属性”格式命名（如：开关-完全闭合状态）</p>
+					<p>✅ 核心要求：样本需覆盖实际业务场景下的<strong>所有可能类别</strong>，不重不漏</p>
+					<p>✅ 样本数量无需多，但需覆盖每个类别在实际场景中的所有变化（如不同角度、光照、安装环境下的电闸）</p>
+					<p>💡 标签仅作为“分组代号”，模型不依赖标签语义，只匹配图片特征；但规范命名可方便人工管理数据集</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <!-- 弹窗3：正负样本分类标签指引 -->
+    <div class="modal" id="positiveNegativeModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closePositiveNegativeModal">&times;</span>
+            <div class="modal-title">正负样本分类 - 标签命名规范指引</div>
+            <!-- 业务逻辑示例 -->
+            <div class="sample-card-group">
+                <div class="sample-card">
+                    <div class="sample-card-title">正样本（标签固定为：positive）</div>
+                    <div class="sample-card-desc">
+                        指“需要被识别的目标场景”<br>
+                        示例：<br>
+                        - 人员未戴安全帽的图片<br>
+                        - 产品存在缺陷的图片
+                    </div>
+                </div>
+                <div class="sample-card">
+                    <div class="sample-card-title">负样本（标签固定为：negative）</div>
+                    <div class="sample-card-desc">
+                        指“不需要被识别的非目标场景”<br>
+                        示例：<br>
+                        - 人员正确佩戴安全帽的图片<br>
+                        - 产品无缺陷的图片
+                    </div>
+                </div>
+            </div>
+            <div class="tip-box">
+                <div class="tip-title">标签命名提示</div>
+                <div class="tip-content">
+                    <p>✅ 标签固定为：正样本用 <strong>positive</strong>，负样本用 <strong>negative</strong>，无需自定义</p>
+                    <p>✅ 核心要求：正/负样本需覆盖实际场景的所有情况（如不同角度、光照下的目标/非目标）</p>
+                    <p>💡 模型逻辑：通过匹配图片特征，判断新图属于“正样本”还是“负样本”</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化Mermaid
+        mermaid.initialize({ startOnLoad: true });
+
+        // 元素获取
+        const guideBtn = document.getElementById('guideBtn');
+        const classificationRadio = document.getElementById('classificationRadio');
+        const detectionRadio = document.getElementById('detectionRadio');
+        const positiveNegativeRadio = document.getElementById('positiveNegativeRadio'); // 新增
+        const detectionModal = document.getElementById('detectionModal');
+        const classificationModal = document.getElementById('classificationModal');
+        const positiveNegativeModal = document.getElementById('positiveNegativeModal'); // 新增
+        const closeDetectionModal = document.getElementById('closeDetectionModal');
+        const closeClassificationModal = document.getElementById('closeClassificationModal');
+        const closePositiveNegativeModal = document.getElementById('closePositiveNegativeModal'); // 新增
+
+        // 切换到“特征匹配式分类”时自动弹出指引
+        classificationRadio.addEventListener('change', () => {
+            if (classificationRadio.checked) {
+                classificationModal.style.display = 'flex';
+            }
+        });
+
+        // 新增：切换到“正负样本分类”时自动弹出指引
+        positiveNegativeRadio.addEventListener('change', () => {
+            if (positiveNegativeRadio.checked) {
+                positiveNegativeModal.style.display = 'flex';
+            }
+        });
+
+        // 点击指引按钮：根据选中的类型显示对应弹窗
+        guideBtn.addEventListener('click', () => {
+            if (classificationRadio.checked) {
+                classificationModal.style.display = 'flex';
+            } else if (detectionRadio.checked) {
+                detectionModal.style.display = 'flex';
+            } else if (positiveNegativeRadio.checked) { // 新增
+                positiveNegativeModal.style.display = 'flex';
+            }
+        });
+
+        // 关闭弹窗
+        closeDetectionModal.addEventListener('click', () => {
+            detectionModal.style.display = 'none';
+        });
+        closeClassificationModal.addEventListener('click', () => {
+            classificationModal.style.display = 'none';
+        });
+        closePositiveNegativeModal.addEventListener('click', () => { // 新增
+            positiveNegativeModal.style.display = 'none';
+        });
+
+        // 点击弹窗外部关闭
+        window.addEventListener('click', (e) => {
+            if (e.target === detectionModal) detectionModal.style.display = 'none';
+            if (e.target === classificationModal) classificationModal.style.display = 'none';
+            if (e.target === positiveNegativeModal) positiveNegativeModal.style.display = 'none'; // 新增
+        });
+    </script>
+</body>
+</html>
