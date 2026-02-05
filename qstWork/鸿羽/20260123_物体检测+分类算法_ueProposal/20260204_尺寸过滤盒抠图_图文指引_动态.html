@@ -534,25 +534,39 @@
     <script>
         // 检测框数据（模拟检测模型的输出）
         const detectionData = {
+            // human: [
+            //     {x: 640, y: 762, width: 256, height: 738, label: "行人"},
+            //     {x: 874, y: 814, width: 172, height: 584, label: "行人"},
+            //     {x: 1014, y: 784, width: 208, height: 620, label: "行人"},
+            //     {x: 1262, y: 872, width: 64, height: 134, label: "行人"}
+            // ],
             human: [
-                {x: 640, y: 762, width: 256, height: 738, label: "行人"},
-                {x: 874, y: 814, width: 172, height: 584, label: "行人"},
-                {x: 1014, y: 784, width: 208, height: 620, label: "行人"},
-                {x: 1262, y: 872, width: 64, height: 134, label: "行人"}
+  { "x": 320, "y": 381, "width": 128, "height": 369, "label": "行人" },
+  { "x": 437, "y": 407, "width": 86, "height": 292, "label": "行人" },
+  { "x": 507, "y": 392, "width": 104, "height": 310, "label": "行人" },
+  { "x": 631, "y": 436, "width": 32, "height": 67, "label": "行人" }
             ],
             vehicle: [
                 {x: 225, y: 606, width: 630, height: 530, label: "车辆"},
                 {x: 1032, y: 538, width: 458, height: 508, label: "车辆"},
                 {x: 1748, y: 312, width: 150, height: 268, label: "车辆"}
             ],
+            // wupin: [
+            //     {x: 682, y: 702, width: 337, height: 363, label: "垃圾桶"},
+            //     {x: 1006, y: 506, width: 394, height: 570, label: "垃圾桶"},
+            //     {x: 1276, y: 600, width: 400, height: 574, label: "水壶"},
+            //     {x: 1630, y: 556, width: 378, height: 696, label: "垃圾桶"},
+            //     {x: 2024, y: 668, width: 462, height: 662, label: "垃圾桶"},
+			// 	{x: 475, y: 1120, width: 136, height: 88, label: "垃圾桶"},
+            // ]
             wupin: [
-                {x: 682, y: 702, width: 337, height: 363, label: "垃圾桶"},
-                {x: 1006, y: 506, width: 394, height: 570, label: "垃圾桶"},
-                {x: 1276, y: 600, width: 400, height: 574, label: "水壶"},
-                {x: 1630, y: 556, width: 378, height: 696, label: "垃圾桶"},
-                {x: 2024, y: 668, width: 462, height: 662, label: "垃圾桶"},
-				{x: 475, y: 1120, width: 136, height: 88, label: "垃圾桶"},
-            ]
+  { "x": 341, "y": 351, "width": 168, "height": 181, "label": "垃圾桶" },
+  { "x": 503, "y": 253, "width": 197, "height": 285, "label": "垃圾桶" },
+  { "x": 638, "y": 300, "width": 200, "height": 287, "label": "水壶" },
+  { "x": 815, "y": 278, "width": 189, "height": 348, "label": "垃圾桶" },
+  { "x": 1012, "y": 334, "width": 231, "height": 331, "label": "垃圾桶" },
+  { "x": 237, "y": 560, "width": 68, "height": 44, "label": "垃圾桶" }
+            ]			
         };
         
 
