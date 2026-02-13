@@ -183,6 +183,24 @@
               "ext": ".html"
             },
             {
+              "name": "20260205_yoloworld算法标签必须有意义.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260205_yoloworld算法标签必须有意义.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260210_yoloworld零样本检测提示词输入时自动加入空类_UE.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260210_yoloworld零样本检测提示词输入时自动加入空类_UE.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260213_Y+D算法_选择多个Y标签时警告分类效果.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260213_Y+D算法_选择多个Y标签时警告分类效果.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
               "name": "Y+D算法生产.html",
               "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法生产.html",
               "type": "file",
