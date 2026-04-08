@@ -309,6 +309,19 @@
               "ext": ".png"
             }
           ]
+        },
+        {
+          "name": "202604_IOT模式中台界面_盒子管理中心",
+          "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心",
+          "type": "dir",
+          "children": [
+            {
+              "name": "readme.md",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/readme.md",
+              "type": "file",
+              "ext": ".md"
+            }
+          ]
         }
       ]
     }
