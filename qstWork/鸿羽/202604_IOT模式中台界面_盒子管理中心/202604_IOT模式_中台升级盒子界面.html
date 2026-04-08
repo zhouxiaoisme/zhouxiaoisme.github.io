@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>盒子软件升级模块</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        /* 适配1920*1080屏幕核心样式 */
+        body {
+            background-color: #f5fafe;
+            padding: 20px;
+            width: 100%;
+            height: 100vh; /* 铺满1080高度 */
+            max-width: 1920px; /* 限制最大宽度为1920 */
+            margin: 0 auto; /* 居中显示 */
+            overflow-y: auto; /* 允许垂直滚动（内容超出时） */
+            overflow-x: hidden; /* 禁止水平滚动 */
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 30px; /* 适度加大内边距，适配1920宽度 */
+            width: 100%;
+            max-width: 1880px; /* 预留左右20px边距，贴合1920屏幕 */
+            min-height: calc(100vh - 40px); /* 至少铺满屏幕高度（减去body的20px上下padding） */
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2d8b4f;
+            font-size: 24px; /* 适配1920屏幕，标题稍放大 */
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e6f7ef;
+            padding-bottom: 15px;
+        }
+        .section-title {
+            color: #2d8b4f;
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            display: block;
+            width: 100%;
+            font-weight: 600;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fdfb;
+            border-radius: 6px;
+            border-left: 3px solid #2d8b4f;
+            display: block;
+            clear: both;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        label {
+            color: #333;
+            font-weight: 500;
+            width: 130px; /* 适配1920宽度，标签稍加宽 */
+            text-align: right;
+            font-size: 15px;
+        }
+        input[type="file"], input[type="text"], button, select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        input[type="text"] {
+            width: 400px; /* 适配1920宽度，输入框加宽 */
+            flex: 1; /* 响应式伸缩，最大宽度不超过容器 */
+            min-width: 350px; /* 最小宽度保证可用性 */
+        }
+        .btn-primary {
+            background-color: #2d8b4f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #267a42;
+        }
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-size: 15px;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #e6e6e6;
+        }
+        .progress {
+            width: 400px; /* 适配1920宽度，进度条加宽 */
+            flex: 1;
+            min-width: 300px;
+            height: 10px;
+            background: #e6e6e6;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #2d8b4f;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .tip {
+            font-size: 14px;
+            margin-left: 15px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 200px;
+        }
+        .success {
+            color: #2d8b4f;
+            background-color: #e8f5e9;
+        }
+        .error {
+            color: #e53e3e;
+            background-color: #fee5e5;
+        }
+        .info {
+            color: #4299e1;
+            background-color: #e8f4f8;
+        }
+        .warning {
+            color: #ed8936;
+            background-color: #fff8e1;
+        }
+        .processing {
+            color: #9c27b0;
+            background-color: #f3e5f5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #eee;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9fdfb;
+            color: #333;
+            font-weight: 600;
+        }
+        /* 优化表格行高，适配1920屏幕 */
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        .tab.active {
+            border-bottom: 3px solid #2d8b4f;
+            color: #2d8b4f;
+        }
+        .tab-content {
+            display: none;
+            padding: 15px 0;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .box-status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #e6f7ef;
+            border-radius: 4px;
+            width: auto;
+        }
+        .flow-tip {
+            color: #666;
+            font-size: 14px;
+            margin: 15px 0;
+            padding: 10px;
+            background: #e6f7ef;
+            border-radius: 4px;
+            width: 100%;
+            line-height: 1.6;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.1);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            width: 450px; /* 适配1920屏幕，弹窗稍加宽 */
+        }
+        .verify-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            width: 100%;
+            line-height: 1.8;
+        }
+        /* 状态标签样式优化 */
+        .status-tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .tag-processing {
+            background: #f3e5f5;
+            color: #9c27b0;
+        }
+        .tag-success {
+            background: #e8f5e9;
+            color: #2d8b4f;
+        }
+        .tag-error {
+            background: #fee5e5;
+            color: #e53e3e;
+        }
+        .tag-fail-deliver {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        /* 1920*1080屏幕专属适配 */
+        @media screen and (min-width: 1920px) {
+            .form-group {
+                max-width: 1800px; /* 限制表单组宽度，避免过宽 */
+            }
+            .modal-content {
+                width: 500px; /* 大屏下弹窗更宽，操作更舒适 */
+            }
+            table {
+                font-size: 15px; /* 大屏下表文字稍大 */
+            }
+        }
+        /* 防止小屏幕变形（兼容降级） */
+        @media screen and (max-width: 1919px) {
+            body {
+                max-width: 100%;
+                padding: 15px;
+            }
+            .container {
+                max-width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>盒子软件升级模块</h1>
+
+        <!-- 1. 选择目标盒子 -->
+        <div class="section" id="section1">
+            <span class="section-title">1. 选择目标盒子</span>
+            <div class="form-group">
+                <label>选择盒子：</label>
+                <button class="btn-primary" id="batchSelectBtn">选择盒子（支持单个/批量）</button>
+                <span class="tip info" id="boxStatusTip">请点击按钮选择盒子</span>
+            </div>
+            <div class="box-status" id="boxStatus" style="display: none;">
+                <div>
+                    <p><strong>已选盒子：</strong><span id="currentBox"></span></p>
+                    <p><strong>在线状态：</strong><span id="boxOnline" class="success"></span></p>
+                    <p><strong>剩余磁盘：</strong><span id="boxDisk"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 上传升级包并MD5校验 -->
+        <div class="section" id="section2">
+            <span class="section-title">2. 上传升级包并MD5校验</span>
+            <div class="form-group">
+                <label>上传升级包：</label>
+                <input type="file" id="upgradeFile" accept=".zip,.tar.gz,.bin">
+                <button class="btn-primary" id="uploadBtn">开始上传并校验</button>
+            </div>
+            <div class="form-group">
+                <label>预期MD5值：</label>
+                <input type="text" id="expectedMd5" placeholder="请输入您确认的升级包MD5值（32位）">
+                <span class="tip info">提示：Windows获取MD5命令：certutil -hashfile 文件路径 MD5</span>
+            </div>
+            <div class="form-group">
+                <label>上传进度：</label>
+                <div class="progress">
+                    <div class="progress-bar" id="uploadProgress"></div>
+                </div>
+                <span class="tip" id="uploadTip">未开始上传</span>
+            </div>
+            <!-- MD5校验结果展示 -->
+            <div class="form-group" id="md5VerifyResult" style="display: none; width: 100%;">
+                <label>校验结果：</label>
+                <div class="verify-result" id="verifyResultContent">
+                    <p><strong>用户输入MD5：</strong><span id="userInputMd5"></span></p>
+                    <p><strong>文件实际MD5：</strong><span id="actualFileMd5"></span></p>
+                    <p><strong>校验结论：</strong><span id="verifyConclusion"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 下发升级任务 -->
+        <div class="section" id="section3">
+            <span class="section-title">3. 下发升级任务（盒子侧二次校验）</span>
+            <p class="flow-tip">流程引导：选择盒子→上传包+MD5校验通过→下发任务（盒子侧校验MD5）</p>
+            <div class="form-group">
+                <label>模拟配置：</label>
+                <select id="simulateConfig">
+                    <option value="normal">正常流程（升级完成）</option>
+                    <option value="md5_fail">盒子侧MD5校验失败</option>
+                    <option value="script_fail">升级脚本返回错误</option>
+                    <option value="deliver_fail">下发任务失败（网络/权限）</option>
+                </select>
+                <span class="tip info">选择要模拟的升级场景</span>
+            </div>
+            <div class="form-group">
+                <button class="btn-primary" id="sendTaskBtn" disabled>下发升级任务</button>
+                <button class="btn-secondary" id="cancelBtn">重置所有状态</button>
+            </div>
+            <div class="form-group">
+                <span class="tip info" id="taskTip">请完成盒子选择和MD5校验通过</span>
+            </div>
+        </div>
+
+        <!-- 4. 升级状态与历史记录 -->
+        <div class="section" id="section4">
+            <span class="section-title">4. 升级状态与历史记录</span>
+            <div class="tabs">
+                <div class="tab active" data-tab="currentStatus">当前升级状态</div>
+                <div class="tab" data-tab="historyRecord">升级历史记录</div>
+            </div>
+            <div class="tab-content active" id="currentStatus">
+                <div id="currentStatusContent">
+                    <p class="tip info">暂无升级任务，下发任务后实时显示状态（含盒子侧MD5校验）</p>
+                </div>
+            </div>
+            <div class="tab-content" id="historyRecord">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>操作时间</th>
+                            <th>盒子序列号</th>
+                            <th>中台MD5校验</th>
+                            <th>下发状态</th>
+                            <th>盒子MD5校验</th>
+                            <th>升级状态</th>
+                            <th>失败原因</th>
+                            <th>操作人</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- 历史记录动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量选择弹窗 -->
+    <div class="modal" id="batchSelectModal">
+        <div class="modal-content">
+            <h3>选择盒子（可单选/多选）</h3>
+            <div style="height: 250px; overflow-y: auto; margin: 20px 0;">
+                <div><input type="checkbox" id="selectAll"> 全选</div>
+                <div><input type="checkbox" name="batchBox" value="SN123456"> SN123456（在线，100GB）</div>
+                <div><input type="checkbox" name="batchBox" value="SN654321"> SN654321（在线，85GB）</div>
+                <div><input type="checkbox" name="batchBox" value="SN789012" disabled> SN789012（离线）</div>
+            </div>
+            <button class="btn-primary" id="confirmBatchBtn">确认选择</button>
+            <button class="btn-secondary" id="cancelBatchBtn" style="margin-left: 10px;">取消</button>
+        </div>
+    </div>
+
+    <!-- 下发确认弹窗 -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3>确认下发升级任务？</h3>
+            <p>当前模拟场景：<span id="simulateSceneText">正常流程（升级完成）</span></p>
+            <p>下发后盒子将：</p>
+            <ol style="margin: 15px 0; padding-left: 25px; line-height: 1.8;">
+                <li>从中台下载升级包（模拟URL：https://example.com/upgrade.zip）</li>
+                <li>下载升级包的MD5文件（模拟URL：https://example.com/upgrade.md5）</li>
+                <li>本地计算升级包MD5，与中台MD5对比</li>
+                <li>校验通过后才执行升级</li>
+            </ol>
+            <button class="btn-primary" id="confirmTaskBtn">确认下发</button>
+            <button class="btn-secondary" id="cancelTaskBtn" style="margin-left: 10px;">取消</button>
+        </div>
+    </div>
+
+    <script>
+        // 引入CryptoJS
+        const script = document.createElement('script');
+        script.src = 'https://cdn.bootcdn.net/ajax/libs/crypto-js/4.2.0/crypto-js.min.js';
+        script.onload = initApp;
+        document.head.appendChild(script);
+
+        // 全局变量
+        let selectedBoxList = [];
+        let fileMd5CheckPass = false;
+        let uploadedFileName = '';
+        let actualMd5 = '';
+        let expectedMd5 = '';
+
+        function initApp() {
+            // 初始化模拟场景文本
+            const simulateConfig = document.getElementById('simulateConfig');
+            const simulateSceneText = document.getElementById('simulateSceneText');
+            simulateConfig.addEventListener('change', () => {
+                simulateSceneText.textContent = simulateConfig.options[simulateConfig.selectedIndex].text;
+            });
+
+            // 1. 盒子选择逻辑
+            const batchSelectBtn = document.getElementById('batchSelectBtn');
+            const batchSelectModal = document.getElementById('batchSelectModal');
+            const confirmBatchBtn = document.getElementById('confirmBatchBtn');
+            const cancelBatchBtn = document.getElementById('cancelBatchBtn');
+            const boxStatus = document.getElementById('boxStatus');
+            const currentBox = document.getElementById('currentBox');
+            const boxOnline = document.getElementById('boxOnline');
+            const boxDisk = document.getElementById('boxDisk');
+            const boxStatusTip = document.getElementById('boxStatusTip');
+
+            batchSelectBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                batchSelectModal.style.display = 'flex';
+            });
+
+            cancelBatchBtn.addEventListener('click', () => {
+                batchSelectModal.style.display = 'none';
+            });
+
+            confirmBatchBtn.addEventListener('click', () => {
+                const checkedBoxes = document.querySelectorAll('input[name="batchBox"]:checked');
+                selectedBoxList = Array.from(checkedBoxes).map(cb => cb.value);
+                
+                if (selectedBoxList.length > 0) {
+                    boxStatus.style.display = 'block';
+                    if (selectedBoxList.length === 1) {
+                        const sn = selectedBoxList[0];
+                        currentBox.textContent = sn;
+                        boxOnline.textContent = '在线';
+                        boxDisk.textContent = sn === 'SN123456' ? '100GB' : '85GB';
+                        boxStatusTip.className = 'tip success';
+                        boxStatusTip.textContent = `已选择盒子${sn}，请上传升级包并校验MD5`;
+                    } else {
+                        currentBox.textContent = `${selectedBoxList.length}个盒子（${selectedBoxList.join('、')}）`;
+                        boxOnline.textContent = '部分在线';
+                        boxDisk.textContent = '按需分配';
+                        boxStatusTip.className = 'tip success';
+                        boxStatusTip.textContent = `已选择${selectedBoxList.length}个盒子，请上传升级包并校验MD5`;
+                    }
+                    checkSendBtnStatus();
+                } else {
+                    boxStatusTip.className = 'tip error';
+                    boxStatusTip.textContent = '请至少选择一个盒子';
+                }
+                batchSelectModal.style.display = 'none';
+            });
+
+            // 全选逻辑
+            document.getElementById('selectAll').addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                document.querySelectorAll('input[name="batchBox"]:enabled').forEach(cb => {
+                    cb.checked = isChecked;
+                });
+            });
+
+            // 2. MD5计算与校验逻辑
+            const uploadBtn = document.getElementById('uploadBtn');
+            const upgradeFile = document.getElementById('upgradeFile');
+            const expectedMd5Input = document.getElementById('expectedMd5');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const uploadTip = document.getElementById('uploadTip');
+            const md5VerifyResult = document.getElementById('md5VerifyResult');
+            const userInputMd5 = document.getElementById('userInputMd5');
+            const actualFileMd5 = document.getElementById('actualFileMd5');
+            const verifyConclusion = document.getElementById('verifyConclusion');
+            const verifyResultContent = document.getElementById('verifyResultContent');
+
+            uploadBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const file = upgradeFile.files[0];
+                expectedMd5 = expectedMd5Input.value.trim().toLowerCase();
+
+                if (!file) {
+                    uploadTip.className = 'tip error';
+                    uploadTip.textContent = '请先选择升级包文件';
+                    return;
+                }
+                if (!expectedMd5 || expectedMd5.length !== 32) {
+                    uploadTip.className = 'tip error';
+                    uploadTip.textContent = '请输入有效的32位MD5值（Windows命令：certutil -hashfile 文件 MD5）';
+                    return;
+                }
+
+                uploadProgress.style.width = '0%';
+                uploadTip.className = 'tip info';
+                uploadTip.textContent = '正在上传并计算MD5...';
+                md5VerifyResult.style.display = 'none';
+                fileMd5CheckPass = false;
+
+                try {
+                    const progressTimer = setInterval(() => {
+                        const currentWidth = parseInt(uploadProgress.style.width) || 0;
+                        if (currentWidth < 100) {
+                            uploadProgress.style.width = `${currentWidth + 10}%`;
+                        } else {
+                            clearInterval(progressTimer);
+                        }
+                    }, 200);
+
+                    actualMd5 = await calculateFileMd5(file);
+                    uploadedFileName = file.name;
+
+                    clearInterval(progressTimer);
+                    uploadProgress.style.width = '100%';
+
+                    fileMd5CheckPass = actualMd5 === expectedMd5;
+
+                    md5VerifyResult.style.display = 'flex';
+                    userInputMd5.textContent = expectedMd5;
+                    actualFileMd5.textContent = actualMd5;
+                    
+                    if (fileMd5CheckPass) {
+                        uploadTip.className = 'tip success';
+                        uploadTip.textContent = '文件上传完成，MD5校验通过！';
+                        verifyConclusion.className = 'success';
+                        verifyConclusion.textContent = '✅ MD5一致，文件完整未被篡改';
+                        verifyResultContent.className = 'verify-result success';
+                    } else {
+                        uploadTip.className = 'tip error';
+                        uploadTip.textContent = '文件上传完成，但MD5校验失败！';
+                        verifyConclusion.className = 'error';
+                        verifyConclusion.textContent = '❌ MD5不一致，文件可能被篡改或损坏';
+                        verifyResultContent.className = 'verify-result error';
+                    }
+
+                    checkSendBtnStatus();
+
+                } catch (error) {
+                    uploadTip.className = 'tip error';
+                    uploadTip.textContent = `MD5计算失败：${error.message}`;
+                }
+            });
+
+            // 3. 下发任务逻辑
+            const sendTaskBtn = document.getElementById('sendTaskBtn');
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmTaskBtn = document.getElementById('confirmTaskBtn');
+            const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+            const taskTip = document.getElementById('taskTip');
+            const currentStatusContent = document.getElementById('currentStatusContent');
+            const historyTableBody = document.getElementById('historyTableBody');
+
+            sendTaskBtn.addEventListener('click', () => {
+                confirmModal.style.display = 'flex';
+            });
+
+            cancelTaskBtn.addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+            });
+
+            confirmTaskBtn.addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+                const simulateType = simulateConfig.value;
+                const now = new Date();
+                const timeStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+                // 第一步：展示下发中/升级中状态
+                taskTip.className = 'tip processing';
+                taskTip.textContent = '正在下发任务到盒子...';
+                currentStatusContent.innerHTML = `
+                    <div class="verify-result processing">
+                        <p><strong>操作时间：</strong>${timeStr}</p>
+                        <p><strong>下发状态：</strong><span class="status-tag tag-processing">下发中</span></p>
+                        <p><strong>升级包：</strong>${uploadedFileName}</p>
+                        <p><strong>中台MD5校验：</strong>${fileMd5CheckPass ? '通过' : '失败'}</p>
+                        <p><strong>当前升级状态：</strong><span class="status-tag tag-processing">升级中</span></p>
+                    </div>
+                `;
+
+                // 第二步：模拟异步流程（3秒后展示最终状态）
+                setTimeout(() => {
+                    let deliverStatus = '成功';
+                    let deliverStatusTag = '<span class="status-tag tag-success">成功</span>';
+                    let boxMd5Check = '通过';
+                    let boxMd5CheckTag = '<span class="status-tag tag-success">通过</span>';
+                    let upgradeStatus = '升级完成';
+                    let upgradeStatusTag = '<span class="status-tag tag-success">升级完成</span>';
+                    let failReason = '-';
+                    let resultClass = 'success';
+
+                    // 根据模拟类型更新状态
+                    switch (simulateType) {
+                        case 'deliver_fail':
+                            deliverStatus = '失败';
+                            deliverStatusTag = '<span class="status-tag tag-fail-deliver">失败</span>';
+                            upgradeStatus = '未执行';
+                            upgradeStatusTag = '<span class="status-tag tag-error">未执行</span>';
+                            failReason = '下发失败：网络超时（盒子IP：192.168.1.101）';
+                            resultClass = 'error';
+                            break;
+                        case 'md5_fail':
+                            boxMd5Check = '失败';
+                            boxMd5CheckTag = '<span class="status-tag tag-error">失败</span>';
+                            upgradeStatus = '升级失败';
+                            upgradeStatusTag = '<span class="status-tag tag-error">升级失败</span>';
+                            failReason = '升级失败：MD5校验失败（盒子计算MD5：e10adc3949ba59abbe56e057f20f883f）';
+                            resultClass = 'error';
+                            break;
+                        case 'script_fail':
+                            upgradeStatus = '升级失败';
+                            upgradeStatusTag = '<span class="status-tag tag-error">升级失败</span>';
+                            failReason = '升级失败：升级脚本返回错误：Error: 依赖库libssl.so.1.1不存在';
+                            resultClass = 'error';
+                            break;
+                        default: // normal
+                            break;
+                    }
+
+                    // 更新当前状态
+                    currentStatusContent.innerHTML = `
+                        <div class="verify-result ${resultClass}">
+                            <p><strong>操作时间：</strong>${timeStr}</p>
+                            <p><strong>下发状态：</strong>${deliverStatusTag}</p>
+                            <p><strong>升级包：</strong>${uploadedFileName}</p>
+                            <p><strong>中台MD5校验：</strong>${fileMd5CheckPass ? '<span class="status-tag tag-success">通过</span>' : '<span class="status-tag tag-error">失败</span>'}</p>
+                            <p><strong>盒子MD5校验：</strong>${boxMd5CheckTag}</p>
+                            <p><strong>升级状态：</strong>${upgradeStatusTag}</p>
+                            <p><strong>失败原因：</strong>${failReason}</p>
+                        </div>
+                    `;
+
+                    // 更新任务提示
+                    if (simulateType === 'deliver_fail') {
+                        taskTip.className = 'tip error';
+                        taskTip.textContent = '任务下发失败，请检查网络或盒子状态';
+                    } else if (simulateType === 'md5_fail' || simulateType === 'script_fail') {
+                        taskTip.className = 'tip error';
+                        taskTip.textContent = '升级失败，详见失败原因';
+                    } else {
+                        taskTip.className = 'tip success';
+                        taskTip.textContent = '所有盒子升级完成！';
+                    }
+
+                    // 添加到历史记录
+                    selectedBoxList.forEach(sn => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${timeStr}</td>
+                            <td>${sn}</td>
+                            <td>${fileMd5CheckPass ? '<span class="status-tag tag-success">通过</span>' : '<span class="status-tag tag-error">失败</span>'}</td>
+                            <td>${deliverStatusTag}</td>
+                            <td>${boxMd5CheckTag}</td>
+                            <td>${upgradeStatusTag}</td>
+                            <td>${failReason}</td>
+                            <td>admin</td>
+                        `;
+                        historyTableBody.prepend(tr);
+                    });
+
+                }, 3000); // 模拟3秒的下发+升级耗时
+            });
+
+            // 4. 重置按钮逻辑
+            const cancelBtn = document.getElementById('cancelBtn');
+            cancelBtn.addEventListener('click', () => {
+                upgradeFile.value = '';
+                expectedMd5Input.value = '';
+                simulateConfig.value = 'normal';
+                document.getElementById('simulateSceneText').textContent = '正常流程（升级完成）';
+                uploadProgress.style.width = '0%';
+                uploadTip.className = 'tip info';
+                uploadTip.textContent = '未开始上传';
+                md5VerifyResult.style.display = 'none';
+                boxStatus.style.display = 'none';
+                currentBox.textContent = '';
+                boxOnline.textContent = '';
+                boxDisk.textContent = '';
+                boxStatusTip.className = 'tip info';
+                boxStatusTip.textContent = '请点击按钮选择盒子';
+                taskTip.className = 'tip info';
+                taskTip.textContent = '请完成盒子选择和MD5校验通过';
+                currentStatusContent.innerHTML = '<p class="tip info">暂无升级任务，下发任务后实时显示状态（含盒子侧MD5校验）</p>';
+                sendTaskBtn.disabled = true;
+                selectedBoxList = [];
+                fileMd5CheckPass = false;
+                uploadedFileName = '';
+                actualMd5 = '';
+                expectedMd5 = '';
+                document.querySelectorAll('input[name="batchBox"]').forEach(cb => cb.checked = false);
+                document.getElementById('selectAll').checked = false;
+            });
+
+            // 5. 标签页切换
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // 6. 点击弹窗外部关闭
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+
+        // 工具函数：计算文件MD5
+        function calculateFileMd5(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const wordArray = CryptoJS.lib.WordArray.create(e.target.result);
+                        const md5 = CryptoJS.MD5(wordArray).toString().toLowerCase();
+                        resolve(md5);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // 工具函数：检查下发按钮是否可点击
+        function checkSendBtnStatus() {
+            const sendTaskBtn = document.getElementById('sendTaskBtn');
+            const taskTip = document.getElementById('taskTip');
+            
+            if (selectedBoxList.length === 0) {
+                sendTaskBtn.disabled = true;
+                taskTip.textContent = '请先选择目标盒子';
+            } else if (!fileMd5CheckPass) {
+                sendTaskBtn.disabled = true;
+                taskTip.textContent = 'MD5校验未通过，无法下发任务';
+            } else {
+                sendTaskBtn.disabled = false;
+                taskTip.className = 'tip success';
+                taskTip.textContent = '所有校验通过，可下发升级任务（可选择模拟不同场景）';
+            }
+        }
+    </script>
+</body>
+</html>

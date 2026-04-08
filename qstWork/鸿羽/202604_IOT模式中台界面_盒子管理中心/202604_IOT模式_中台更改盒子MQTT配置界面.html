@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MQTT配置管理中心（公网消息代理）- 1920×1080适配版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        /* 1920*1080屏幕核心适配 */
+        body {
+            background-color: #f5fafe;
+            padding: 20px;
+            width: 100%;
+            min-height: 100vh;
+            max-width: 1920px;
+            margin: 0 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 30px;
+            width: 100%;
+            max-width: 1880px;
+            min-height: calc(100vh - 40px);
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2d8b4f;
+            font-size: 24px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e6f7ef;
+            padding-bottom: 15px;
+        }
+        /* 模块区域通用样式 */
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fdfb;
+            border-radius: 6px;
+            border-left: 3px solid #2d8b4f;
+            display: block;
+            clear: both;
+            width: 100%;
+        }
+        .section-title {
+            color: #2d8b4f;
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            display: block;
+            width: 100%;
+            font-weight: 600;
+        }
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        label {
+            color: #333;
+            font-weight: 500;
+            width: 150px;
+            text-align: right;
+            font-size: 15px;
+        }
+        input[type="text"], input[type="number"], select, textarea {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+            flex: 1;
+            min-width: 350px;
+        }
+        /* 按钮样式 */
+        .btn-primary {
+            background-color: #2d8b4f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: background-color 0.2s;
+            margin-right: 10px;
+        }
+        .btn-primary:hover {
+            background-color: #267a42;
+        }
+        .btn-primary:disabled {
+            background-color: #9cccba;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 15px;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #e6e6e6;
+        }
+        /* 提示信息样式 */
+        .tip {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .tip.info {
+            color: #4299e1;
+        }
+        .tip.success {
+            color: #2d8b4f;
+        }
+        .tip.warning {
+            color: #f57c00;
+        }
+        .tip.error {
+            color: #e53e3e;
+        }
+        /* 状态标签 */
+        .status-tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .status-success {
+            background-color: #e8f5e9;
+            color: #2d8b4f;
+        }
+        .status-fail {
+            background-color: #fee5e5;
+            color: #e53e3e;
+        }
+        .status-warning {
+            background-color: #fff8e1;
+            color: #f57c00;
+        }
+        /* 表格样式 */
+        .monitor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 15px;
+        }
+        .monitor-table th, .monitor-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .monitor-table th {
+            background-color: #f9fdfb;
+            color: #2d8b4f;
+            font-weight: 600;
+        }
+        .monitor-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        /* 筛选栏 */
+        .filter-bar {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-tag {
+            padding: 6px 12px;
+            background-color: #e8f5e9;
+            color: #2d8b4f;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #c8e6c9;
+        }
+        .filter-tag.active {
+            background-color: #2d8b4f;
+            color: #fff;
+        }
+        /* 操作结果面板 */
+        .result-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e6f7ef;
+            border-radius: 4px;
+            width: 100%;
+            line-height: 1.6;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .result-content {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* 操作流程提示 */
+        .process-tip {
+            background-color: #e8f5e9;
+            border-left: 3px solid #2d8b4f;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: #267a42;
+        }
+        /* 1920*1080屏幕专属适配 */
+        @media screen and (min-width: 1920px) {
+            .form-group {
+                max-width: 1800px;
+            }
+            .monitor-table {
+                font-size: 15px;
+            }
+            input[type="text"], input[type="number"], select {
+                min-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MQTT配置管理中心（公网消息代理）</h1>
+
+        <!-- ==================== 前置步骤：目标盒子选择 ==================== -->
+        <div class="section">
+            <span class="section-title">1. 选择目标操作盒子</span>
+            <!-- 操作流程提示 -->
+            <div class="process-tip">
+                <strong>操作流程：</strong>1. 选择盒子 → 2. 配置新的公网代理（MQTT）IP/端口 → 3. 下发配置到盒子 → 4. 重启消息传输模块（按新代理地址重连）
+            </div>
+            <div class="form-group">
+                <label>目标盒子：</label>
+                <select id="box-select" multiple>
+                    <option value="SN123456">SN123456（192.168.1.100，在线）</option>
+                    <option value="SN654321">SN654321（192.168.1.101，在线）</option>
+                    <option value="SN789012" disabled>SN789012（192.168.1.102，离线）</option>
+                    <option value="SN987654">SN987654（192.168.1.103，在线）</option>
+                </select>
+                <span class="tip info">可多选，离线盒子禁用勾选；所有配置操作仅对选中的盒子生效</span>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <button class="btn-secondary" id="select-all-boxes">全选在线盒子</button>
+                <button class="btn-secondary" id="clear-selection">清空选择</button>
+                <span class="status-tag" id="selection-status">已选择 0 个盒子</span>
+            </div>
+        </div>
+
+        <!-- ==================== 2. 配置并下发公网代理（MQTT）新参数 ==================== -->
+        <div class="section">
+            <span class="section-title">2. 配置并下发公网代理（MQTT）新参数</span>
+            <div class="form-group">
+                <label>公网代理（MQTT）IP：</label>
+                <input type="text" id="mqtt-ip-input" value="192.168.1.200" placeholder="请输入公网代理IP地址（MQTT协议）">
+                <span class="tip info">仅下发配置不中断存量连接，新代理地址需重启模块后生效</span>
+            </div>
+            <div class="form-group">
+                <label>公网代理（MQTT）端口：</label>
+                <input type="number" id="mqtt-port-input" value="1883" min="1" max="65535" placeholder="请输入公网代理端口号（MQTT协议）">
+                <span class="tip info">端口范围：1-65535，MQTT默认1883</span>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <button class="btn-primary" id="send-config-btn" disabled>下发配置到选中盒子</button>
+                <button class="btn-secondary" id="reset-config-btn">重置配置</button>
+                <span class="status-tag status-success" id="config-status-tag">当前配置：192.168.1.200:1883</span>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <p class="tip warning">
+                    <strong>配置说明：</strong>下发配置仅将新的公网代理（MQTT）IP/端口发送到选中的盒子，不会中断现有连接；需在下一步重启消息传输模块，盒子才会按新代理地址重连。
+                </p>
+            </div>
+        </div>
+
+        <!-- ==================== 3. 重启盒子消息传输（MQTT）模块 ==================== -->
+        <div class="section">
+            <span class="section-title">3. 重启盒子消息传输（MQTT）模块</span>
+            <div class="form-group">
+                <label></label>
+                <button class="btn-primary" id="restart-module-btn" disabled>重启选中盒子的消息传输模块</button>
+                <button class="btn-primary" id="batch-restart-btn" style="background-color: #f57c00;">⚠️ 批量重启全部在线盒子的消息传输模块</button>
+            </div>
+            <div class="form-group">
+                <label></label>
+                <p class="tip warning">
+                    <strong>操作提示：</strong>重启盒子侧消息传输模块（MQTT协议），将触发盒子按已下发的新公网代理地址重新连接，不会影响服务端代理服务和未选中盒子的连接。
+                </p>
+            </div>
+
+            <!-- 操作结果面板 -->
+            <div class="result-panel" id="operation-result-panel">
+                <div class="result-header">
+                    <span>操作结果：请先选择盒子，再执行配置下发或模块重启</span>
+                    <span class="status-tag" id="operation-status-tag"></span>
+                </div>
+                <div class="result-content" id="operation-result-content"></div>
+            </div>
+        </div>
+
+        <!-- ==================== 4. 代理配置状态与盒子连接监控 ==================== -->
+        <div class="section">
+            <span class="section-title">4. 代理配置状态与盒子连接监控</span>
+            
+            <!-- 配置状态展示 -->
+            <div class="form-group">
+                <label>最近下发的公网代理配置：</label>
+                <div>
+                    <p><strong>公网代理IP（MQTT）：</strong><span id="current-ip">192.168.1.200</span></p>
+                    <p><strong>公网代理端口（MQTT）：</strong><span id="current-port">1883</span></p>
+                    <p><strong>下发时间：</strong><span id="update-time">2025-04-08 10:30:25</span></p>
+                    <p><strong>下发盒子数：</strong><span id="send-box-count">0</span></p>
+                </div>
+            </div>
+
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <span>连接状态筛选：</span>
+                <span class="filter-tag active" data-filter="all">全部</span>
+                <span class="filter-tag" data-filter="online">在线</span>
+                <span class="filter-tag" data-filter="offline">离线</span>
+            </div>
+
+            <!-- 盒子连接状态表格 -->
+            <table class="monitor-table">
+                <thead>
+                    <tr>
+                        <th>盒子SN</th>
+                        <th>盒子IP</th>
+                        <th>已下发公网代理IP/端口</th>
+                        <th>当前连接公网代理IP/端口</th>
+                        <th>连接状态</th>
+                        <th>在线状态</th>
+                        <th>最后心跳时间</th>
+                    </tr>
+                </thead>
+                <tbody id="box-monitor-tbody">
+                    <tr data-status="online">
+                        <td>SN123456</td>
+                        <td>192.168.1.100</td>
+                        <td>192.168.1.200:1883</td>
+                        <td>192.168.1.200:1883</td>
+                        <td><span class="status-tag status-success">连接正常</span></td>
+                        <td><span class="status-tag status-success">在线</span></td>
+                        <td>2025-04-08 15:20:30</td>
+                    </tr>
+                    <tr data-status="online">
+                        <td>SN654321</td>
+                        <td>192.168.1.101</td>
+                        <td>192.168.1.200:1883</td>
+                        <td>192.168.1.200:1883</td>
+                        <td><span class="status-tag status-success">连接正常</span></td>
+                        <td><span class="status-tag status-success">在线</span></td>
+                        <td>2025-04-08 15:19:45</td>
+                    </tr>
+                    <tr data-status="offline">
+                        <td>SN789012</td>
+                        <td>192.168.1.102</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-tag status-fail">连接异常</span></td>
+                        <td><span class="status-tag status-fail">离线</span></td>
+                        <td>2025-04-08 10:05:12</td>
+                    </tr>
+                    <tr data-status="online">
+                        <td>SN987654</td>
+                        <td>192.168.1.103</td>
+                        <td>192.168.1.200:1883</td>
+                        <td>192.168.1.200:1883</td>
+                        <td><span class="status-tag status-success">连接正常</span></td>
+                        <td><span class="status-tag status-success">在线</span></td>
+                        <td>2025-04-08 15:21:18</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化变量
+            let originalIp = document.getElementById('mqtt-ip-input').value;
+            let originalPort = document.getElementById('mqtt-port-input').value;
+            let selectedBoxes = [];
+            
+            // 初始化事件监听
+            initBoxSelectionHandlers();
+            initConfigHandlers();
+            initModuleRestartHandlers();
+            initFilterHandlers();
+            
+            // 更新选择状态
+            updateSelectionStatus();
+        });
+
+        // 1. 盒子选择逻辑（核心前置逻辑）
+        function initBoxSelectionHandlers() {
+            const boxSelect = document.getElementById('box-select');
+            const selectAllBtn = document.getElementById('select-all-boxes');
+            const clearBtn = document.getElementById('clear-selection');
+            const sendConfigBtn = document.getElementById('send-config-btn');
+            const restartModuleBtn = document.getElementById('restart-module-btn');
+            
+            // 监听盒子选择变化
+            boxSelect.addEventListener('change', function() {
+                selectedBoxes = Array.from(this.selectedOptions).map(opt => opt.value);
+                updateSelectionStatus();
+                
+                // 启用/禁用按钮
+                sendConfigBtn.disabled = selectedBoxes.length === 0;
+                restartModuleBtn.disabled = selectedBoxes.length === 0;
+            });
+            
+            // 全选在线盒子
+            selectAllBtn.addEventListener('click', function() {
+                const options = boxSelect.options;
+                selectedBoxes = [];
+                
+                for (let i = 0; i < options.length; i++) {
+                    if (!options[i].disabled) {
+                        options[i].selected = true;
+                        selectedBoxes.push(options[i].value);
+                    }
+                }
+                
+                updateSelectionStatus();
+                sendConfigBtn.disabled = false;
+                restartModuleBtn.disabled = false;
+            });
+            
+            // 清空选择
+            clearBtn.addEventListener('click', function() {
+                boxSelect.selectedIndex = -1;
+                selectedBoxes = [];
+                updateSelectionStatus();
+                sendConfigBtn.disabled = true;
+                restartModuleBtn.disabled = true;
+            });
+        }
+
+        // 2. 配置下发逻辑（贴合研发逻辑：先下发配置到盒子）
+        function initConfigHandlers() {
+            const sendBtn = document.getElementById('send-config-btn');
+            const resetBtn = document.getElementById('reset-config-btn');
+            const ipInput = document.getElementById('mqtt-ip-input');
+            const portInput = document.getElementById('mqtt-port-input');
+            const configStatusTag = document.getElementById('config-status-tag');
+            
+            // 下发配置到选中盒子
+            sendBtn.addEventListener('click', function() {
+                const newIp = ipInput.value.trim();
+                const newPort = portInput.value.trim();
+                
+                // 简单校验
+                if (!newIp) {
+                    showOperationResult('失败', '请输入公网代理（MQTT）IP地址', false);
+                    return;
+                }
+                if (!newPort || newPort < 1 || newPort > 65535) {
+                    showOperationResult('失败', '请输入有效的公网代理（MQTT）端口（1-65535）', false);
+                    return;
+                }
+                
+                // 模拟下发配置（研发实际逻辑：给选中盒子发新IP/端口命令）
+                const now = formatTime(new Date());
+                document.getElementById('current-ip').textContent = newIp;
+                document.getElementById('current-port').textContent = newPort;
+                document.getElementById('update-time').textContent = now;
+                document.getElementById('send-box-count').textContent = selectedBoxes.length;
+                
+                // 更新状态
+                configStatusTag.textContent = `当前配置：${newIp}:${newPort}`;
+                configStatusTag.className = 'status-tag status-success';
+                
+                // 展示操作结果
+                showOperationResult(
+                    '成功', 
+                    `公网代理（MQTT）配置下发成功
+下发时间：${now}
+下发配置：${newIp}:${newPort}
+下发盒子：${selectedBoxes.join(', ')}
+提示：已将新配置发送到选中盒子，需重启消息传输模块（MQTT）使配置生效`, 
+                    true
+                );
+                
+                // 更新原始值
+                originalIp = newIp;
+                originalPort = newPort;
+                
+                // 更新盒子已下发配置（模拟）
+                updateBoxSentConfig(newIp, newPort);
+            });
+            
+            // 重置配置
+            resetBtn.addEventListener('click', function() {
+                ipInput.value = originalIp;
+                portInput.value = originalPort;
+                configStatusTag.textContent = `当前配置：${originalIp}:${originalPort}`;
+                
+                showOperationResult(
+                    '提示', 
+                    '公网代理（MQTT）配置已重置为最近下发的值', 
+                    true
+                );
+            });
+        }
+
+        // 3. 重启MQTT模块逻辑（贴合研发逻辑：下发配置后重启模块）
+        function initModuleRestartHandlers() {
+            const restartBtn = document.getElementById('restart-module-btn');
+            const batchRestartBtn = document.getElementById('batch-restart-btn');
+            const boxSelect = document.getElementById('box-select');
+            
+            // 重启选中盒子的MQTT模块
+            restartBtn.addEventListener('click', function() {
+                const now = formatTime(new Date());
+                
+                // 二次确认
+                if (!confirm(`确认重启以下盒子的消息传输（MQTT）模块？\n${selectedBoxes.join('\n')}\n\n提示：重启后盒子将按已下发的新公网代理（MQTT）配置重连`)) {
+                    return;
+                }
+                
+                // 模拟重启操作（研发实际逻辑：给选中盒子发重启模块命令）
+                showOperationResult(
+                    '成功', 
+                    `消息传输（MQTT）模块重启成功
+重启时间：${now}
+重启盒子：${selectedBoxes.join(', ')}
+提示：选中盒子已按新配置（${document.getElementById('current-ip').textContent}:${document.getElementById('current-port').textContent}）重新连接公网代理`, 
+                    true
+                );
+                
+                // 模拟更新盒子当前连接配置和心跳时间
+                updateBoxCurrentConfig(document.getElementById('current-ip').textContent, document.getElementById('current-port').textContent);
+                updateBoxHeartbeat(selectedBoxes);
+            });
+            
+            // 批量重启全部在线盒子
+            batchRestartBtn.addEventListener('click', function() {
+                // 二次确认
+                if (!confirm('确认批量重启所有在线盒子的消息传输（MQTT）模块？\n\n提示：重启后盒子将按已下发的新公网代理（MQTT）配置重连')) {
+                    return;
+                }
+                
+                const onlineBoxes = ['SN123456', 'SN654321', 'SN987654'];
+                const now = formatTime(new Date());
+                const currentIp = document.getElementById('current-ip').textContent;
+                const currentPort = document.getElementById('current-port').textContent;
+                
+                showOperationResult(
+                    '成功', 
+                    `批量重启消息传输（MQTT）模块成功
+重启时间：${now}
+重启盒子：${onlineBoxes.join(', ')}
+提示：所有在线盒子已按新配置（${currentIp}:${currentPort}）重新连接公网代理`, 
+                    true
+                );
+                
+                // 模拟更新所有在线盒子连接配置和心跳时间
+                updateBoxCurrentConfig(currentIp, currentPort);
+                updateBoxHeartbeat(onlineBoxes);
+                
+                // 更新选择状态为全选
+                const options = boxSelect.options;
+                selectedBoxes = [];
+                for (let i = 0; i < options.length; i++) {
+                    if (!options[i].disabled) {
+                        options[i].selected = true;
+                        selectedBoxes.push(options[i].value);
+                    }
+                }
+                updateSelectionStatus();
+            });
+        }
+
+        // 4. 状态筛选逻辑
+        function initFilterHandlers() {
+            const filterTags = document.querySelectorAll('.filter-tag');
+            const tableRows = document.querySelectorAll('#box-monitor-tbody tr');
+            
+            filterTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 切换筛选标签状态
+                    filterTags.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filterType = this.getAttribute('data-filter');
+                    
+                    // 筛选表格行
+                    tableRows.forEach(row => {
+                        const rowStatus = row.getAttribute('data-status');
+                        if (filterType === 'all' || filterType === rowStatus) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        // 工具函数：更新选择状态显示
+        function updateSelectionStatus() {
+            const statusTag = document.getElementById('selection-status');
+            statusTag.textContent = `已选择 ${selectedBoxes.length} 个盒子`;
+            statusTag.className = `status-tag ${selectedBoxes.length > 0 ? 'status-success' : ''}`;
+        }
+
+        // 工具函数：展示操作结果
+        function showOperationResult(status, content, isSuccess) {
+            const statusTag = document.getElementById('operation-status-tag');
+            const resultContent = document.getElementById('operation-result-content');
+            
+            statusTag.textContent = status;
+            statusTag.className = `status-tag ${isSuccess ? 'status-success' : 'status-fail'}`;
+            resultContent.textContent = content;
+        }
+
+        // 工具函数：格式化时间
+        function formatTime(date) {
+            return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        }
+
+        // 工具函数：更新盒子已下发的MQTT配置
+        function updateBoxSentConfig(newIp, newPort) {
+            const cells = document.querySelectorAll('#box-monitor-tbody td:nth-child(3)');
+            cells.forEach((cell, index) => {
+                const row = cell.parentElement;
+                if (row.getAttribute('data-status') !== 'offline') {
+                    cell.textContent = `${newIp}:${newPort}`;
+                }
+            });
+        }
+
+        // 工具函数：更新盒子当前连接的MQTT配置
+        function updateBoxCurrentConfig(newIp, newPort) {
+            const cells = document.querySelectorAll('#box-monitor-tbody td:nth-child(4)');
+            cells.forEach((cell, index) => {
+                const row = cell.parentElement;
+                if (row.getAttribute('data-status') !== 'offline') {
+                    cell.textContent = `${newIp}:${newPort}`;
+                }
+            });
+        }
+
+        // 工具函数：更新盒子心跳时间
+        function updateBoxHeartbeat(boxSNs) {
+            const now = formatTime(new Date());
+            const rows = document.querySelectorAll('#box-monitor-tbody tr');
+            
+            rows.forEach(row => {
+                const sn = row.querySelector('td:first-child').textContent;
+                if (boxSNs.includes(sn)) {
+                    row.querySelector('td:last-child').textContent = now;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
