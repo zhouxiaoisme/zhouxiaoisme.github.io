@@ -28,7 +28,7 @@ jobs:
           // 目标目录
           const targetDir = './qstWork';
           // 要包含的文件类型
-          const allowedExts = ['.html', '.jpg', '.png', '.gif', '.svg', '.jpeg', '.bmp', '.mp4', '.txt', '.md'];
+          const allowedExts = ['.html', '.jpg', '.png', '.gif', '.svg', '.jpeg', '.bmp', '.mp4', '.txt', '.md', ".cfg", ".yaml", ".pdf", ".doc", ".docx", ".xls", ".xlsx"];
 
           // 递归扫描目录
           function scanDir(dir) {
