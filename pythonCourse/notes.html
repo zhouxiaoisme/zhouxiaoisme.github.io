@@ -1,211 +1,114 @@
 <!DOCTYPE html>
-  <html lang='zh-CN'>
-  <head>
-      <meta charset='UTF-8'> <!-- 强制指定UTF-8编码，核心保障 -->
-      <meta http-equiv='Content-Type' content='text/html; charset=utf-8'> <!-- 兼容旧浏览器 -->
-      <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-      <title>Python学习笔记 | 一个普通的思考者</title>
-      <style>
-          * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-              font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-              transition: all 0.3s ease;
-          }
-          body {
-              background: linear-gradient(120deg, #f5f7fa 0%, #e4eaf5 100%);
-              color: #333;
-              line-height: 1.5;
-              padding: 20px;
-              max-width: 1000px;
-              margin: 0 auto;
-              min-height: 100vh;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              charset: utf-8; /* 额外保障编码一致性 */
-          }
-          .container {
-              background: rgba(255, 255, 255, 0.95);
-              border-radius: 16px;
-              padding: 40px 60px;
-              box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
-              border: 1px solid #e8f4f8;
-          }
-          .header {
-              text-align: center;
-              margin-bottom: 35px;
-          }
-          .avatar {
-              width: 120px;
-              height: 120px;
-              border-radius: 50%;
-              background: linear-gradient(45deg, #4299e1 0%, #38b2ac 100%);
-              margin: 0 auto 20px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 48px;
-              color: white;
-              box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
-          }
-          .avatar:hover {
-              transform: scale(1.05);
-              box-shadow: 0 6px 18px rgba(66, 153, 225, 0.4);
-          }
-          h1 {
-              font-size: 32px;
-              margin-bottom: 8px;
-              background: linear-gradient(90deg, #2d3748, #4a5568);
-              -webkit-background-clip: text;
-              background-clip: text;
-              color: transparent;
-              font-weight: 600;
-          }
-          .subtitle {
-              color: #718096;
-              font-size: 17px;
-              font-weight: 400;
-              font-style: italic;
-          }
-          .notes-section h2 {
-              font-size: 22px;
-              margin-bottom: 15px;
-              background: linear-gradient(90deg, #4299e1, #9f7aea);
-              -webkit-background-clip: text;
-              background-clip: text;
-              color: transparent;
-              border-left: 4px solid #4299e1;
-              padding-left: 12px;
-              font-weight: 600;
-          }
-          .notes-list {
-              list-style: none;
-              display: grid;
-              gap: 12px;
-          }
-          .notes-list li {
-              background: linear-gradient(180deg, #f0f8fb 0%, #fef7fb 100%);
-              border-radius: 10px;
-              border: 1px solid #f5fafe;
-              box-shadow: 0 2px 8px rgba(224, 231, 255, 0.5);
-              transition: all 0.3s ease;
-          }
-          .notes-list li:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 4px 12px rgba(224, 231, 255, 0.8);
-          }
-          .notes-list a {
-              display: flex;
-              align-items: center;
-              padding: 16px 20px;
-              color: #2d3748;
-              text-decoration: none;
-              font-size: 16px;
-          }
-          /* 关键修复3：笔记前缀改用HTML实体，替换原生Emoji */
-          .notes-list a::before {
-              content: '\1F4D5'; /* 替换 &#128213;，CSS识别的Unicode转义序列，对应📚表情 */
-              margin-right: 12px;
-              font-size: 18px;
-          }
-          .notes-list a:hover {
-              color: #4299e1;
-          }
-          .back-btn {
-              margin-top: 30px;
-              text-align: center;
-          }
-          .back-btn a {
-              display: inline-block;
-              padding: 10px 24px;
-              background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              text-decoration: none;
-              border-radius: 8px;
-              font-size: 15px;
-              box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-          }
-          .back-btn a:hover {
-              transform: translateY(-1px);
-              box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-          }
-          .footer {
-              text-align: center;
-              margin-top: 25px;
-              background: linear-gradient(90deg, #718096, #a0aec0);
-              -webkit-background-clip: text;
-              background-clip: text;
-              color: transparent;
-              font-size: 14px;
-              padding-bottom: 10px;
-          }
-          @media (max-width: 768px) {
-              body {
-                  max-width: 100%;
-                  padding: 15px;
-              }
-              .container {
-                  padding: 30px 20px;
-              }
-              .avatar {
-                  width: 100px;
-                  height: 100px;
-                  font-size: 40px;
-              }
-              h1 {
-                  font-size: 28px;
-              }
-              .notes-section h2 {
-                  font-size: 20px;
-              }
-              .notes-list a {
-                  padding: 14px 16px;
-                  font-size: 15px;
-              }
-          }
-      </style>
-  </head>
-  <body>
-      <div class='container'>
-          <div class='header'>
-              <div class='avatar'>&#128013;</div> <!-- 使用HTML实体替代原生Emoji -->
-              <h1>Python学习笔记</h1>
-              <p class='subtitle'>从底层逻辑拆解Python学习笔记，较真每一个知识点</p>
-          </div>
-          <div class='notes-section'>
-              <h2>我的笔记列表</h2>
-              <ul class='notes-list'>
-                            <li><a href='202509_10进制转换为8进制_除8取余法讲解_讲解思路1.html'>202509 10进制转换为8进制 除8取余法讲解 讲解思路1</a></li>
-                            <li><a href='202509_10进制转换为8进制_除8取余法讲解_讲解思路2.html'>202509 10进制转换为8进制 除8取余法讲解 讲解思路2</a></li>
-                            <li><a href='20251118_Python对象的直接赋值浅拷贝深拷贝.html'>20251118 Python对象的直接赋值浅拷贝深拷贝</a></li>
-                            <li><a href='20251118_从对象和引用理解赋值与拷贝.html'>20251118 从对象和引用理解赋值与拷贝</a></li>
-                            <li><a href='20251118_先导概念_对象和引用.html'>20251118 先导概念 对象和引用</a></li>
-                            <li><a href='20251118_先导概念_对象和引用_小测验.html'>20251118 先导概念 对象和引用 小测验</a></li>
-                            <li><a href='20251125_Python中集合概念入门讲解.html'>20251125 Python中集合概念入门讲解</a></li>
-                            <li><a href='20251125_Python中集合概念入门讲解_宽度60%.html'>20251125 Python中集合概念入门讲解 宽度60%</a></li>
-                            <li><a href='20251204_range函数生成迭代对象可节省内存.html'>20251204 Range函数生成迭代对象可节省内存</a></li>
-                            <li><a href='20251204_生成1亿偶数列表的内存崩溃问题和range可迭代对象的轻量优势对比.html'>20251204 生成1亿偶数列表的内存崩溃问题和range可迭代对象的轻量优势对比</a></li>
-                            <li><a href='20251215_python函数参数传递口诀.html'>20251215 Python函数参数传递口诀</a></li>
-                            <li><a href='20251215_python函数参数传递方式_混合使用实例.html'>20251215 Python函数参数传递方式 混合使用实例</a></li>
-                            <li><a href='20251218_python库包模块区别.html'>20251218 Python库包模块区别</a></li>
-                            <li><a href='20251223_Python运算符优先级与结合性.html'>20251223 Python运算符优先级与结合性</a></li>
-                            <li><a href='20251225_python海象运算符.html'>20251225 Python海象运算符</a></li>
-                            <li><a href='20251231_python语法糖.html'>20251231 Python语法糖</a></li>
-                            <li><a href='202601_HTML网页乱码排查与解决方法.html'>202601 HTML网页乱码排查与解决方法</a></li>
-                            <li><a href='202601_python字符串a+b是否是操作符重载.html'>202601 Python字符串a+b是否是操作符重载</a></li>
-                            <li><a href='202601_python语法糖.html'>202601 Python语法糖</a></li>
-                            <li><a href='202601_python链式比较详解_语法糖的一种.html'>202601 Python链式比较详解 语法糖的一种</a></li>
-                            <li><a href='202601_浮点数不确定尾数_知识点.html'>202601 浮点数不确定尾数 知识点</a></li>
-                        </ul>
-          </div>
-          <div class='back-btn'>
-              <a href='../index.html'>← 返回个人主页</a>
-          </div>
-      </div>
-      <div class='footer'>
-          <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
-      </div>
-  </body>
-  </html>
+<html lang='zh-CN'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Python学习笔记 | 一个普通的思考者</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; transition:all 0.3s ease; }
+        body { background: linear-gradient(120deg, #f5f7fa 0%, #e4eaf5 100%); color:#333; padding:20px; max-width:1000px; margin:0 auto; min-height:100vh; }
+        .container { background:rgba(255,255,255,0.95); border-radius:16px; padding:40px; box-shadow:0 8px 24px rgba(149,157,165,0.15); }
+        .header { text-align:center; margin-bottom:25px; }
+        .avatar { width:110px; height:110px; border-radius:50%; background:linear-gradient(45deg,#4299e1,#38b2ac); margin:0 auto 18px; display:flex; align-items:center; justify-content:center; font-size:42px; color:white; }
+        h1 { font-size:28px; background:linear-gradient(90deg,#2d3748,#4a5568); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .subtitle { color:#718096; font-size:16px; font-style:italic; }
+        .search-box { width:100%; padding:12px 16px; border:1px solid #e2e8f0; border-radius:10px; font-size:15px; margin-bottom:20px; outline:none; }
+        .search-box:focus { border-color:#4299e1; box-shadow:0 0 0 3px rgba(66,153,225,0.15); }
+        .section { margin-bottom:24px; }
+        .section h2 { font-size:20px; margin-bottom:12px; color:#4299e1; border-left:4px solid #4299e1; padding-left:10px; }
+        .list { display:grid; gap:10px; list-style:none; }
+        .list li { background:#f7fafc; border-radius:10px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+        .list li a { color:#2d3748; text-decoration:none; display:flex; align-items:center; gap:10px; }
+        .list li a:hover { color:#4299e1; }
+        .date { color:#718096; font-size:13px; }
+        .hide { display:none !important; }
+        .empty { text-align:center; padding:20px; color:#a0aec0; }
+        .back { margin-top:25px; text-align:center; }
+        .back a { display:inline-block; padding:10px 22px; background:linear-gradient(90deg,#667eea,#764ba2); color:white; border-radius:8px; text-decoration:none; }
+        .footer { text-align:center; margin-top:20px; color:#718096; font-size:14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">&#128013;</div>
+            <h1>Python学习笔记</h1>
+            <p class="subtitle">从底层逻辑拆解Python学习笔记，较真每一个知识点</p>
+        </div>
+
+        <input type="text" class="search-box" id="search" placeholder="🔍 搜索笔记或子目录...">
+
+        <!-- 子目录入口 -->
+        <div class="section">
+            <h2>📂 子目录</h2>
+            <ul class="list" id="folderList">
+            </ul>
+        </div>
+
+        <!-- 笔记列表 -->
+        <div class="section">
+            <h2>📄 笔记文件（按最新排序）</h2>
+            <ul class="list" id="fileList">
+<li><a href='202601_python字符串a+b是否是操作符重载.html'>📄 202601 Python字符串a+b是否是操作符重载</a><span class='date'>2026-06-09</span></li>
+<li><a href='202601_python语法糖.html'>📄 202601 Python语法糖</a><span class='date'>2026-06-09</span></li>
+<li><a href='202601_python链式比较详解_语法糖的一种.html'>📄 202601 Python链式比较详解 语法糖的一种</a><span class='date'>2026-06-09</span></li>
+<li><a href='202601_浮点数不确定尾数_知识点.html'>📄 202601 浮点数不确定尾数 知识点</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251225_python海象运算符.html'>📄 20251225 Python海象运算符</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251231_python语法糖.html'>📄 20251231 Python语法糖</a><span class='date'>2026-06-09</span></li>
+<li><a href='202601_HTML网页乱码排查与解决方法.html'>📄 202601 HTML网页乱码排查与解决方法</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251218_python库包模块区别.html'>📄 20251218 Python库包模块区别</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251223_Python运算符优先级与结合性.html'>📄 20251223 Python运算符优先级与结合性</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251204_range函数生成迭代对象可节省内存.html'>📄 20251204 Range函数生成迭代对象可节省内存</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251204_生成1亿偶数列表的内存崩溃问题和range可迭代对象的轻量优势对比.html'>📄 20251204 生成1亿偶数列表的内存崩溃问题和range可迭代对象的轻量优势对比</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251215_python函数参数传递口诀.html'>📄 20251215 Python函数参数传递口诀</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251215_python函数参数传递方式_混合使用实例.html'>📄 20251215 Python函数参数传递方式 混合使用实例</a><span class='date'>2026-06-09</span></li>
+<li><a href='202509_10进制转换为8进制_除8取余法讲解_讲解思路2.html'>📄 202509 10进制转换为8进制 除8取余法讲解 讲解思路2</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251118_Python对象的直接赋值浅拷贝深拷贝.html'>📄 20251118 Python对象的直接赋值浅拷贝深拷贝</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251118_从对象和引用理解赋值与拷贝.html'>📄 20251118 从对象和引用理解赋值与拷贝</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251118_先导概念_对象和引用.html'>📄 20251118 先导概念 对象和引用</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251118_先导概念_对象和引用_小测验.html'>📄 20251118 先导概念 对象和引用 小测验</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251125_Python中集合概念入门讲解.html'>📄 20251125 Python中集合概念入门讲解</a><span class='date'>2026-06-09</span></li>
+<li><a href='20251125_Python中集合概念入门讲解_宽度60%.html'>📄 20251125 Python中集合概念入门讲解 宽度60%</a><span class='date'>2026-06-09</span></li>
+<li><a href='202509_10进制转换为8进制_除8取余法讲解_讲解思路1.html'>📄 202509 10进制转换为8进制 除8取余法讲解 讲解思路1</a><span class='date'>2026-06-09</span></li>
+            </ul>
+            <div class="empty hide" id="emptyTip">未找到匹配内容</div>
+        </div>
+
+        <div class="back">
+            <a href="../index.html">← 返回主页</a>
+        </div>
+    </div>
+
+    <div class="footer">一个爱思考、爱较真、爱睡觉的普通人 © 2025</div>
+
+    <script>
+        const search = document.getElementById('search');
+        const folderList = document.getElementById('folderList');
+        const fileList = document.getElementById('fileList');
+        const emptyTip = document.getElementById('emptyTip');
+
+        search.addEventListener('input', function() {
+            const key = this.value.toLowerCase();
+            let hasMatch = false;
+
+            // 搜索子目录
+            folderList.querySelectorAll('li').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const match = text.includes(key);
+                item.classList.toggle('hide', !match);
+                if (match) hasMatch = true;
+            });
+
+            // 搜索文件
+            fileList.querySelectorAll('li').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const match = text.includes(key);
+                item.classList.toggle('hide', !match);
+                if (match) hasMatch = true;
+            });
+
+            emptyTip.classList.toggle('hide', hasMatch);
+        });
+    </script>
+</body>
+</html>

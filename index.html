@@ -3,311 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一个普通的思考者</title>
+    <title>学习笔记主页 | 一个普通的思考者</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        body {
-            background: linear-gradient(120deg, #f5f7fa 0%, #e4eaf5 100%);
-            color: #333;
-            line-height: 1.5;
-            padding: 20px;
-            max-width: 1200px; /* 总宽度适配宽屏，容纳主体+链接栏 */
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* 整体容器：主体+右侧链接栏 */
-        .main-wrap {
-            display: grid;
-            grid-template-columns: 1fr 280px; /* 主体区占比大，链接栏固定宽度 */
-            gap: 30px;
-            align-items: start;
-        }
-
-        /* 原有主体容器 */
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 40px 60px;
-            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
-            border: 1px solid #e8f4f8;
-        }
-
-        /* 右侧链接分栏 */
-        .link-sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 30px 25px;
-            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
-            border: 1px solid #e8f4f8;
-            position: sticky;
-            top: 20px; /* 滚动时链接栏固定，方便点击 */
-            height: fit-content; /* 高度自适应内容 */
-        }
-
-        .link-sidebar h3 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            background: linear-gradient(90deg, #9f7aea, #667eea);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 600;
-            border-bottom: 2px solid #f0f8fb;
-            padding-bottom: 8px;
-        }
-
-        /* 链接样式 */
-        .link-list {
-            list-style: none;
-        }
-
-        .link-list li {
-            margin-bottom: 12px;
-        }
-
-        .link-list li:last-child {
-            margin-bottom: 0;
-        }
-
-        .link-list a {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            background: linear-gradient(180deg, #f0f8fb 0%, #fef7fb 100%);
-            border-radius: 8px;
-            color: #2d3748;
-            text-decoration: none;
-            font-size: 15px;
-            border: 1px solid #f5fafe;
-        }
-
-        .link-list a:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(224, 231, 255, 0.8);
-            background: linear-gradient(180deg, #e8f4f8 0%, #fdf2f8 100%);
-            color: #4299e1;
-        }
-
-        .link-list a::before {
-            content: "🔗";
-            margin-right: 8px;
-            font-size: 14px;
-        }
-
-        /* 原有样式保留 */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .avatar {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
-        }
-
-        h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #2d3748, #4a5568);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            color: #718096;
-            font-size: 17px;
-            font-weight: 400;
-            font-style: italic;
-        }
-
-        .profile-section {
-            margin: 0 0 20px 0;
-        }
-
-        .profile-section h2 {
-            font-size: 22px;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #38b2ac, #4299e1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            border-left: 4px solid #38b2ac;
-            padding-left: 12px;
-            font-weight: 600;
-        }
-
-        .profile-card {
-            background: linear-gradient(180deg, #f0f8fb 0%, #fef7fb 100%);
-            padding: 24px 30px;
-            border-radius: 12px;
-            border: 1px solid #f5fafe;
-            box-shadow: 0 2px 8px rgba(224, 231, 255, 0.5);
-        }
-
-        .profile-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(224, 231, 255, 0.8);
-        }
-
-        .profile-card p {
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #2d3748;
-            line-height: 1.5;
-        }
-
-        .profile-card p:last-child {
-            margin-bottom: 0;
-        }
-
-        .profile-card p strong {
-            color: #4299e1;
-            font-weight: 600;
-        }
-
-        .profile-card p::before {
-            content: "";
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #9f7aea;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 25px;
-            background: linear-gradient(90deg, #718096, #a0aec0);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-size: 14px;
-            padding-bottom: 10px;
-            grid-column: 1 / -1; /* 页脚跨两栏显示 */
-        }
-
-        /* 移动端适配：合并为单栏，链接栏移到主体下方 */
-        @media (max-width: 900px) {
-            .main-wrap {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .container {
-                padding: 30px 20px;
-            }
-
-            .link-sidebar {
-                position: static;
-                padding: 25px 20px;
-            }
-
-            body {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            .avatar {
-                width: 120px;
-                height: 120px;
-                font-size: 40px;
-            }
-
-            h1 {
-                font-size: 28px;
-            }
-
-            .profile-section h2 {
-                font-size: 20px;
-            }
-
-            .profile-card {
-                padding: 20px 16px;
-            }
-        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; }
+        body { background: linear-gradient(120deg, #f5f7fa 0%, #e4eaf5 100%); padding:20px; max-width:1000px; margin:0 auto; min-height:100vh; }
+        .container { background:white; border-radius:16px; padding:40px; box-shadow:0 8px 24px rgba(149,157,165,0.15); }
+        .header { text-align:center; margin-bottom:30px; }
+        .avatar { width:120px; height:120px; border-radius:50%; background:linear-gradient(45deg,#4299e1,#38b2ac); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:48px; color:white; }
+        h1 { font-size:32px; background:linear-gradient(90deg,#2d3748,#4a5568); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .subtitle { color:#718096; font-size:17px; font-style:italic; }
+        .folder-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin-top:20px; }
+        .folder-item { background:#f0f8fb; border-radius:12px; padding:20px; text-align:center; text-decoration:none; color:#2d3748; box-shadow:0 2px 8px rgba(224,231,255,0.5); }
+        .folder-item:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(224,231,255,0.8); color:#4299e1; }
+        .folder-icon { font-size:36px; margin-bottom:10px; }
+        .folder-name { font-size:16px; font-weight:500; }
+        .footer { text-align:center; margin-top:30px; color:#718096; font-size:14px; }
     </style>
 </head>
 <body>
-    <!-- 整体容器：主体+右侧链接栏 -->
-    <div class="main-wrap">
-        <!-- 原有主体内容 -->
-        <div class="container">
-            <div class="header">
-                <div class="avatar">🧠</div>
-                <h1>一个普通的思考者</h1>
-                <p class="subtitle">从底层逻辑出发，较真也热爱生活</p>
-            </div>
-
-            <div class="profile-section">
-                <h2>关于我</h2>
-                <div class="profile-card">
-                    <p>🔍 <strong>底层逻辑爱好者</strong>：习惯刨根问底，不满足于表面答案，拆解事物核心逻辑，搞明白「为什么」。</p>
-                    <p>🧐 <strong>天生爱较真</strong>：抠细节、追本质，不喜欢「差不多就行」，哪怕小事也捋清来龙去脉。</p>
-                    <p>😴 <strong>重度睡眠爱好者</strong>：充足睡眠是理清思路的前提，累了睡一觉再继续「较真」。</p>
-                    <p>✨ <strong>终究是普通人</strong>：带小坚持探索日常，认真又松弛地活着。</p>
-                </div>
-            </div>
-
-            <div class="profile-section">
-                <h2>我的小信条</h2>
-                <div class="profile-card">
-                    <p>凡事多问一句「为什么」，答案藏在底层逻辑里</p>
-                    <p>较真不是抬杠，是对「想明白」的尊重</p>
-                    <p>睡觉是最好的重启键，醒了再拆解世界</p>
-                </div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">📚</div>
+            <h1>学习笔记总索引</h1>
+            <p class="subtitle">全栈学习笔记 | 持续更新</p>
         </div>
-
-        <!-- 右侧链接分栏 -->
-        <div class="link-sidebar">
-            <h3>更多内容</h3>
-            <ul class="link-list">
-                <!-- 替换为你实际的目录链接，格式：pages/文件名.html -->
-				<li><a href="qstWork/index.html">职业之路</a></li>
-                <li><a href="pythonCourse/notes.html">我的python成长笔记</a></li>
-                <li><a href="aiCourse/notes.html">我的AI思考笔记</a></li>
-                <li><a href="aigcCourse/notes.html">我的AIGC思考笔记</a></li>
-				<li><a href="cCourse/notes.html">我的C学习笔记</a></li>
-				<li><a href="编程utility/notes.html">关于计算机和软件的那些事</a></li>
-                <li><a href="think/notes.html">底层逻辑思考</a></li>
-                <li><a href="life/notes.html">日常松弛瞬间</a></li>
-                <!-- 可继续添加更多链接 -->
-            </ul>
+        <div class="folder-grid">
+<a class='folder-item' href='cCourse/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>C</div></a>
+<a class='folder-item' href='aigcCourse/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>Aigc</div></a>
+<a class='folder-item' href='aiCourse/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>Ai</div></a>
+<a class='folder-item' href='pythonCourse/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>Python</div></a>
+<a class='folder-item' href='编程utility/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>编程utility</div></a>
+<a class='folder-item' href='qstWork/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>QstWork</div></a>
         </div>
     </div>
-
-    <!-- 页脚 -->
-    <div class="footer">
-        <p>一个爱思考、爱较真、爱睡觉的普通人 © 2025</p>
-    </div>
+    <div class="footer">一个爱思考、爱较真、爱睡觉的普通人 © 2025</div>
 </body>
 </html>
