@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>场景验证配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+        /* 醒目指引按钮样式 */
+        .guide-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #40a9ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(64, 169, 255, 0.3);
+            transition: all 0.2s ease;
+        }
+        .guide-btn:hover {
+            background-color: #1890ff;
+            box-shadow: 0 4px 8px rgba(64, 169, 255, 0.4);
+        }
+        .guide-btn::before {
+            content: "📝";
+            margin-right: 6px;
+        }
+        /* 弹窗遮罩层 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        /* 弹窗内容容器 */
+        .modal-content {
+            width: 100%;
+            max-width: 850px;
+            max-height: 90vh;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+            position: relative;
+        }
+        /* 关闭按钮 */
+        .close-btn {
+            position: sticky;
+            top: 10px;
+            left: calc(100% - 40px);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            border: none;
+            color: #666;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 10px 0 auto;
+            z-index: 10;
+        }
+        .close-btn:hover {
+            background-color: #e8f4f8;
+            color: #f5222d;
+        }
+        .section {
+            margin-bottom: 24px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        .required {
+            color: #f5222d;
+        }
+        .add-btn {
+            color: #1890ff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .add-btn::before {
+            content: "+";
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        .input-wrapper input {
+            width: 100%;
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+        }
+        .input-wrapper input:disabled {
+            background-color: #f5f7fa;
+            color: #40a9ff;
+            cursor: not-allowed;
+            font-weight: 500;
+        }
+        .char-count {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #999;
+        }
+        .confidence-input {
+            width: 80px;
+            height: 36px;
+            padding: 0 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .contrast-class-container {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px dashed #40a9ff;
+            background-color: #f0f8ff;
+        }
+        .contrast-class-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        .contrast-class-tip {
+            font-size: 12px;
+            color: #f5222d;
+            margin-left: 4px;
+            line-height: 1.4;
+        }
+        .delete-btn {
+            color: #f5222d;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* 提示词写作指引弹窗内样式 */
+        .guide-container {
+            padding: 30px;
+            max-width: 100%;
+        }
+        .main-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f4f8;
+            display: flex;
+            align-items: center;
+        }
+        .main-title::before {
+            content: "🎯";
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        .core-goal {
+            background-color: #e8f4f8;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            color: #2d3748;
+        }
+        .step-card {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .step-title span {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            background-color: #4299e1;
+            color: #fff;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        .step-content {
+            font-size: 14px;
+            color: #4a5568;
+        }
+        .step-content ul {
+            margin-left: 20px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        .step-content li {
+            margin-bottom: 8px;
+        }
+        .example-good {
+            color: #48bb78;
+            font-weight: 500;
+        }
+        .example-bad {
+            color: #e53e3e;
+            font-weight: 500;
+        }
+        .warning {
+            color: #ed8936;
+            font-weight: 500;
+            margin-top: 8px;
+            display: block;
+        }
+        .why {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        .complete-example {
+            background-color: #f0f8fb;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .example-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .example-title::before {
+            content: "🔍";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        /* 响应式适配 */
+        @media (max-width: 600px) {
+            .guide-container {
+                padding: 20px;
+            }
+            .main-title {
+                font-size: 20px;
+            }
+            .step-title, .example-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 醒目提示词写作指引按钮 -->
+        <button class="guide-btn" onclick="openGuideModal()">提示词写作指引</button>
+
+        <!-- 要验证的场景 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="required">*</span>请描述要验证的场景是什么?
+                </div>
+                <div class="add-btn" onclick="addSceneRow()">新增</div>
+            </div>
+            <div id="sceneRows">
+                <div class="row">
+                    <div class="input-wrapper">
+                        <input type="text" placeholder="请输入" maxlength="48" 
+                               oninput="updateCharCount(this)" 
+                               onblur="checkInitialInput(this)">
+                        <span class="char-count">0/48</span>
+                    </div>
+                    <input type="number" class="confidence-input" value="0.5" step="0.001" min="0" max="1">
+                </div>
+            </div>
+        </div>
+
+        <!-- 需要排除的场景 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">需要排除哪些场景?</div>
+                <div class="add-btn" onclick="addExcludeRow()">新增</div>
+            </div>
+            <div id="excludeRows">
+                <div class="row">
+                    <div class="input-wrapper">
+                        <input type="text" placeholder="请输入" maxlength="48" oninput="updateCharCount(this)">
+                        <span class="char-count">0/48</span>
+                    </div>
+                    <input type="number" class="confidence-input" value="0.5" step="0.001" min="0" max="1">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示词写作指引弹窗 -->
+    <div class="modal-overlay" id="guideModal">
+        <div class="modal-content">
+            <!-- 关闭按钮 -->
+            <button class="close-btn" onclick="closeGuideModal()">×</button>
+            <!-- 指引内容 -->
+            <div class="guide-container">
+                <h1 class="main-title">零样本开放词汇目标检测：提示词写作指引</h1>
+                <div class="core-goal">
+                    <strong>核心目标：</strong>用文字告诉AI您想找什么。文字越清晰、越独特，AI找得越准。
+                </div>
+                <div class="step-card">
+                    <h2 class="step-title"><span>1</span>第一步：明确您的主体（最关键！）</h2>
+                    <div class="step-content">
+                        <ul>
+                            <li>使用最具体的名称：越具体越好。<br>
+                                <span class="example-good">✅ 好：German Shepherd（德国牧羊犬）/ fire hydrant（消防栓）</span><br>
+                                <span class="example-bad">❌ 差：dog（狗）/ red object（红色物体）</span>
+                            </li>
+                            <li>语言选择：推荐使用英文（模型在英文语料上训练得更好）。</li>
+                            <li>多物体并列：如果需要检测多种物体，用多组提示词（每组提示词对应一个物体)。<br>
+                                <span class="example-good">✅ 例子：Person, car, bicycle</span>
+                            </li>
+                        </ul>
+                        <span class="warning">⚠️ 误区：</span>尽量不要直接加负向提示词（如 not cat），这会让AI困惑，可能降低精度。如果不想检测某物体，建议在阈值设置中调整或在后处理阶段过滤。
+                    </div>
+                </div>
+                <div class="step-card">
+                    <h2 class="step-title"><span>2</span>第二步：为主体增加描述，让它更特别（优化技巧）</h2>
+                    <div class="step-content">
+                        当目标容易漏检或与背景混淆时，在主体前加上描述词。
+                        <ul>
+                            <li>加外观：描述颜色、形状。<br>
+                                <span class="example-good">✅ 例子：red fire hydrant（红色消防栓）</span>
+                            </li>
+                            <li>加场景：描述它所在的位置或用途。<br>
+                                <span class="example-good">✅ 例子：fire hydrant on sidewalk（人行道上的消防栓）</span>
+                            </li>
+                        </ul>
+                        <span class="why">Why：这能帮助AI区分目标与类似背景。</span>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <h2 class="step-title"><span>3</span>第三步：添加对比类(空背景)（减少漏检）</h2>
+                    <div class="step-content">
+                        <ul>
+                            <li>技巧：使用空提示词或与主要目标无关的提示词来提高对比度。<br>
+                                <span class="example-good">✅ 例子：</span>如果希望检测 firework（烟花），不要只输入 firework，可以输入两组：
+                                <ul>
+                                    <li>第一组：firework（目标）</li>
+                                    <li>第二组：空提示词（即不输入任何词） 或者 background</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <span class="why">Why：空提示词或无关提示词会为模型提供了一个对比基准，帮助模型更清晰地区分目标与背景。</span>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <h2 class="step-title"><span>4</span>第四步：使用多个同义词（减少漏检）</h2>
+                    <div class="step-content">
+                        <ul>
+                            <li>如果一个物体有多种叫法，可以都写上，让AI综合判断。<br>
+                                <span class="example-good">✅ 例子：sofa, couch, settee（沙发的不同英文说法）</span>
+                            </li>
+                        </ul>
+                        <span class="why">Why：不同词语可能触发模型对同一目标的不同感知，避免漏检。</span>
+                    </div>
+                </div>
+                <div class="complete-example">
+                    <h2 class="example-title">一个完整的例子</h2>
+                    <div class="step-content">
+                        场景：监控画面中，检测工人是否佩戴了白色安全帽。<br><br>
+                        <span class="example-bad">❌ 普通写法：helmet</span><br>
+                        <span class="example-good">✅ 推荐写法：</span><br>
+                        white safety helmet, worker's head<br><br>
+                        <strong>解释：</strong>不仅说明了是安全帽，还说明了颜色（白色）和位置（在工人的头上），并且明确了目标是“工人”。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let sceneRowCount = 1;
+        let excludeRowCount = 1;
+        let hasContrastClass = false;
+
+        // 更新字符计数
+        function updateCharCount(input) {
+            const count = input.value.length;
+            const charCountEl = input.nextElementSibling;
+            charCountEl.textContent = `${count}/48`;
+        }
+
+        // 检查初始输入框内容
+        function checkInitialInput(input) {
+            if (input.value.trim() !== '' && !hasContrastClass) {
+                addContrastClassRow();
+                hasContrastClass = true;
+            }
+        }
+
+        // 添加场景行
+        function addSceneRow() {
+            const container = document.getElementById('sceneRows');
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
+            newRow.innerHTML = `
+                <div class="input-wrapper">
+                    <input type="text" placeholder="请输入" maxlength="48" oninput="updateCharCount(this)">
+                    <span class="char-count">0/48</span>
+                </div>
+                <input type="number" class="confidence-input" value="0.5" step="0.001" min="0" max="1">
+            `;
+            container.appendChild(newRow);
+            sceneRowCount++;
+
+            if (!hasContrastClass) {
+                addContrastClassRow();
+                hasContrastClass = true;
+            }
+        }
+
+        // 添加对比类行
+        function addContrastClassRow() {
+            const container = document.getElementById('sceneRows');
+            const contrastContainer = document.createElement('div');
+            contrastContainer.id = 'contrastClassContainer';
+            contrastContainer.className = 'contrast-class-container';
+            
+            const contrastRow = document.createElement('div');
+            contrastRow.className = 'contrast-class-row';
+            contrastRow.innerHTML = `
+                <div class="input-wrapper">
+                    <input type="text" value="对比类(空背景)" disabled>
+                </div>
+                <input type="number" class="confidence-input" value="0.002" step="0.001" min="0" max="1">
+                <button class="delete-btn" onclick="removeContrastClassRow()">删除</button>
+            `;
+            
+            const tipEl = document.createElement('div');
+            tipEl.className = 'contrast-class-tip';
+            tipEl.textContent = '已添加对比类以提升检测效果（用于区分目标与背景）';
+            
+            contrastContainer.appendChild(contrastRow);
+            contrastContainer.appendChild(tipEl);
+            container.appendChild(contrastContainer);
+        }
+
+        // 移除对比类行
+        function removeContrastClassRow() {
+            const contrastContainer = document.getElementById('contrastClassContainer');
+            if (contrastContainer) {
+                contrastContainer.remove();
+                hasContrastClass = false;
+            }
+        }
+
+        // 添加排除场景行
+        function addExcludeRow() {
+            const container = document.getElementById('excludeRows');
+            const newRow = document.createElement('div');
+            newRow.className = 'row';
+            newRow.innerHTML = `
+                <div class="input-wrapper">
+                    <input type="text" placeholder="请输入" maxlength="48" oninput="updateCharCount(this)">
+                    <span class="char-count">0/48</span>
+                </div>
+                <input type="number" class="confidence-input" value="0.5" step="0.001" min="0" max="1">
+            `;
+            container.appendChild(newRow);
+            excludeRowCount++;
+        }
+
+        // 打开指引弹窗
+        function openGuideModal() {
+            const modal = document.getElementById('guideModal');
+            modal.style.display = 'flex';
+            // 禁止页面滚动
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭指引弹窗
+        function closeGuideModal() {
+            const modal = document.getElementById('guideModal');
+            modal.style.display = 'none';
+            // 恢复页面滚动
+            document.body.style.overflow = 'auto';
+        }
+
+        // 点击遮罩层关闭弹窗
+        document.getElementById('guideModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGuideModal();
+            }
+        });
+
+        // 按ESC键关闭弹窗
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeGuideModal();
+            }
+        });
+    </script>
+</body>
+</html>

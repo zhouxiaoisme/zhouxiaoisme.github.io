@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鸿羽事件检测AI分析盒子 - 人员黑白名单功能设计文档</title>
+    <style>
+        /* 全局重置 & 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+        }
+
+        :root {
+            /* 主题色 */
+            --primary-color: #007acc;
+            --primary-dark: #005a9e;
+            --secondary-color: #f0f7ff;
+            /* 中性色 */
+            --text-main: #333;
+            --text-secondary: #666;
+            --text-light: #999;
+            --border-light: #eee;
+            --border-main: #ddd;
+            --bg-white: #fff;
+            --bg-gray: #f9f9f9;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+            /* 间距 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 20px;
+            --spacing-xl: 24px;
+        }
+
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg) var(--spacing-md);
+            line-height: 1.7;
+            color: var(--text-main);
+            background-color: var(--bg-gray);
+        }
+
+        /* 头部样式 */
+        .header {
+            text-align: center;
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 3px solid var(--primary-color);
+            margin-bottom: var(--spacing-xl);
+            background-color: var(--bg-white);
+            padding: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .title {
+            font-size: clamp(20px, 3vw, 28px);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* 章节样式 */
+        .section {
+            background-color: var(--bg-white);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--secondary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        /* 信息项样式 */
+        .info-item {
+            margin-bottom: var(--spacing-md);
+            font-size: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: inline-block;
+            min-width: 110px;
+            flex-shrink: 0;
+            margin-right: var(--spacing-sm);
+        }
+
+        /* 列表样式优化 */
+        .tech-requirements {
+            margin-top: var(--spacing-lg);
+            margin-left: 0;
+        }
+
+        .requirements-title {
+            font-size: 16px;
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        .requirement-list {
+            margin-left: var(--spacing-md);
+            list-style-type: decimal;
+            padding-left: var(--spacing-sm);
+        }
+
+        .requirement-list > li {
+            margin-bottom: var(--spacing-md);
+            padding-left: var(--spacing-sm);
+        }
+
+        .sub-list {
+            margin-left: var(--spacing-lg);
+            list-style-type: disc;
+            margin-top: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+            padding-left: var(--spacing-sm);
+        }
+		
+		
+
+        .sub-item {
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.6;
+        }
+
+        /* 链接 & 图片样式 */
+        .design-doc-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .design-doc-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: var(--spacing-sm);
+            border: 1px solid var(--border-main);
+            padding: var(--spacing-xs);
+        }
+
+        /* 页脚样式 */
+        .footer {
+            text-align: center;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: var(--spacing-xl);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .header {
+                padding: var(--spacing-lg);
+                margin-bottom: var(--spacing-lg);
+            }
+
+            .section {
+                padding: var(--spacing-lg);
+                margin-bottom: var(--spacing-lg);
+            }
+
+            .info-item {
+                flex-direction: column;
+            }
+
+            .info-label {
+                margin-bottom: var(--spacing-xs);
+                min-width: auto;
+            }
+
+            .requirement-list {
+                margin-left: 0;
+            }
+
+            .sub-list {
+                margin-left: var(--spacing-md);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 18px;
+            }
+
+            .info-item {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">鸿羽事件检测AI分析盒子 - 人员黑白名单功能设计</h1>
+        <p>文档创建时间：2026年1月23日</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">一、产品目标</h2>
+        <div class="info-item">
+            <span class="info-label">目标内容：</span>向现有鸿羽事件检测AI分析盒子增加人员黑白名单功能
+        </div>
+        <div class="info-item">
+            <span class="info-label">提出时间：</span>2026.1.23
+        </div>
+        <div class="info-item">
+            <span class="info-label">提出人：</span>George
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">二、技术目标</h2>
+        <div class="info-item">
+            <span class="info-label">目标内容：</span>向现有鸿羽事件检测AI分析盒子增加人脸库比对和报警触发功能
+        </div>
+        <div class="info-item">
+            <span class="info-label">提出时间：</span>2026.1.23
+        </div>
+        <div class="info-item">
+            <span class="info-label">提出人：</span>zx
+        </div>
+        
+        <div class="info-item">
+            <span class="info-label">具体技术要求：</span>
+            <ol class="requirement-list">
+                <li class="sub-item">
+                    <strong>硬件能力：</strong>嵌入式 AI 视频分析盒子，最多接入 32 路1920*1080相机实时视频流
+                </li>
+                <li class="sub-item">
+                    <strong>核心功能：</strong>人脸抓拍 + 人脸库比对 + 报警触发
+                </li>
+                <li class="sub-item">
+                    <strong>人脸库管理：</strong>
+                    <ul class="sub-list">
+                        <li>单个人脸库最多 128 张人脸</li>
+                        <li>盒子最多存储 4 个人脸库</li>
+                        <li>人脸库类型：黑白名单（可扩展其他类型）</li>
+						<li>每个人脸库可单独设置比对门限（相似度阈值）</li>
+                    </ul>
+                </li>
+                <li class="sub-item">
+                    <strong>相机配置：</strong>
+                    <ul class="sub-list">
+                        <li>每个相机可绑定多个人脸库</li>
+                        <li>每个相机可单独设置人脸抓拍最小尺寸，和人脸检测门限</li>
+                    </ul>
+                </li>
+                <li class="sub-item">
+                    <strong>报警规则：</strong>人脸一旦被抓拍,应在100ms以内对人脸库完成比对并对命中人脸立即触发报警。
+                </li>
+                <li class="sub-item">
+					<strong>软件要求：</strong>
+					<ul class="sub-list">
+						<li>需在现有鸿羽盒子web管理系统中,无缝嵌入"人脸库管理"和"人脸抓拍记录"页面。</li>
+						<li>需将该功能作为一个 “人员分析 & 人脸比对” 事件，同步启动对应相机的任务分析流程。</li>
+						<ul class="sub-list">
+							<li>事件启动后，系统将开启人脸抓拍功能；抓拍的人脸可通过"人脸抓拍记录"页面查看。</li>
+							<li>当相机抓拍的人脸与已录入人脸库的人脸匹配时，系统将立即生成人脸报警事件，并触发声音报警 / 悬浮提示报警；报警信息会明确标注与哪个人脸库中的人员匹配，相关记录可在"报警记录"或"历史事件"中查询。</li>
+							<li>若抓拍人脸同时匹配到多个人脸库人员，将以相似度最高的匹配结果为准；若存在多个相同的最高相似度，则同步输出所有匹配的人员信息。</li>
+							<li>人脸抓拍记录与人脸报警事件记录均存储于设备本地，当存储空间不足时，系统将按 “先进先出” 原则自动清理最早的人脸抓拍记录和报警事件记录。</li>
+						</ul>
+					</ul>
+				</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">三、方案设计</h2>
+		<div class="info-item">
+            <span class="info-label">相关设计文档：</span>
+			<ol class="requirement-list">
+				 <li class="sub-item">
+					<a href="./人脸比对功能相关UE_v2.html" class="design-doc-link">人脸比对功能相关UE_v2.html 👈 请点击我查看盒子UE界面建议设计！</a>
+				</li>
+				 <li class="sub-item">
+					<img src="./技术方案_v1_构件图.png" alt="技术方案_v1_构件图.png">
+					<a href="./技术方案_v1_构件图.png" class="design-doc-link">☝️ 请点击我获取上图原图链接！</a>
+				 </li>
+				 <li class="sub-item">
+					<img src="./技术方案_v1_顺序图.png" alt="技术方案_v1_顺序图.png">
+					<a href="./技术方案_v1_顺序图.png" class="design-doc-link">☝️ 请点击我获取上图原图链接！</a>
+				</li>
+			</ol>
+		</div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2026 鸿羽事件检测AI分析盒子开发团队</p>
+    </div>
+</body>
+</html>

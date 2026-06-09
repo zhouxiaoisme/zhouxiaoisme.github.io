@@ -1,0 +1,359 @@
+{
+  "name": "qstWork",
+  "path": "",
+  "type": "dir",
+  "children": [
+    {
+      "name": "index.html",
+      "path": "index.html",
+      "type": "file",
+      "ext": ".html"
+    },
+    {
+      "name": "notes.html",
+      "path": "notes.html",
+      "type": "file",
+      "ext": ".html"
+    },
+    {
+      "name": "鸿羽",
+      "path": "鸿羽",
+      "type": "dir",
+      "children": [
+        {
+          "name": "20260123_AI事件分析盒子_人脸比对功能",
+          "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能",
+          "type": "dir",
+          "children": [
+            {
+              "name": "example_face_1.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_face_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "example_scene_1.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_scene_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "example_z1.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z1.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "example_z2.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z2.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "example_z3.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z3.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "example_z4.jpg",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/example_z4.jpg",
+              "type": "file",
+              "ext": ".jpg"
+            },
+            {
+              "name": "index.html",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/index.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "人脸比对功能相关UE_v1.html",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/人脸比对功能相关UE_v1.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "人脸比对功能相关UE_v2.html",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/人脸比对功能相关UE_v2.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "技术方案_v1.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/技术方案_v1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "技术方案_v1_构件图.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/技术方案_v1_构件图.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "技术方案_v1_顺序图.png",
+              "path": "鸿羽/20260123_AI事件分析盒子_人脸比对功能/技术方案_v1_顺序图.png",
+              "type": "file",
+              "ext": ".png"
+            }
+          ]
+        },
+        {
+          "name": "20260123_物体检测+分类算法_ueProposal",
+          "path": "鸿羽/20260123_物体检测+分类算法_ueProposal",
+          "type": "dir",
+          "children": [
+            {
+              "name": "20250622_Y+D算法生产UE_磨刀导出.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20250622_Y+D算法生产UE_磨刀导出.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "20260126_lj_鸿羽算法生产界面_当前实现.mp4",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260126_lj_鸿羽算法生产界面_当前实现.mp4",
+              "type": "file",
+              "ext": ".mp4"
+            },
+            {
+              "name": "20260130_dino服饰颜色分类_ex1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260130_dino服饰颜色分类_ex1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "20260130_dino服饰颜色分类_ex2.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260130_dino服饰颜色分类_ex2.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "20260130_使用yoloWorld检人形上半身bbox再使用DINOv3特征对上半身bbox做服饰颜色分类算法_复盘.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260130_使用yoloWorld检人形上半身bbox再使用DINOv3特征对上半身bbox做服饰颜色分类算法_复盘.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260131_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260131_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260203_人形类_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260203_人形类_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260203_物品类_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260203_物品类_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260203_车辆类_训练图片上传_自动化抠图.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260203_车辆类_训练图片上传_自动化抠图.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260204_尺寸过滤和抠图_图文指引_动态.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤和抠图_图文指引_动态.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260204_尺寸过滤和抠图_图文指引_静态.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤和抠图_图文指引_静态.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260204_尺寸过滤和抠图_图文指引_静态_实时绘制.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260204_尺寸过滤和抠图_图文指引_静态_实时绘制.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260205_yoloworld和DINOV3算法标签要求.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260205_yoloworld和DINOV3算法标签要求.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260205_yoloworld算法标签必须有意义.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260205_yoloworld算法标签必须有意义.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260210_yoloworld零样本检测提示词输入时自动加入空类_UE.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260210_yoloworld零样本检测提示词输入时自动加入空类_UE.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "20260213_Y+D算法_选择多个Y标签时警告分类效果.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/20260213_Y+D算法_选择多个Y标签时警告分类效果.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "Y+D算法生产.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法生产.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "Y+D算法迭代.html",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/Y+D算法迭代.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "yoloworld标签语义解释_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/yoloworld标签语义解释_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "人形大图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形大图_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "人形大图_1_叠加框效果.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形大图_1_叠加框效果.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "人形小图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/人形小图_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "全景_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "全景_1_叠加框效果.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1_叠加框效果.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "全景_1_小图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/全景_1_小图_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "垃圾桶满溢_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "垃圾桶满溢_2.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_2.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "垃圾桶满溢_3.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_3.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "垃圾桶满溢_4.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_4.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "垃圾桶满溢_5.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_5.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "垃圾桶满溢_6.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/垃圾桶满溢_6.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "车辆大图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆大图_1.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "车辆大图_1_叠加框效果.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆大图_1_叠加框效果.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "车辆小图_1.png",
+              "path": "鸿羽/20260123_物体检测+分类算法_ueProposal/车辆小图_1.png",
+              "type": "file",
+              "ext": ".png"
+            }
+          ]
+        },
+        {
+          "name": "202604_IOT模式中台界面_盒子管理中心",
+          "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心",
+          "type": "dir",
+          "children": [
+            {
+              "name": "202604_IOT模式_中台升级盒子界面.html",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/202604_IOT模式_中台升级盒子界面.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "202604_IOT模式_中台升级盒子界面原型需求文档.docx",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/202604_IOT模式_中台升级盒子界面原型需求文档.docx",
+              "type": "file",
+              "ext": ".docx"
+            },
+            {
+              "name": "202604_IOT模式_中台升级调试盒子_当前界面_不友好黑箱无反馈.png",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/202604_IOT模式_中台升级调试盒子_当前界面_不友好黑箱无反馈.png",
+              "type": "file",
+              "ext": ".png"
+            },
+            {
+              "name": "202604_IOT模式_中台更改盒子MQTT配置界面.html",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/202604_IOT模式_中台更改盒子MQTT配置界面.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "202604_IOT模式_中台远程执行盒子界面.html",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/202604_IOT模式_中台远程执行盒子界面.html",
+              "type": "file",
+              "ext": ".html"
+            },
+            {
+              "name": "readme.md",
+              "path": "鸿羽/202604_IOT模式中台界面_盒子管理中心/readme.md",
+              "type": "file",
+              "ext": ".md"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>物体类别选择</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 32px;
+      background-color: #f9f9fb;
+      color: #333;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .tag.selected {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+      color: #1565c0;
+      font-weight: 500;
+    }
+
+    .warning-hint {
+      display: none; /* 默认隐藏 */
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background-color: #fff8e6;
+      border-left: 4px solid #ffc107;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #5a5a5a;
+    }
+
+    .warning-hint.visible {
+      display: flex;
+    }
+
+    .warning-hint .icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      fill: #ff9800;
+      margin-top: 2px;
+    }
+
+    .warning-hint p {
+      margin: 0;
+    }
+
+    .warning-hint p:first-child {
+      font-weight: 600;
+      color: #d35400;
+    }
+
+    .warning-hint p:not(:first-child) {
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>请选择要送入分类模块的物体类别：</h2>
+
+  <div class="tag-list" id="tagList">
+    <!-- 标签由 JS 动态生成 -->
+  </div>
+
+  <div class="warning-hint" id="warningHint">
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm-2-4v-4h2v4h-2z"/>
+    </svg>
+    <div>
+      <p>警告：多种物体可能导致分类模糊，影响分类效果。</p>
+      <p>混合不同语义类别的物体进行统一分类时，其在特征空间中分布高度分离，易导致模型混淆。当前建议仅选择单一类别；多分支分类解耦方案正在规划中。</p>
+    </div>
+  </div>
+
+  <script>
+    // 模拟支持的物体类别（可替换为实际业务标签）
+    const supportedClasses = [
+      '椅子', '桌子', '台灯', '沙发', '床', '电视', '笔记本电脑',
+      '水瓶', '杯子', '书本', '背包', '挂钟'
+    ];
+
+    const tagListEl = document.getElementById('tagList');
+    const warningHintEl = document.getElementById('warningHint');
+    const selectedTags = new Set();
+
+    // 渲染标签
+    supportedClasses.forEach(cls => {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.textContent = cls;
+      tag.addEventListener('click', () => {
+        if (selectedTags.has(cls)) {
+          selectedTags.delete(cls);
+          tag.classList.remove('selected');
+        } else {
+          selectedTags.add(cls);
+          tag.classList.add('selected');
+        }
+        updateWarningVisibility();
+      });
+      tagListEl.appendChild(tag);
+    });
+
+    function updateWarningVisibility() {
+      if (selectedTags.size >= 2) {
+        warningHintEl.classList.add('visible');
+      } else {
+        warningHintEl.classList.remove('visible');
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用 "YoloWorld检人形上半身bbox + 使用DINOv3特征对上半身bbox做服饰颜色分类" 算法的思考</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        body {
+            padding: 20px;
+            line-height: 1.8;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #27ae60;
+        }
+        h2 {
+            color: #27ae60;
+            font-size: 20px;
+            margin: 30px 0 15px;
+        }
+        h3 {
+            color: #2980b9;
+            font-size: 18px;
+            margin: 20px 0 10px;
+        }
+        .flow-chart {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid #e9ecef;
+        }
+        code {
+            font-family: Consolas, Monaco, monospace;
+        }
+        .analysis-section {
+            background-color: #fff;
+            padding: 20px;
+            border-left: 4px solid #e74c3c;
+            margin: 20px 0;
+        }
+        .solution-section {
+            background-color: #fff;
+            padding: 20px;
+            border-left: 4px solid #27ae60;
+            margin: 20px 0;
+        }
+        .must-do-section {
+            background-color: #fff8e1;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #ffc107;
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f2f2f2;
+            color: #2c3e50;
+        }
+        .key-point {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .correct-point {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .must-do-point {
+            color: #ff5722;
+            font-weight: bold;
+            font-size: 16px;
+        }
+		
+        .example-img1 {
+            width: 100%;
+			max-width:600px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }		
+        .example-img {
+            width: 100%;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }		
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.0/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>一、现有“YoloWorld检人形上半身 + DINOv3上衣颜色分类” 算法的推理流程</h1>
+        <p>2026.01.25~01.28, 长沙小伙伴在鸿羽生产力平台上做了”Y+D"算法生产的尝试。具体的尝试过程如下：</p>
+        <div class="flow-chart">
+            <div class="mermaid">
+                flowchart TD
+                    A[输入图片] --> B1[使用YoloWorld算法检测行人上半身bbox]
+					B1 --> B[抠取上半身bbox区域图片]
+                    B --> C[送入DINOv3模型]
+                    C --> D[提取图像特征并L2归一化]
+					D --> E[计算这个特征与事先已计算得到的红/蓝/白三类聚类中心特征或均值特征的余弦相似度]
+                    E --> F[Softmax归一化概率]
+                    F --> G[输出概率最高的类别- 红?蓝?白?]
+            </div>
+        </div>
+		<p>根据尝试结果，这个算法的效果不尽人意。</p>
+		<p><img src = "./20260130_dino服饰颜色分类_ex1.png" class="example-img1"></p>
+		<p><img src = "./20260130_dino服饰颜色分类_ex2.png" class="example-img"></p>
+		
+        <h1>二、现有算法-存在问题</h1>
+        <div class="analysis-section">
+            <h3>核心错误1：由于Softmax归一化，导致其他颜色强制选择“红/蓝/白三类中的某一类”</h3>
+            <p>这是该方案在实际部署时最致命的缺陷之一: 这个系统只认识“红”、“白”、“蓝”三个类别！而街道上的行人会穿着各种颜色的衣服：绿色、黄色、黑色、棕色、紫色等等。
+强制选择的后果： 当一个穿着绿色T恤的行人经过时，您的系统会计算其特征 Fgreen 与 Cred,Cblue,Cwhite 的相似度。由于没有“绿色”原型，系统将被迫在已有的三个类别中做出选择。Fgreen 可能会因为在特征空间中与 Cblue 的距离最近，而被系统以高置信度（经过Softmax后）错误地分类为“蓝色”。	</p>
+            <p>本质：Softmax是<strong>封闭集分类的专属激活函数</strong>，在你使用了softmax的这个算法中，你总是把服饰颜色空间当成一个封闭集，但这个封闭集却没覆盖实际的物理颜色类别空间，出现了逻辑漏洞；</p>
+
+            <h3>核心错误2：由于光照与环境的剧烈动态变化，以及光照与环境的剧烈动态变化类别覆盖不完整，用一个聚类中心来代表整个类别是完全不够的：</h3>
+			<p><strong>原型中心的漂移与失效：</strong> 您在离线阶段计算的类别中心 Cred,Cblue,Cwhite，是基于您收集的标注数据集。如果这个数据集主要是在白天、晴天条件下采集的，那么这个“红色”原型 Cred 实际上是“晴天白天的红色”原型。当夜晚来临，一件红色衣服在路灯下的特征向量 Fnew_night_red，在特征空间中可能与 Cred 相距甚远，反而离代表“阴影下的白色”（即灰色）的 Cwhite 或者代表“深色”的 Cblue 更近，导致灾难性的分类错误。</p>
+			<p><strong>类内方差急剧增大：</strong> 由于光照变化，以及同一种颜色本身存在很大的类内差异(如：红色包含粉红、酒红，橙红等差异很大的不同红色), 用一个聚类中心来代表整个类别是完全不够的。例如，一个“粉红色”的特征，可能在特征空间中位于“红色”中心和“白色”中心的中间位置，导致分类极其不稳定。</p>
+        </div>
+
+       <h1>三、解决方案</h1>
+		<div class="solution-section">	
+            <h3>✅ 对其他颜色强制选择红白蓝三类中一类 问题，可采用如下方法之一：</h3>
+            <p>1. 摒弃Softmax归一化，直接使用余弦相似度进行类别判定和阈值校验；</p>
+            <p>2. 强制补充类别完整性：枚举所有物理实际颜色类别，或至少新增“其他类”覆盖未枚举的颜色。或者至少引入“其他”类别，将所有非红/白/蓝的衣服都标注为此类。但这会导致“other”类别的内部方差极大，几乎不可能用少数几个原型来代表。</p>
+			<p>3. <strong>一个更现实的方法是，</strong>在Softmax分类之后，再加一个判断。如果一个新样本的特征，与它最相似的那个类别的原型的相似度，都没有超过一个预设的阈值T，那么就将其分类为“未知（Unknown）”。例如，虽然绿色衣服被判断为最像蓝色，但其与 Cblue 的余弦相似度只有0.4，低于阈值0.7，因此系统拒绝分类，输出“未知”。这能有效避免明显的错分，但需要精心调试阈值。这是保证系统不在其未知领域胡乱猜测的关键。如下图：</p>
+        <div class="flow-chart">
+            <div class="mermaid">
+                flowchart TD
+                    A[输入图片] --> B1[YoloWorld检测行人上半身bbox]
+                    B1 --> B[抠取上半身bbox区域图片]
+                    B --> C[送入DINOv3模型]
+                    C --> D[提取图像特征并L2归一化]
+                    D --> E[计算与红/蓝/白三类 所有原型特征的余弦相似度=>Softmax]
+                    E --> E2[获取每个类别中所有原型的最高相似度]
+                    E2 --> F[获取每个类别的对应类别阈值]
+                    F --> G{是否存在某个类的最高相似度<br>≥对应阈值的相似度？}
+                    G -->|否| J["输出'未知（需人工审核）'→人工复核流程"]
+                    G -->|是| H[筛选出所有≥阈值的类别，取相似度最高者]
+                    H --> I[输出该类别标签（红/蓝/白）]
+            </div>
+        </div>			
+        </div>
+
+		<div class="solution-section">	
+            <h3>✅ 对一个类中心代表整个类别不够的问题，应采用“扩充原型数量（多中心策略）”：</h3>
+            <p>1. 不要为每个颜色类别只计算一个中心。在对每个类别的特征进行聚类时，设置K>1（例如，K=5）。这样，“红色”类别就可以由5个原型中心共同代表，分别对应“鲜红色”、“暗红色”、“粉红色”、“带图案的红色”等子类。</p>
+			<p>2. 在线推理时，计算新样本与所有原型（例如，3个类别 x 5个原型 = 15个原型）的相似度，然后取其与某个类别内所有原型的最高相似度作为该类别的得分，再送入Softmax。</p>
+		</div>
+	
+	
+        <h1>三、现有算法 - 深度思考</h1>
+        <div class="analysis-section">
+    		<h3>DINOv3骨干网络得到的特征可能不具备很强的颜色敏感性</h3>
+			<p>1. DINOv3是通过自监督学习（对比学习）训练的，它的特征空间主要编码的是语义相似性而非颜色相似性。如：DINOv3对"狗"和"猫"的区分度应很高，但对"红色T恤"和"蓝色T恤"的区分度不确定也会很高，预训练时模型学到的可能是"这是衣服"而非"这是红色"。</p>
+            <p>2. <strong>DINOV3特征对颜色的敏感度究竟有多高，是否足以作为颜色分类的主要依据，是一个需要通过实验验证的关键问题。</strong></p>
+        </div>	
+    </div>
+
+
+    <script>
+        mermaid.initialize({
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#27ae60',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#219653',
+                lineColor: '#666',
+                secondaryColor: '#e74c3c',
+                tertiaryColor: '#f9f9f9'
+            },
+            flowchart: {
+                nodeSpacing: 12,
+                rankSpacing: 18,
+                curve: 'linear'
+            },
+            fontSize: 14
+        });
+    </script>
+</body>
+</html>

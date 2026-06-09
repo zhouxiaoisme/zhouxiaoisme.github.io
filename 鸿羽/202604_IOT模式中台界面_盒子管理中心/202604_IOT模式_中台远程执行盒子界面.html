@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>盒子远程执行中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        /* 1920*1080屏幕核心适配 */
+        body {
+            background-color: #f5fafe;
+            padding: 20px;
+            width: 100%;
+            min-height: 100vh;
+            max-width: 1920px;
+            margin: 0 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 30px;
+            width: 100%;
+            max-width: 1880px;
+            min-height: calc(100vh - 40px);
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2d8b4f;
+            font-size: 24px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e6f7ef;
+            padding-bottom: 15px;
+        }
+        /* 模块切换Tab */
+        .module-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 30px;
+        }
+        .module-tab {
+            padding: 12px 30px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .module-tab.active {
+            border-bottom: 3px solid #2d8b4f;
+            color: #2d8b4f;
+            background-color: #f9fdfb;
+        }
+        .module-content {
+            display: none;
+            width: 100%;
+        }
+        .module-content.active {
+            display: block;
+        }
+        .section-title {
+            color: #2d8b4f;
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            display: block;
+            width: 100%;
+            font-weight: 600;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fdfb;
+            border-radius: 6px;
+            border-left: 3px solid #2d8b4f;
+            display: block;
+            clear: both;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        label {
+            color: #333;
+            font-weight: 500;
+            width: 130px;
+            text-align: right;
+            font-size: 15px;
+        }
+        input[type="text"], select, textarea {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+            flex: 1;
+            min-width: 350px;
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: Consolas, monospace;
+        }
+        .btn-primary {
+            background-color: #2d8b4f;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #267a42;
+        }
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-size: 15px;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #e6e6e6;
+        }
+        /* 命令模板样式 */
+        .template-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .template-tag {
+            padding: 6px 12px;
+            background-color: #e8f5e9;
+            color: #2d8b4f;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #c8e6c9;
+            transition: all 0.2s;
+        }
+        .template-tag:hover {
+            background-color: #c8e6c9;
+        }
+        /* 执行结果面板 */
+        .result-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e6f7ef;
+            border-radius: 4px;
+            width: 100%;
+            line-height: 1.6;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .result-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .status-success {
+            background-color: #e8f5e9;
+            color: #2d8b4f;
+        }
+        .status-fail {
+            background-color: #fee5e5;
+            color: #e53e3e;
+        }
+        .result-content {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* 1920*1080屏幕专属适配 */
+        @media screen and (min-width: 1920px) {
+            .form-group {
+                max-width: 1800px;
+            }
+            table {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>盒子远程执行中心</h1>
+
+        <!-- 模块切换Tab -->
+        <div class="module-tabs">
+            <div class="module-tab active" data-module="shell">远程Shell命令执行</div>
+            <div class="module-tab" data-module="sql">远程数据库SQL执行</div>
+        </div>
+
+        <!-- ==================== 远程Shell命令执行模块 ==================== -->
+        <div class="module-content active" id="shell-module">
+            <!-- 1. 命令执行区域 -->
+            <div class="section">
+                <span class="section-title">1. 远程Shell命令执行</span>
+                <div class="form-group">
+                    <label>目标盒子：</label>
+                    <select id="shell-box-select" multiple>
+                        <option value="SN123456">SN123456（192.168.1.100，在线）</option>
+                        <option value="SN654321">SN654321（192.168.1.101，在线）</option>
+                        <option value="SN789012" disabled>SN789012（192.168.1.102，离线）</option>
+                    </select>
+                    <span class="tip info">可多选，支持批量执行</span>
+                </div>
+                <div class="form-group">
+                    <label>命令模板：</label>
+                    <div class="template-group">
+                        <span class="template-tag" data-cmd="systemctl restart nginx">重启Nginx服务</span>
+                        <span class="template-tag" data-cmd="tail -f /var/log/nginx/access.log">查看Nginx访问日志</span>
+                        <span class="template-tag" data-cmd="df -h">查看磁盘空间</span>
+                        <span class="template-tag" data-cmd="top -bn1">查看系统负载</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>执行命令：</label>
+                    <textarea id="shell-cmd-input" placeholder="请输入要执行的Shell命令，支持多行"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn-primary" id="shell-exec-btn">执行命令</button>
+                    <button class="btn-secondary" id="shell-reset-btn">重置</button>
+                </div>
+            </div>
+
+            <!-- 2. 执行结果面板 -->
+            <div class="section">
+                <span class="section-title">2. 执行结果实时展示</span>
+                <div class="result-panel" id="shell-result-panel">
+                    <div class="result-header">
+                        <span>请执行命令后查看结果</span>
+                        <span class="result-status"></span>
+                    </div>
+                    <div class="result-content" id="shell-result-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 远程数据库SQL执行模块 ==================== -->
+        <div class="module-content" id="sql-module">
+            <!-- 1. SQL执行区域 -->
+            <div class="section">
+                <span class="section-title">1. 远程数据库SQL执行</span>
+                <div class="form-group">
+                    <label>目标盒子：</label>
+                    <select id="sql-box-select" multiple>
+                        <option value="SN123456">SN123456（192.168.1.100，在线）</option>
+                        <option value="SN654321">SN654321（192.168.1.101，在线）</option>
+                        <option value="SN789012" disabled>SN789012（192.168.1.102，离线）</option>
+                    </select>
+                    <span class="tip info">可多选，支持批量执行</span>
+                </div>
+                <div class="form-group">
+                    <label>SQL模板：</label>
+                    <div class="template-group">
+                        <span class="template-tag" data-sql="SELECT * FROM user LIMIT 10;">查询用户表前10条</span>
+                        <span class="template-tag" data-sql="SHOW TABLES;">查看所有表</span>
+                        <span class="template-tag" data-sql="EXPLAIN SELECT * FROM order WHERE create_time > '2025-01-01';">分析查询性能</span>
+                        <span class="template-tag" data-sql="SELECT COUNT(*) FROM log;">统计日志表行数</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>执行SQL：</label>
+                    <textarea id="sql-cmd-input" placeholder="请输入要执行的SQL语句，支持多行"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn-primary" id="sql-exec-btn">执行SQL</button>
+                    <button class="btn-secondary" id="sql-reset-btn">重置</button>
+                </div>
+            </div>
+
+            <!-- 2. 执行结果面板 -->
+            <div class="section">
+                <span class="section-title">2. 执行结果实时展示</span>
+                <div class="result-panel" id="sql-result-panel">
+                    <div class="result-header">
+                        <span>请执行SQL后查看结果</span>
+                        <span class="result-status"></span>
+                    </div>
+                    <div class="result-content" id="sql-result-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initModuleTabs();
+            initShellModule();
+            initSqlModule();
+        });
+
+        // 1. 模块切换逻辑
+        function initModuleTabs() {
+            const tabs = document.querySelectorAll('.module-tab');
+            const contents = document.querySelectorAll('.module-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 切换Tab状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // 切换内容显示
+                    const module = tab.getAttribute('data-module');
+                    contents.forEach(c => c.classList.remove('active'));
+                    document.getElementById(`${module}-module`).classList.add('active');
+                });
+            });
+        }
+
+        // 2. 远程Shell模块初始化
+        function initShellModule() {
+            // 命令模板点击填充
+            document.querySelectorAll('.template-tag[data-cmd]').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    document.getElementById('shell-cmd-input').value = tag.getAttribute('data-cmd');
+                });
+            });
+
+            // 执行命令按钮
+            document.getElementById('shell-exec-btn').addEventListener('click', () => {
+                const cmd = document.getElementById('shell-cmd-input').value.trim();
+                const boxes = Array.from(document.getElementById('shell-box-select').selectedOptions).map(opt => opt.value);
+
+                if (!cmd) {
+                    alert('请输入要执行的Shell命令');
+                    return;
+                }
+                if (boxes.length === 0) {
+                    alert('请选择目标盒子');
+                    return;
+                }
+
+                execShellCmd(cmd, boxes);
+            });
+
+            // 重置按钮
+            document.getElementById('shell-reset-btn').addEventListener('click', () => {
+                document.getElementById('shell-cmd-input').value = '';
+                document.getElementById('shell-box-select').selectedIndex = -1;
+                document.getElementById('shell-result-content').textContent = '';
+                document.querySelector('#shell-result-panel .result-header span:first-child').textContent = '请执行命令后查看结果';
+                document.querySelector('#shell-result-panel .result-status').textContent = '';
+            });
+        }
+
+        // 3. 远程SQL模块初始化
+        function initSqlModule() {
+            // SQL模板点击填充
+            document.querySelectorAll('.template-tag[data-sql]').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    document.getElementById('sql-cmd-input').value = tag.getAttribute('data-sql');
+                });
+            });
+
+            // 执行SQL按钮
+            document.getElementById('sql-exec-btn').addEventListener('click', () => {
+                const sql = document.getElementById('sql-cmd-input').value.trim();
+                const boxes = Array.from(document.getElementById('sql-box-select').selectedOptions).map(opt => opt.value);
+
+                if (!sql) {
+                    alert('请输入要执行的SQL语句');
+                    return;
+                }
+                if (boxes.length === 0) {
+                    alert('请选择目标盒子');
+                    return;
+                }
+
+                execSqlCmd(sql, boxes);
+            });
+
+            // 重置按钮
+            document.getElementById('sql-reset-btn').addEventListener('click', () => {
+                document.getElementById('sql-cmd-input').value = '';
+                document.getElementById('sql-box-select').selectedIndex = -1;
+                document.getElementById('sql-result-content').textContent = '';
+                document.querySelector('#sql-result-panel .result-header span:first-child').textContent = '请执行SQL后查看结果';
+                document.querySelector('#sql-result-panel .result-status').textContent = '';
+            });
+        }
+
+        // 4. 执行Shell命令（模拟）
+        function execShellCmd(cmd, boxes) {
+            const now = new Date();
+            const timeStr = formatTime(now);
+            const isSuccess = Math.random() > 0.2; // 80%成功率
+            const output = isSuccess ? `命令执行成功\n${cmd}\n执行结果：[模拟返回数据]` : `命令执行失败\n${cmd}\n错误日志：Permission denied`;
+
+            // 更新结果面板
+            updateShellResultPanel(timeStr, boxes, isSuccess, output);
+        }
+
+        // 5. 执行SQL命令（模拟）
+        function execSqlCmd(sql, boxes) {
+            const now = new Date();
+            const timeStr = formatTime(now);
+            const isSuccess = Math.random() > 0.2;
+            const affectRows = isSuccess ? Math.floor(Math.random() * 1000) : 0;
+            const output = isSuccess ? `SQL执行成功\n${sql}\n影响行数：${affectRows}` : `SQL执行失败\n${sql}\n错误日志：Syntax error`;
+
+            // 更新结果面板
+            updateSqlResultPanel(timeStr, boxes, isSuccess, output, affectRows);
+        }
+
+        // 6. 更新Shell结果面板
+        function updateShellResultPanel(time, boxes, isSuccess, output) {
+            const panel = document.getElementById('shell-result-panel');
+            const header = panel.querySelector('.result-header');
+            const content = panel.querySelector('.result-content');
+
+            header.querySelector('span:first-child').textContent = `下发时间：${time} | 目标盒子：${boxes.join(',')}`;
+            const statusTag = header.querySelector('.result-status');
+            
+            if (isSuccess) {
+                statusTag.textContent = '执行成功';
+                statusTag.className = 'result-status status-success';
+            } else {
+                statusTag.textContent = '执行失败';
+                statusTag.className = 'result-status status-fail';
+            }
+
+            content.textContent = output;
+        }
+
+        // 7. 更新SQL结果面板
+        function updateSqlResultPanel(time, boxes, isSuccess, output, affectRows) {
+            const panel = document.getElementById('sql-result-panel');
+            const header = panel.querySelector('.result-header');
+            const content = panel.querySelector('.result-content');
+
+            header.querySelector('span:first-child').textContent = `下发时间：${time} | 目标盒子：${boxes.join(',')} | 影响行数：${affectRows}`;
+            const statusTag = header.querySelector('.result-status');
+            
+            if (isSuccess) {
+                statusTag.textContent = '执行成功';
+                statusTag.className = 'result-status status-success';
+            } else {
+                statusTag.textContent = '执行失败';
+                statusTag.className = 'result-status status-fail';
+            }
+
+            content.textContent = output;
+        }
+
+        // 工具函数：格式化时间
+        function formatTime(date) {
+            return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
