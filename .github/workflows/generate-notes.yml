@@ -50,7 +50,7 @@ jobs:
 
           # 排除目录
           # EXCLUDE_DIRS=(".github" "node_modules" "assets" "images" ".git")
-		  EXCLUDE_DIRS=(".github" ".git")
+          EXCLUDE_DIRS=(".github" ".git")
 
           # 生成根目录总索引页 index.html ==========================
           cd "$GITHUB_WORKSPACE"
@@ -208,8 +208,7 @@ jobs:
               # 列出 HTML 文件，按【修改时间倒序】最新排在最上面 ======================
               shopt -s nullglob
               ls -t *.html | grep -v "notes.html" | while read -r file; do
- 				  echo "   📄 添加文件：$file"
-
+                  echo " - 添加文件：$file"
                   title=$(echo "$file" | sed 's/\.html//g; s/-/ /g; s/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
                   filedate=$(date -r "$file" +'%Y-%m-%d')
                   echo "<li><a href='$file'>📄 $title</a><span class='date'>$filedate</span></li>" >> notes.html
