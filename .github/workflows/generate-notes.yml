@@ -1,4 +1,4 @@
-name: 递归全目录自动生成笔记列表
+name: 递归全目录自动生成笔记列表（终极版）
 on:
   push:
     paths:
@@ -23,7 +23,7 @@ jobs:
           # 1. 递归遍历 GitHub 仓库中所有层级的子目录（不限深度）
           # 2. 自动为【每一个目录】生成一个美观的 notes.html 笔记列表页面
           # 3. 页面自动包含：目录标题、文件链接、最后修改日期、返回主页按钮、实时搜索框
-          # 4. 自动排除系统目录：.github / .git / node_modules / assets / images
+          # 4. 自动排除系统目录：.github / .git
           #
           # 什么是【笔记列表】？
           # 简单说：就是给每个文件夹自动生成一个“目录导航页”，
@@ -49,7 +49,8 @@ jobs:
           ##############################################################################
 
           # 排除目录
-          EXCLUDE_DIRS=(".github" "node_modules" "assets" "images" ".git")
+          # EXCLUDE_DIRS=(".github" "node_modules" "assets" "images" ".git")
+		  EXCLUDE_DIRS=(".github" ".git")
 
           # 生成根目录总索引页 index.html ==========================
           cd "$GITHUB_WORKSPACE"
@@ -88,7 +89,7 @@ jobs:
           EOF
 
           # 根目录显示所有一级子目录入口
-          find . -maxdepth 1 -type d | grep -v '^\.$' | grep -vE "/(\.github|\.git|node_modules|assets|images)$" | while read -r rootdir; do
+          find . -maxdepth 1 -type d | grep -v '^\.$' | grep -vE "/(\.github|\.git)$" | while read -r rootdir; do
               dirname=$(basename "$rootdir")
               cleanname=$(echo "$dirname" | sed 's/Course//g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
               echo "<a class='folder-item' href='$dirname/notes.html'><div class='folder-icon'>📂</div><div class='folder-name'>$cleanname</div></a>" >> index.html
@@ -145,7 +146,7 @@ jobs:
           <head>
               <meta charset='UTF-8'>
               <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-              <title>$PAGE_TITLE | 一个普通的思考者</title>
+              <title>$PAGE_TITLE | 草台班子-思考者</title>
               <style>
                   * { margin:0; padding:0; box-sizing:border-box; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; transition:all 0.3s ease; }
                   body { background: linear-gradient(120deg, #f5f7fa 0%, #e4eaf5 100%); color:#333; padding:20px; max-width:1000px; margin:0 auto; min-height:100vh; }
@@ -187,7 +188,7 @@ jobs:
           EOF
 
               # 列出子目录 ======================
-              find . -maxdepth 1 -type d | grep -v '^\.$' | grep -vE "/(\.github|\.git|node_modules|assets|images)$" | sort | while read -r subdir; do
+              find . -maxdepth 1 -type d | grep -v '^\.$' | grep -vE "/(\.github|\.git)$" | sort | while read -r subdir; do
                   name=$(basename "$subdir")
                   cleanname=$(echo "$name" | sed 's/Course//g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
                   echo "<li><a href='$name/notes.html'>📂 $cleanname</a></li>" >> notes.html
@@ -207,6 +208,8 @@ jobs:
               # 列出 HTML 文件，按【修改时间倒序】最新排在最上面 ======================
               shopt -s nullglob
               ls -t *.html | grep -v "notes.html" | while read -r file; do
+ 				  echo "   📄 添加文件：$file"
+
                   title=$(echo "$file" | sed 's/\.html//g; s/-/ /g; s/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1')
                   filedate=$(date -r "$file" +'%Y-%m-%d')
                   echo "<li><a href='$file'>📄 $title</a><span class='date'>$filedate</span></li>" >> notes.html
